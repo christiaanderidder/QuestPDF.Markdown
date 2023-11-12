@@ -3,7 +3,8 @@ on:
   release:
     types: [published]
 jobs:
-  build:
+  release:
+    name: Release package
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -21,4 +22,4 @@ jobs:
     - name: Publish package (NuGet)
       run: dotnet nuget push ./package/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
     - name: Publish package (GitHub)
-      run: dotnet nuget push ./package/*.nupkg --api-key ${{ secrets.GITHUB_API_KEY }} --source ttps://nuget.pkg.github.com/christiaanderidder/index.json
+      run: dotnet nuget push ./package/*.nupkg --api-key ${{ secrets.GH_API_KEY }} --source ttps://nuget.pkg.github.com/christiaanderidder/index.json
