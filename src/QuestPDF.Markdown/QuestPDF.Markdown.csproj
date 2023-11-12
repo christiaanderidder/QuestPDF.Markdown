@@ -4,7 +4,7 @@
         <PackageId>QuestPDF.Markdown</PackageId>
         <Version>1.0.0-alpha.2</Version>
         <Authors>Christiaan de Ridder</Authors>
-        <PackageDescription>QuestPDF.Markdown is an open-source helper library A helper that allows rendering markdown into a QuestPDF document</PackageDescription>
+        <PackageDescription>QuestPDF.Markdown is an open-source helper library that allows rendering markdown into a QuestPDF document</PackageDescription>
         <PackageProjectUrl>https://github.com/christiaanderidder/QuestPDF.Markdown</PackageProjectUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
