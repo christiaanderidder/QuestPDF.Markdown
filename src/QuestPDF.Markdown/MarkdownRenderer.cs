@@ -1,4 +1,5 @@
 using Markdig;
+using Markdig.Extensions.TaskLists;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using QuestPDF.Fluent;
@@ -81,7 +82,7 @@ internal class MarkdownRenderer
                     col.Item().Row(li =>
                     {
                         li.Spacing(5);
-                        li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}." : "•");
+                        li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}{list.OrderedDelimiter}" : "•");
                         ProcessBlock(item, li.RelativeItem(), properties);
                     });
                 }
@@ -139,18 +140,19 @@ internal class MarkdownRenderer
                 }
             });
         }
-        else if(block is CodeBlock code)
+        else if (block is ThematicBreakBlock rule)
+        {
+            pdf.RenderDebug(Colors.Green.Medium, _debug)
+                .LineHorizontal(2)
+                .LineColor(Colors.Grey.Lighten3);
+        }
+        else if (block is CodeBlock code)
         {
             pdf.RenderDebug(Colors.Yellow.Medium, _debug)
                 .Background(Colors.Grey.Lighten3)
                 .Padding(5)
-                .Column(col =>
-                {
-                    foreach (var line in code.Lines)
-                    {
-                        col.Item().Text(line.ToString()).FontFamily(Fonts.CourierNew);
-                    }
-                });
+                .Text(code.Lines.ToString())
+                .FontFamily(Fonts.CourierNew);
         }
 
         
@@ -179,7 +181,23 @@ internal class MarkdownRenderer
                     properties.LinkUrl = link.Url;
                     break;
                 case EmphasisInline emphasis:
-                    properties.TextStyles.Push(t => emphasis.DelimiterCount == 2 ? t.Bold() : t.Italic());
+                    properties.TextStyles.Push(t =>
+                    {
+                        switch (emphasis.DelimiterChar, emphasis.DelimiterCount)
+                        {
+                            case ('^', 1):
+                                return t.Superscript();
+                            case ('~', 1):
+                                return t.Subscript();
+                            case ('~', 2):
+                                return t.Strikethrough();
+                            case ('+', 2):
+                                return t.Underline();
+                            case ('=', 2):
+                                return t.BackgroundColor(Colors.Yellow.Lighten2);
+                        }
+                        return emphasis.DelimiterCount == 2 ? t.Bold() : t.Italic();
+                    });
                     break;
             }
 
@@ -215,15 +233,23 @@ internal class MarkdownRenderer
     {
         switch (inline)
         {
+            case AutolinkInline autoLink:
+                var linkSpan = text.Hyperlink(autoLink.Url, autoLink.Url);
+                linkSpan.ApplyStyles(properties.TextStyles.ToList());
+                break;
             case LineBreakInline:
                 // Ignore markdown line breaks, they are used for formatting the source code.
                 //span = text.Span("\n");
                 break;
+            case TaskList task:
+                var taskSpan = task.Checked ? text.Span("\u25a0") : text.Span("\u25a1");
+                taskSpan.FontFamily(Fonts.CourierNew);
+                break;
             case LiteralInline literal:
-                var span = properties.LinkUrl != null
+                var literalSpan = !string.IsNullOrEmpty(properties.LinkUrl)
                     ? text.Hyperlink(literal.ToString(), properties.LinkUrl)
                     : text.Span(literal.ToString());
-                span.RenderDebug(Colors.Green.Medium, _debug).ApplyStyles(properties.TextStyles.ToList());
+                literalSpan.ApplyStyles(properties.TextStyles.ToList());
                 break;
             case CodeInline code:
                 text.Span(code.Content).BackgroundColor(Colors.Grey.Lighten3).FontFamily(Fonts.CourierNew);
