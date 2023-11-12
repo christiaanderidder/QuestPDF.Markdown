@@ -1,4 +1,5 @@
 using Markdig;
+using Markdig.Extensions.TaskLists;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using QuestPDF.Fluent;
@@ -81,7 +82,7 @@ internal class MarkdownRenderer
                     col.Item().Row(li =>
                     {
                         li.Spacing(5);
-                        li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}." : "•");
+                        li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}{list.OrderedDelimiter}" : "•");
                         ProcessBlock(item, li.RelativeItem(), properties);
                     });
                 }
@@ -228,6 +229,10 @@ internal class MarkdownRenderer
             case LineBreakInline:
                 // Ignore markdown line breaks, they are used for formatting the source code.
                 //span = text.Span("\n");
+                break;
+            case TaskList task:
+                var taskSpan = task.Checked ? text.Span("\u25a0") : text.Span("\u25a1");
+                taskSpan.FontFamily(Fonts.CourierNew);
                 break;
             case LiteralInline literal:
                 var span = !string.IsNullOrEmpty(properties.LinkUrl)
