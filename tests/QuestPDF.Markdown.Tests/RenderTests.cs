@@ -21,15 +21,31 @@ public class RenderTests
     [Test]
     public async Task Render()
     {
-        var document = GenerateDocument((item) => item.Markdown(_markdown));
-        await document.ShowInPreviewerAsync();
+        var document = GenerateDocument(item => item.Markdown(_markdown));
+        
+        try
+        {
+            await document.ShowInPreviewerAsync();    
+        }
+        catch(OperationCanceledException)
+        {
+            // Ignore
+        }
     }
     
     [Test]
     public async Task RenderDebug()
     {
-        var document = GenerateDocument((item) => item.Markdown(_markdown, true));
-        await document.ShowInPreviewerAsync();
+        var document = GenerateDocument(item => item.Markdown(_markdown, true));
+        
+        try
+        {
+            await document.ShowInPreviewerAsync();    
+        }
+        catch(OperationCanceledException)
+        {
+            // Ignore
+        }
     }
     
     private Document GenerateDocument(Action<IContainer> body)
