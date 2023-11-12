@@ -173,7 +173,24 @@ internal class MarkdownRenderer
                     properties.LinkUrl = link.Url;
                     break;
                 case EmphasisInline emphasis:
-                    properties.TextStyles.Push(t => emphasis.DelimiterCount == 2 ? t.Bold() : t.Italic());
+                    properties.TextStyles.Push(t =>
+                    {
+                        var delimiter = emphasis.DelimiterChar;
+                        switch (emphasis.DelimiterChar, emphasis.DelimiterCount)
+                        {
+                            case ('^', 1):
+                                return t.Superscript();
+                            case ('~', 1):
+                                return t.Subscript();
+                            case ('~', 2):
+                                return t.Strikethrough();
+                            case ('+', 2):
+                                return t.Underline();
+                            case ('=', 2):
+                                return t.BackgroundColor(Colors.Yellow.Lighten2);
+                        }
+                        return emphasis.DelimiterCount == 2 ? t.Bold() : t.Italic();
+                    });
                     break;
             }
 

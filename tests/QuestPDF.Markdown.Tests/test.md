@@ -36,7 +36,6 @@ Alt-H2
 
 # Emphasis
 
-```
 Emphasis, aka italics, with *asterisks* or _underscores_.
 
 Strong emphasis, aka bold, with **asterisks** or __underscores__.
@@ -73,6 +72,29 @@ __This is bold text__
 _This is italic text_
 
 ~~Strikethrough~~
+```
+
+------
+
+# Extended emphasis
+
+19^th^
+
+H~2~O
+
+++Inserted text++
+
+==Marked text==
+
+```
+19^th^
+
+H~2~O
+
+++Inserted text++
+
+==Marked text==
+```
 
 ------
 
