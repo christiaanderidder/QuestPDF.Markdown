@@ -145,7 +145,8 @@ internal class MarkdownRenderer
             pdf.RenderDebug(Colors.Yellow.Medium, _debug)
                 .Background(Colors.Grey.Lighten3)
                 .Padding(5)
-                .Text(code.Lines.ToString());
+                .Text(code.Lines.ToString())
+                .FontFamily(Fonts.CourierNew);
         }
 
         
