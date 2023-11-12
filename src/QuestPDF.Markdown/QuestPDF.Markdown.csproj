@@ -8,6 +8,7 @@
         <PackageProjectUrl>https://github.com/christiaanderidder/QuestPDF.Markdown</PackageProjectUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageIcon>logo.png</PackageIcon>
         <RepositoryUrl>https://github.com/christiaanderidder/QuestPDF.Markdown</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Copyright>Christiaan de Ridder</Copyright>
@@ -24,9 +25,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
-        <None Include="..\..\README.md" Pack="true" PackagePath=""/>
         <None Include="../../LICENSE" Pack="true" PackagePath=""/>
         <None Include="../../README.md" Pack="true" PackagePath=""/>
+        <None Include="../../img/logo.png" Pack="true" PackagePath=""/>
     </ItemGroup>
 </Project>
