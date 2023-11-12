@@ -1,4 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <PackageId>QuestPDF.Markdown</PackageId>
+        <Version>1.0.0-alpha</Version>
+        <Authors>Christiaan de Ridder</Authors>
+        <PackageDescription>QuestPDF.Markdown is an open-source helper library A helper that allows rendering markdown into a QuestPDF document</PackageDescription>
+        <PackageProjectUrl>https://github.com/christiaanderidder/QuestPDF.Markdown</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/christiaanderidder/QuestPDF.Markdown</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Copyright>Christiaan de Ridder</Copyright>
+        <PackageTags>pdf questpdf markdown convert</PackageTags>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+    
     <ItemGroup>
       <PackageReference Include="Markdig" Version="0.33.0" />
       <PackageReference Include="QuestPDF" Version="2023.10.1" />

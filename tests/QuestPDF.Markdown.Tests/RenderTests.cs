@@ -20,7 +20,7 @@ public class RenderTests
     [Test]
     public async Task Render()
     {
-        var document = GenerateDocument((item) => item.Markdown(_markdown, false));
+        var document = GenerateDocument((item) => item.Markdown(_markdown));
         await document.ShowInPreviewerAsync();
     }
     
