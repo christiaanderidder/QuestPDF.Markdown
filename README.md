@@ -2,7 +2,7 @@
 A helper that allows rendering markdown into a QuestPDF document 
 
 ## Usage
-```
+```csharp
 var text = 
 @"# Hello, world!
 *Greetings* from **markdown**!
