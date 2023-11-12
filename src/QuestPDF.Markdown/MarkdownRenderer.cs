@@ -144,13 +144,7 @@ internal class MarkdownRenderer
             pdf.RenderDebug(Colors.Yellow.Medium, _debug)
                 .Background(Colors.Grey.Lighten3)
                 .Padding(5)
-                .Column(col =>
-                {
-                    foreach (var line in code.Lines)
-                    {
-                        col.Item().Text(line.ToString()).FontFamily(Fonts.CourierNew);
-                    }
-                });
+                .Text(code.Lines.ToString());
         }
 
         
