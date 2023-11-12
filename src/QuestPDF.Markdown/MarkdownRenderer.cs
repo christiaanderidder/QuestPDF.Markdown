@@ -214,7 +214,7 @@ internal class MarkdownRenderer
                 //span = text.Span("\n");
                 break;
             case LiteralInline literal:
-                var span = properties.LinkUrl != null
+                var span = !string.IsNullOrEmpty(properties.LinkUrl)
                     ? text.Hyperlink(literal.ToString(), properties.LinkUrl)
                     : text.Span(literal.ToString());
                 span.RenderDebug(Colors.Green.Medium, _debug).ApplyStyles(properties.TextStyles.ToList());
