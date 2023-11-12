@@ -3,7 +3,8 @@ on:
   release:
     types: [published]
 jobs:
-  build:
+  release:
+    name: Release package
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
