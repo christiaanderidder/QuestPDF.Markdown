@@ -14,12 +14,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\QuestPDF.Markdown\QuestPDF.Markdown.csproj" />
+        <ProjectReference Include="..\..\src\QuestPDF.Markdown\QuestPDF.Markdown.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="test.md">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="test.md">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>
