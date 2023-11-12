@@ -140,7 +140,13 @@ internal class MarkdownRenderer
                 }
             });
         }
-        else if(block is CodeBlock code)
+        else if (block is ThematicBreakBlock rule)
+        {
+            pdf.RenderDebug(Colors.Green.Medium, _debug)
+                .LineHorizontal(2)
+                .LineColor(Colors.Grey.Lighten3);
+        }
+        else if (block is CodeBlock code)
         {
             pdf.RenderDebug(Colors.Yellow.Medium, _debug)
                 .Background(Colors.Grey.Lighten3)
