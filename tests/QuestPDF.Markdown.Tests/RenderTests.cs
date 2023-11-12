@@ -6,6 +6,7 @@ using QuestPDF.Previewer;
 
 namespace QuestPDF.Markdown.Tests;
 
+[Ignore("These tests are disabled for automated workflows because they open a QuestPDF previewer window")]
 public class RenderTests
 {
     private string _markdown = string.Empty;
