@@ -226,6 +226,10 @@ internal class MarkdownRenderer
     {
         switch (inline)
         {
+            case AutolinkInline autoLink:
+                var linkSpan = text.Hyperlink(autoLink.Url, autoLink.Url);
+                linkSpan.ApplyStyles(properties.TextStyles.ToList());
+                break;
             case LineBreakInline:
                 // Ignore markdown line breaks, they are used for formatting the source code.
                 //span = text.Span("\n");
@@ -235,10 +239,10 @@ internal class MarkdownRenderer
                 taskSpan.FontFamily(Fonts.CourierNew);
                 break;
             case LiteralInline literal:
-                var span = !string.IsNullOrEmpty(properties.LinkUrl)
+                var literalSpan = !string.IsNullOrEmpty(properties.LinkUrl)
                     ? text.Hyperlink(literal.ToString(), properties.LinkUrl)
                     : text.Span(literal.ToString());
-                span.RenderDebug(Colors.Green.Medium, _debug).ApplyStyles(properties.TextStyles.ToList());
+                literalSpan.ApplyStyles(properties.TextStyles.ToList());
                 break;
             case CodeInline code:
                 text.Span(code.Content).BackgroundColor(Colors.Grey.Lighten3).FontFamily(Fonts.CourierNew);
