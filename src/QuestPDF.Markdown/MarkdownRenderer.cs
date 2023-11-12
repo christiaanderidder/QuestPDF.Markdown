@@ -175,7 +175,6 @@ internal class MarkdownRenderer
                 case EmphasisInline emphasis:
                     properties.TextStyles.Push(t =>
                     {
-                        var delimiter = emphasis.DelimiterChar;
                         switch (emphasis.DelimiterChar, emphasis.DelimiterCount)
                         {
                             case ('^', 1):
