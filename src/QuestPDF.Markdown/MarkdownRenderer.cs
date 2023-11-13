@@ -26,7 +26,11 @@ internal class MarkdownRenderer
         _debug = debug;
         _pipeline = new MarkdownPipelineBuilder()
             .DisableHtml()
-            .UseAdvancedExtensions()
+            .UseEmphasisExtras()
+            .UseGridTables()
+            .UsePipeTables()
+            .UseTaskLists()
+            .UseAutoLinks()
             .Build();
     }
     
