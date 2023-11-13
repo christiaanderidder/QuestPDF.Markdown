@@ -20,6 +20,8 @@ var document = Document.Create(container =>
 });
 ```
 
+![Usage](https://github.com/christiaanderidder/QuestPDF.Markdown/blob/main/img/usage.png?raw=true)
+
 ## What's supported?
 The aim of this library is to support all basic markdown functionality and some of the extensions supported by markdig.
 
