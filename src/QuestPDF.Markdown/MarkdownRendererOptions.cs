@@ -3,7 +3,7 @@ using QuestPDF.Helpers;
 
 namespace QuestPDF.Markdown;
 
-public class RenderConfig
+public class MarkdownRendererOptions
 {
     public bool Debug { get; set; }
     public bool DownloadImages { get; set; }
@@ -32,5 +32,5 @@ public class RenderConfig
     public string HorizontalRuleColor { get; set; } = Colors.Grey.Lighten2;
     public int HorizontalRuleThickness { get; set; } = 2;
 
-    public Func<HttpClient>? HttpClientFactory { get; set; }
+    public HttpClient? HttpClient { get; set; }
 }

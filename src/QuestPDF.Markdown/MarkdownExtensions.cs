@@ -10,11 +10,11 @@ public static class MarkdownExtensions
     /// </summary>
     /// <param name="container">The QuestPDF container to render in</param>
     /// <param name="markdown">The markdown text to render</param>
-    /// <param name="config">Optional configuration of the renderer</param>
+    /// <param name="options">Optional configuration of the renderer</param>
     /// <returns>The QuestPDF container that the markdown text was rendered in</returns>
-    public static IContainer Markdown(this IContainer container, string markdown, RenderConfig? config = null)
+    public static IContainer Markdown(this IContainer container, string markdown, MarkdownRendererOptions? options = null)
     {
-        var renderer = new MarkdownRenderer(config);
+        var renderer = new MarkdownRenderer(options);
         return renderer.ConvertMarkdown(markdown, container); 
     }
     

@@ -22,13 +22,12 @@ public class RenderTests
     [Test]
     public async Task Render()
     {
-        var config = new RenderConfig
+        var options = new MarkdownRendererOptions
         {
-            Debug = false,
             DownloadImages = true,
-            HttpClientFactory = () => _httpClient
+            HttpClient = _httpClient
         };
-        var document = GenerateDocument(item => item.Markdown(_markdown, config));
+        var document = GenerateDocument(item => item.Markdown(_markdown, options));
         
         try
         {
@@ -43,13 +42,13 @@ public class RenderTests
     [Test]
     public async Task RenderDebug()
     {
-        var config = new RenderConfig
+        var options = new MarkdownRendererOptions
         {
             Debug = true,
             DownloadImages = true,
-            HttpClientFactory = () => _httpClient
+            HttpClient = _httpClient
         };
-        var document = GenerateDocument(item => item.Markdown(_markdown, config));
+        var document = GenerateDocument(item => item.Markdown(_markdown, options));
         
         try
         {
