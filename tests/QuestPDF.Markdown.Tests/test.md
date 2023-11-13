@@ -264,10 +264,10 @@ Some text to show that the reference links can follow later.
 Inline images:
 
 Inline-style:
-![alt text](https://placehold.co/48.png "Logo Title Text 1")
+![48x48 image](https://placehold.co/48.png "Logo Title Text 1")
 
 Reference-style:
-![alt text][logo]
+![48x48 image][logo]
 
 [logo]: https://placehold.co/48.png "Logo Title Text 2"
 
@@ -306,40 +306,6 @@ Like links, Images also have a footnote style syntax
 With a reference later in the document defining the URL location:
 
 [id]:https://placehold.co/200.png "The title"
-
-------
-
-# [Footnotes](https://github.com/markdown-it/markdown-it-footnote)
-
-```
-Footnote 1 link[^first].
-
-Footnote 2 link[^second].
-
-Inline footnote^[Text of inline footnote] definition.
-
-Duplicated footnote reference[^second].
-
-[^first]: Footnote **can have markup**
-
-    and multiple paragraphs.
-
-[^second]: Footnote text.
-```
-
-Footnote 1 link[^first].
-
-Footnote 2 link[^second].
-
-Inline footnote^[Text of inline footnote] definition.
-
-Duplicated footnote reference[^second].
-
-[^first]: Footnote **can have markup**
-
-    and multiple paragraphs.
-
-[^second]: Footnote text.
 
 ------
 
