@@ -25,6 +25,8 @@ public class RenderTests
         var config = new RenderConfig
         {
             Debug = false,
+            DownloadImages = true,
+            HttpClientFactory = () => _httpClient
         };
         var document = GenerateDocument(item => item.Markdown(_markdown, config));
         
@@ -44,6 +46,8 @@ public class RenderTests
         var config = new RenderConfig
         {
             Debug = true,
+            DownloadImages = true,
+            HttpClientFactory = () => _httpClient
         };
         var document = GenerateDocument(item => item.Markdown(_markdown, config));
         

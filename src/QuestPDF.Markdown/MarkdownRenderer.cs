@@ -6,6 +6,7 @@ using Markdig.Syntax.Inlines;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Markdown;
 
@@ -256,6 +257,7 @@ internal class MarkdownRenderer
                 case LinkInline link:
                     properties.TextStyles.Push(t => t.FontColor(Colors.Blue.Medium).Underline());
                     properties.LinkUrl = link.Url;
+                    properties.IsImage = link.IsImage;
                     break;
                 case EmphasisInline emphasis:
                     properties.TextStyles.Push(t =>
@@ -299,7 +301,33 @@ internal class MarkdownRenderer
 
             // Reset the link URL
             properties.LinkUrl = null;
+            properties.IsImage = false;
         }
+    }
+
+    private (Stream Bytes, int Width, int Height) DownloadImage(Uri uri)
+    {
+        var ms = new MemoryStream();
+        var httpClient = _config.HttpClientFactory?.Invoke();
+        if (httpClient == null) return (ms, 0, 0);
+        
+        var response = httpClient.GetAsync(uri)
+            .GetAwaiter()
+            .GetResult();
+        
+        if (!response.IsSuccessStatusCode) return (ms, 0, 0);
+        
+        using var stream = response.Content.ReadAsStreamAsync()
+            .GetAwaiter()
+            .GetResult();
+
+        stream.CopyTo(ms);
+        ms.Position = 0;
+
+        var skData = SKData.Create(ms);
+        var image = SKBitmap.Decode(skData);
+        ms.Position = 0;
+        return (ms, image.Width, image.Height);
     }
 
     /// <summary>
@@ -323,10 +351,8 @@ internal class MarkdownRenderer
                 taskSpan.FontFamily(Fonts.CourierNew);
                 break;
             case LiteralInline literal:
-                var literalSpan = !string.IsNullOrEmpty(properties.LinkUrl)
-                    ? text.Hyperlink(literal.ToString(), properties.LinkUrl)
-                    : text.Span(literal.ToString());
-                literalSpan.ApplyStyles(properties.TextStyles.ToList());
+                ProcessLiteralInline(literal, text, properties)
+                    .ApplyStyles(properties.TextStyles.ToList());
                 break;
             case CodeInline code:
                 text.Span(code.Content).BackgroundColor(Colors.Grey.Lighten3).FontFamily(Fonts.CourierNew);
@@ -335,5 +361,16 @@ internal class MarkdownRenderer
                 text.Span($"Unknown LeafInline: {inline.GetType()}").BackgroundColor(Colors.Orange.Medium);
                 break;
         }
+    }
+
+    private TextSpanDescriptor ProcessLiteralInline(LiteralInline literal, TextDescriptor text, TextProperties properties)
+    {
+        if (string.IsNullOrEmpty(properties.LinkUrl) || !Uri.TryCreate(properties.LinkUrl, UriKind.Absolute, out var uri)) return text.Span(literal.ToString());
+
+        if (!properties.IsImage || !_config.DownloadImages) return text.Hyperlink(literal.ToString(), properties.LinkUrl);
+        
+        var (image, width, height) = DownloadImage(uri);
+        text.Element(e => e.Width(width).Height(height).Image(image));
+        return text.Span(string.Empty);
     }
 }
