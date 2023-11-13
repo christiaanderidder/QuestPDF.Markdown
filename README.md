@@ -1,7 +1,7 @@
 # QuestPDF.Markdown
 QuestPDF.Markdown allows rendering markdown into a [QuestPDF](https://www.questpdf.com/) document using the [markdig](https://github.com/xoofx/markdig) parser.
 
-![Nuget](https://img.shields.io/nuget/v/QuestPDF.Markdown)
+[![Nuget](https://img.shields.io/nuget/v/QuestPDF.Markdown)](https://www.nuget.org/packages/QuestPDF.Markdown)
 
 ## Usage
 ```csharp
