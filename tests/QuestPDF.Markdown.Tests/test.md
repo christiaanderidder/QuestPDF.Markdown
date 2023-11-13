@@ -261,48 +261,51 @@ Some text to show that the reference links can follow later.
 # Images
 
 ```
-Here's our logo (hover to see the title text):
+Inline images:
 
 Inline-style:
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+![alt text](https://placehold.co/48.png "Logo Title Text 1")
 
 Reference-style:
 ![alt text][logo]
 
-[logo]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 2"
+[logo]: https://placehold.co/48.png "Logo Title Text 2"
 
-![Minion](https://octodex.github.com/images/minion.png)
-![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+![200x200 image](https://placehold.co/200.png)
+
+![200x200 image with title](https://placehold.co/200.png "The title")
 
 Like links, Images also have a footnote style syntax
 
-![Alt text][id]
+![200x200 image with reference][id]
 
 With a reference later in the document defining the URL location:
 
-[id]: https://octodex.github.com/images/dojocat.jpg  "The Dojocat"
+[id]:https://placehold.co/200.png "The title"
+
 ```
 
-Here's our logo (hover to see the title text):
+Inline images:
 
 Inline-style:
-![alt text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 1")
+![alt text](https://placehold.co/48.png "Logo Title Text 1")
 
 Reference-style:
 ![alt text][logo]
 
-[logo]: https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png "Logo Title Text 2"
+[logo]: https://placehold.co/48.png "Logo Title Text 2"
 
-![Minion](https://octodex.github.com/images/minion.png)
-![Stormtroopocat](https://octodex.github.com/images/stormtroopocat.jpg "The Stormtroopocat")
+![200x200 image](https://placehold.co/200.png)
+
+![200x200 image with title](https://placehold.co/200.png "The title")
 
 Like links, Images also have a footnote style syntax
 
-![Alt text][id]
+![200x200 image with reference][id]
 
 With a reference later in the document defining the URL location:
 
-[id]: https://octodex.github.com/images/dojocat.jpg  "The Dojocat"
+[id]:https://placehold.co/200.png "The title"
 
 ------
 
