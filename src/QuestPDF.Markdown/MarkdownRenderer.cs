@@ -1,4 +1,5 @@
 using Markdig;
+using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -68,33 +69,39 @@ internal class MarkdownRenderer
                 properties.TextStyles.Push(t => t.FontColor(Colors.Grey.Darken1));
                 break;
         }
-        
-        pdf.RenderDebug(Colors.Red.Medium, _debug).Column(col =>
+
+        if (block is Table table)
         {
-            col.Spacing(10);
-            
-            var rowNum = 1;
-            foreach (var item in block)
+            pdf = ProcessTableBlock(table, pdf, properties);
+        }
+        else
+        {
+            pdf.RenderDebug(Colors.Red.Medium, _debug).Column(col =>
             {
-                if (block is ListBlock list)
+                col.Spacing(10);
+            
+                var rowNum = 1;
+                foreach (var item in block)
                 {
-                    var num = rowNum;
-                    col.Item().Row(li =>
+                    var container = col.Item();
+                    if (block is ListBlock list)
                     {
-                        li.Spacing(5);
-                        li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}{list.OrderedDelimiter}" : "•");
-                        ProcessBlock(item, li.RelativeItem(), properties);
-                    });
+                        var num = rowNum;
+                        container.Row(li =>
+                        {
+                            li.Spacing(5);
+                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}{list.OrderedDelimiter}" : "•");
+                            ProcessBlock(item, li.RelativeItem(), properties);
+                        });
+                    }
+                    else
+                    {
+                        ProcessBlock(item, container, properties);
+                    }
+                    rowNum++;
                 }
-                else
-                {
-                    ProcessBlock(item, col.Item(), properties);
-                }
-                rowNum++;
-            }
-            
-            
-        });
+            });
+        }
         
         // Pop any styles that were applied to the entire container off the stack
         switch (block)
@@ -103,6 +110,79 @@ internal class MarkdownRenderer
                 properties.TextStyles.Pop();
                 break;
         }
+
+        return pdf;
+    }
+
+    private IContainer ProcessTableBlock(Table table, IContainer pdf, TextProperties properties)
+    {
+        pdf.RenderDebug(Colors.Green.Medium, _debug).Table(td =>
+        {
+            td.ColumnsDefinition(cd =>
+            {
+                foreach(var col in table.ColumnDefinitions)
+                {
+                    // Width is set to 0 for relative columns
+                    if (col.Width > 0)
+                    {
+                        cd.ConstantColumn(col.Width);
+                    }
+                    else
+                    {
+                        cd.RelativeColumn();
+                    }
+                }
+            });
+
+            uint rowIdx = 1;
+            var rows = table.OfType<TableRow>().ToList();
+            foreach (var row in rows)
+            {
+                if (row.IsHeader) properties.TextStyles.Push(t => t.Bold());
+                
+                var colIdx = 0;
+                var cells = row.OfType<TableCell>().ToList();
+                foreach (var cell in cells)
+                {
+                    var colDef = table.ColumnDefinitions[colIdx];
+                    
+                    Console.WriteLine($"{rowIdx},{colIdx}");
+                    Console.WriteLine(cell.ToString());
+                    
+                    var container = td.Cell()
+                        .RowSpan((uint)cell.RowSpan)
+                        .Row(rowIdx + 1)
+                        .Column((uint)(cell.ColumnIndex >= 0 ? cell.ColumnIndex : colIdx) + 1)
+                        .ColumnSpan((uint)cell.RowSpan)
+                        .BorderBottom(rowIdx < rows.Count ? (row.IsHeader ? 3 : 1) : 0)
+                        .BorderColor(Colors.Grey.Lighten2)
+                        .Background(rowIdx % 2 == 0 ? Colors.Grey.Lighten4 : Colors.White)
+                        .Padding(5)
+                        .RenderDebug(Colors.Orange.Medium, _debug);
+                    
+                    switch (colDef.Alignment)
+                    {
+                        case TableColumnAlign.Left:
+                            container = container.AlignLeft();
+                            break;
+                        case TableColumnAlign.Center:
+                            container = container.AlignCenter();
+                            break;
+                        case TableColumnAlign.Right:
+                            container = container.AlignRight();
+                            break;
+                    }
+                    
+                    ProcessBlock(cell, container, properties);
+
+                    colIdx++;
+                }
+                
+                if (row.IsHeader) properties.TextStyles.Pop();
+                
+                rowIdx++;
+            }
+        });
 
         return pdf;
     }
@@ -144,12 +224,12 @@ internal class MarkdownRenderer
         {
             pdf.RenderDebug(Colors.Green.Medium, _debug)
                 .LineHorizontal(2)
-                .LineColor(Colors.Grey.Lighten3);
+                .LineColor(Colors.Grey.Lighten2);
         }
         else if (block is CodeBlock code)
         {
             pdf.RenderDebug(Colors.Yellow.Medium, _debug)
-                .Background(Colors.Grey.Lighten3)
+                .Background(Colors.Grey.Lighten4)
                 .Padding(5)
                 .Text(code.Lines.ToString())
                 .FontFamily(Fonts.CourierNew);

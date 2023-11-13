@@ -33,9 +33,9 @@ Currently the following features are supported:
 - Emphasis (bold, italic)
 - Task lists
 - Extra emphasis (subscript, superscript, strikethrough, marked, inserted)
+- Tables
 
 Support for the following extensions will be added in the future:
-- Tables
 - Images
 - Footnotes
 
