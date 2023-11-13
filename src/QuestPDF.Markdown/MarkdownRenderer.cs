@@ -83,18 +83,16 @@ internal class MarkdownRenderer
             pdf.RenderDebug(Colors.Red.Medium, _debug).Column(col =>
             {
                 col.Spacing(10);
-            
-                var rowNum = 1;
+                
                 foreach (var item in block)
                 {
                     var container = col.Item();
-                    if (block is ListBlock list)
+                    if (block is ListBlock list && item is ListItemBlock listItem)
                     {
-                        var num = rowNum;
                         container.Row(li =>
                         {
                             li.Spacing(5);
-                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}{list.OrderedDelimiter}" : "•");
+                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{listItem.Order}{list.OrderedDelimiter}" : "•");
                             ProcessBlock(item, li.RelativeItem(), properties);
                         });
                     }
@@ -102,7 +100,6 @@ internal class MarkdownRenderer
                     {
                         ProcessBlock(item, container, properties);
                     }
-                    rowNum++;
                 }
             });
         }
@@ -224,7 +221,7 @@ internal class MarkdownRenderer
                 }
             });
         }
-        else if (block is ThematicBreakBlock rule)
+        else if (block is ThematicBreakBlock)
         {
             pdf.RenderDebug(Colors.Green.Medium, _debug)
                 .LineHorizontal(2)
