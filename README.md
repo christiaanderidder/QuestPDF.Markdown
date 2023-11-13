@@ -1,5 +1,7 @@
 # QuestPDF.Markdown
-A helper that allows rendering markdown into a QuestPDF document 
+QuestPDF.Markdown allows rendering markdown into a [QuestPDF](https://www.questpdf.com/) document using the [markdig](https://github.com/xoofx/markdig) parser.
+
+![Nuget](https://img.shields.io/nuget/v/QuestPDF.Markdown)
 
 ## Usage
 ```csharp
@@ -17,6 +19,28 @@ var document = Document.Create(container =>
     });
 });
 ```
+
+## What's supported?
+The aim of this library is to support all basic markdown functionality and some of the extensions supported by markdig.
+
+Currently the following features are supported:
+- Headings
+- Block quotes
+- Code blocks
+- Lists (ordered and unordered)
+- Emphasis (bold, italic)
+- Task lists
+- Extra emphasis (subscript, superscript, strikethrough, marked, inserted)
+
+Support for the following extensions will be added in the future:
+- Tables
+- Images
+- Footnotes
+
+Support for the following extensions is not planned:
+- Raw HTML
+- Math blocks
+- Diagrams
 
 ## Contributing
 To quickly test changes made in the library, you can make use of the excellent QuestPDF previewer in combination with the QuestPDF.Markdown.Tests project and `dotnet watch`
