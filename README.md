@@ -22,6 +22,48 @@ var document = Document.Create(container =>
 
 ![Usage](https://github.com/christiaanderidder/QuestPDF.Markdown/blob/main/img/usage.png?raw=true)
 
+### Styling the output
+The styling used by the MarkdownRenderer class can be configured by passing an instance of MarkdownRendererOptions to the Markdown extension method.
+```csharp
+var text = @"> Hello, world!";
+
+var options = new MarkdownRendererOptions
+{
+    BlockQuoteBorderColor = Colors.Red.Medium,
+    BlockQuoteBorderThickness = 5
+};
+
+var document = Document.Create(container =>
+{
+    container.Page(page =>
+    {
+        page.Margin(20);
+        page.Content().Markdown(text, options);
+    });
+});
+```
+
+### Rendering images
+By default image rendering is disabled. To enable image rendering, a HttpClient has to be provided to the MarkdownRendererOptions instance.
+```csharp
+var text = @"![title](https://placehold.co/100x50.png)";
+
+var options = new MarkdownRendererOptions
+{
+    HttpClient = new HttpClient(),
+    DownloadImages = true
+};
+
+var document = Document.Create(container =>
+{
+    container.Page(page =>
+    {
+        page.Margin(20);
+        page.Content().Markdown(text, options);
+    });
+});
+```
+
 ## What's supported?
 The aim of this library is to support all basic markdown functionality and some of the extensions supported by markdig.
 
@@ -29,18 +71,14 @@ Currently the following features are supported:
 - Headings
 - Block quotes
 - Code blocks
-- Lists (ordered and unordered)
+- Lists (ordered, unordered)
 - Emphasis (bold, italic)
 - Task lists
 - Extra emphasis (subscript, superscript, strikethrough, marked, inserted)
 - Tables
-
-Support for the following features will be added in the future:
 - Images
-- Footnotes
-- A way to configure the styling of rendered components
 
-Support for the following features is not planned:
+Support for the following extensions is currently not planned:
 - Raw HTML
 - Math blocks
 - Diagrams
