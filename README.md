@@ -35,11 +35,12 @@ Currently the following features are supported:
 - Extra emphasis (subscript, superscript, strikethrough, marked, inserted)
 - Tables
 
-Support for the following extensions will be added in the future:
+Support for the following features will be added in the future:
 - Images
 - Footnotes
+- A way to configure the styling of rendered components
 
-Support for the following extensions is not planned:
+Support for the following features is not planned:
 - Raw HTML
 - Math blocks
 - Diagrams
