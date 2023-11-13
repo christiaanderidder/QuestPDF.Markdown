@@ -68,10 +68,16 @@ internal class MarkdownRenderer
                 properties.TextStyles.Push(t => t.FontColor(Colors.Grey.Darken1));
                 break;
         }
-        
-        pdf.RenderDebug(Colors.Red.Medium, _debug).Column(col =>
+
+        if (block is Table table)
         {
-            col.Spacing(10);
+            pdf = ProcessTableBlock(table, pdf, properties);
+        }
+        else
+        {
+            pdf.RenderDebug(Colors.Red.Medium, _debug).Column(col =>
+            {
+                col.Spacing(10);
             
             var rowNum = 1;
             foreach (var item in block)
@@ -103,6 +109,79 @@ internal class MarkdownRenderer
                 properties.TextStyles.Pop();
                 break;
         }
+
+        return pdf;
+    }
+
+    private IContainer ProcessTableBlock(Table table, IContainer pdf, TextProperties properties)
+    {
+        pdf.RenderDebug(Colors.Green.Medium, _debug).Table(td =>
+        {
+            td.ColumnsDefinition(cd =>
+            {
+                foreach(var col in table.ColumnDefinitions)
+                {
+                    // Width is set to 0 for relative columns
+                    if (col.Width > 0)
+                    {
+                        cd.ConstantColumn(col.Width);
+                    }
+                    else
+                    {
+                        cd.RelativeColumn();
+                    }
+                }
+            });
+
+            uint rowIdx = 1;
+            var rows = table.OfType<TableRow>().ToList();
+            foreach (var row in rows)
+            {
+                if (row.IsHeader) properties.TextStyles.Push(t => t.Bold());
+                
+                var colIdx = 0;
+                var cells = row.OfType<TableCell>().ToList();
+                foreach (var cell in cells)
+                {
+                    var colDef = table.ColumnDefinitions[colIdx];
+                    
+                    Console.WriteLine($"{rowIdx},{colIdx}");
+                    Console.WriteLine(cell.ToString());
+                    
+                    var container = td.Cell()
+                        .RowSpan((uint)cell.RowSpan)
+                        .Row(rowIdx + 1)
+                        .Column((uint)(cell.ColumnIndex >= 0 ? cell.ColumnIndex : colIdx) + 1)
+                        .ColumnSpan((uint)cell.RowSpan)
+                        .BorderBottom(rowIdx < rows.Count ? (row.IsHeader ? 3 : 1) : 0)
+                        .BorderColor(Colors.Grey.Lighten2)
+                        .Background(rowIdx % 2 == 0 ? Colors.Grey.Lighten4 : Colors.White)
+                        .Padding(5)
+                        .RenderDebug(Colors.Orange.Medium, _debug);
+                    
+                    switch (colDef.Alignment)
+                    {
+                        case TableColumnAlign.Left:
+                            container = container.AlignLeft();
+                            break;
+                        case TableColumnAlign.Center:
+                            container = container.AlignCenter();
+                            break;
+                        case TableColumnAlign.Right:
+                            container = container.AlignRight();
+                            break;
+                    }
+                    
+                    ProcessBlock(cell, container, properties);
+
+                    colIdx++;
+                }
+                
+                if (row.IsHeader) properties.TextStyles.Pop();
+                
+                rowIdx++;
+            }
+        });
 
         return pdf;
     }
