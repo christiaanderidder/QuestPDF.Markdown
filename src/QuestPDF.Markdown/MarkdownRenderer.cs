@@ -79,28 +79,28 @@ internal class MarkdownRenderer
             {
                 col.Spacing(10);
             
-            var rowNum = 1;
-            foreach (var item in block)
-            {
-                if (block is ListBlock list)
+                var rowNum = 1;
+                foreach (var item in block)
                 {
-                    var num = rowNum;
-                    col.Item().Row(li =>
+                    var container = col.Item();
+                    if (block is ListBlock list)
                     {
-                        li.Spacing(5);
-                        li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}{list.OrderedDelimiter}" : "•");
-                        ProcessBlock(item, li.RelativeItem(), properties);
-                    });
+                        var num = rowNum;
+                        container.Row(li =>
+                        {
+                            li.Spacing(5);
+                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}{list.OrderedDelimiter}" : "•");
+                            ProcessBlock(item, li.RelativeItem(), properties);
+                        });
+                    }
+                    else
+                    {
+                        ProcessBlock(item, container, properties);
+                    }
+                    rowNum++;
                 }
-                else
-                {
-                    ProcessBlock(item, col.Item(), properties);
-                }
-                rowNum++;
-            }
-            
-            
-        });
+            });
+        }
         
         // Pop any styles that were applied to the entire container off the stack
         switch (block)
