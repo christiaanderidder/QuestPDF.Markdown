@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using QuestPDF.Helpers;
 
 namespace QuestPDF.Markdown;
@@ -20,7 +21,7 @@ public class RenderConfig
 
     public string TaskListCheckedGlyph { get; set; } = "☑";
     public string TaskListUncheckedGlyph { get; set; } = "☐";
-    public string UnicodeGlyphFont { get; set; } = Fonts.Arial;
+    public string UnicodeGlyphFont { get; set; } = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Arial Unicode MS" : Fonts.Arial;
 
     public string TableBorderColor { get; set; } = Colors.Grey.Lighten2;
     public string TableEvenRowBackgroundColor { get; set; } = Colors.Grey.Lighten4;
