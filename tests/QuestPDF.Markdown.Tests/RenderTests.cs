@@ -10,6 +10,7 @@ namespace QuestPDF.Markdown.Tests;
 public class RenderTests
 {
     private string _markdown = string.Empty;
+    private readonly HttpClient _httpClient = new();
     
     [SetUp]
     public void Setup()
@@ -21,7 +22,11 @@ public class RenderTests
     [Test]
     public async Task Render()
     {
-        var document = GenerateDocument(item => item.Markdown(_markdown));
+        var config = new RenderConfig
+        {
+            Debug = false,
+        };
+        var document = GenerateDocument(item => item.Markdown(_markdown, config));
         
         try
         {
@@ -36,7 +41,11 @@ public class RenderTests
     [Test]
     public async Task RenderDebug()
     {
-        var document = GenerateDocument(item => item.Markdown(_markdown, true));
+        var config = new RenderConfig
+        {
+            Debug = true,
+        };
+        var document = GenerateDocument(item => item.Markdown(_markdown, config));
         
         try
         {

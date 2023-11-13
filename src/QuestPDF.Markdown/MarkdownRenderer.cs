@@ -18,12 +18,12 @@ namespace QuestPDF.Markdown;
 /// </remarks>
 internal class MarkdownRenderer
 {
-    private readonly bool _debug;
+    private readonly RenderConfig _config;
     private readonly MarkdownPipeline _pipeline;
 
-    internal MarkdownRenderer(bool debug)
+    internal MarkdownRenderer(RenderConfig? config = null)
     {
-        _debug = debug;
+        _config = config ?? new RenderConfig();
         _pipeline = new MarkdownPipelineBuilder()
             .DisableHtml()
             .UseEmphasisExtras()
@@ -33,8 +33,8 @@ internal class MarkdownRenderer
             .UseAutoLinks()
             .Build();
     }
-    
-    internal IContainer ConvertMarkdown(string markdownText, IContainer pdf, bool debug = false)
+
+    internal IContainer ConvertMarkdown(string markdownText, IContainer pdf)
     {
         var document = Markdig.Markdown.Parse(markdownText, _pipeline);
         var properties = new TextProperties();
@@ -80,7 +80,7 @@ internal class MarkdownRenderer
         }
         else
         {
-            pdf.RenderDebug(Colors.Red.Medium, _debug).Column(col =>
+            pdf.RenderDebug(Colors.Red.Medium, _config.Debug).Column(col =>
             {
                 col.Spacing(10);
                 
@@ -117,7 +117,7 @@ internal class MarkdownRenderer
 
     private IContainer ProcessTableBlock(Table table, IContainer pdf, TextProperties properties)
     {
-        pdf.RenderDebug(Colors.Green.Medium, _debug).Table(td =>
+        pdf.RenderDebug(Colors.Green.Medium, _config.Debug).Table(td =>
         {
             td.ColumnsDefinition(cd =>
             {
@@ -155,7 +155,7 @@ internal class MarkdownRenderer
                         .BorderColor(Colors.Grey.Lighten2)
                         .Background(rowIdx % 2 == 0 ? Colors.Grey.Lighten4 : Colors.White)
                         .Padding(5)
-                        .RenderDebug(Colors.Orange.Medium, _debug);
+                        .RenderDebug(Colors.Orange.Medium, _config.Debug);
                     
                     switch (colDef.Alignment)
                     {
@@ -200,7 +200,7 @@ internal class MarkdownRenderer
 
         if (block.Inline != null && block.Inline.Any())
         {
-            pdf.RenderDebug(Colors.Yellow.Medium, _debug).Text(text =>
+            pdf.RenderDebug(Colors.Yellow.Medium, _config.Debug).Text(text =>
             {
                 // Process the block's inline elements
                 foreach (var item in block.Inline)
@@ -219,13 +219,13 @@ internal class MarkdownRenderer
         }
         else if (block is ThematicBreakBlock)
         {
-            pdf.RenderDebug(Colors.Green.Medium, _debug)
+            pdf.RenderDebug(Colors.Green.Medium, _config.Debug)
                 .LineHorizontal(2)
                 .LineColor(Colors.Grey.Lighten2);
         }
         else if (block is CodeBlock code)
         {
-            pdf.RenderDebug(Colors.Yellow.Medium, _debug)
+            pdf.RenderDebug(Colors.Yellow.Medium, _config.Debug)
                 .Background(Colors.Grey.Lighten4)
                 .Padding(5)
                 .Text(code.Lines.ToString())
