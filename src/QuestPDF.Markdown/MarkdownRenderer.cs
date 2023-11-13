@@ -70,8 +70,10 @@ internal class MarkdownRenderer
         switch (block)
         {
             case QuoteBlock:
-                pdf = pdf.BorderLeft(2).BorderColor(Colors.Grey.Lighten2).PaddingLeft(10);
-                properties.TextStyles.Push(t => t.FontColor(Colors.Grey.Darken1));
+                pdf = pdf.BorderLeft(_config.BlockQuoteBorderThickness)
+                    .BorderColor(_config.BlockQuoteBorderColor)
+                    .PaddingLeft(10);
+                properties.TextStyles.Push(t => t.FontColor(_config.BlockQuoteTextColor));
                 break;
         }
 
@@ -152,9 +154,9 @@ internal class MarkdownRenderer
                         .Row(rowIdx + 1)
                         .Column((uint)(cell.ColumnIndex >= 0 ? cell.ColumnIndex : colIdx) + 1)
                         .ColumnSpan((uint)cell.RowSpan)
-                        .BorderBottom(rowIdx < rows.Count ? (row.IsHeader ? 3 : 1) : 0)
-                        .BorderColor(Colors.Grey.Lighten2)
-                        .Background(rowIdx % 2 == 0 ? Colors.Grey.Lighten4 : Colors.White)
+                        .BorderBottom(rowIdx < rows.Count ? (row.IsHeader ? _config.TableHeaderBorderThickness : _config.TableBorderThickness) : 0)
+                        .BorderColor(_config.TableBorderColor)
+                        .Background(rowIdx % 2 == 0 ? _config.TableEvenRowBackgroundColor : _config.TableOddRowBackgroundColor)
                         .Padding(5)
                         .RenderDebug(Colors.Orange.Medium, _config.Debug);
                     
@@ -221,16 +223,16 @@ internal class MarkdownRenderer
         else if (block is ThematicBreakBlock)
         {
             pdf.RenderDebug(Colors.Green.Medium, _config.Debug)
-                .LineHorizontal(2)
-                .LineColor(Colors.Grey.Lighten2);
+                .LineHorizontal(_config.HorizontalRuleThickness)
+                .LineColor(_config.HorizontalRuleColor);
         }
         else if (block is CodeBlock code)
         {
             pdf.RenderDebug(Colors.Yellow.Medium, _config.Debug)
-                .Background(Colors.Grey.Lighten4)
+                .Background(_config.CodeBlockBackground)
                 .Padding(5)
                 .Text(code.Lines.ToString())
-                .FontFamily(Fonts.CourierNew);
+                .FontFamily(_config.CodeFont);
         }
 
         
@@ -255,7 +257,7 @@ internal class MarkdownRenderer
             switch (inline)
             {
                 case LinkInline link:
-                    properties.TextStyles.Push(t => t.FontColor(Colors.Blue.Medium).Underline());
+                    properties.TextStyles.Push(t => t.FontColor(_config.LinkTextColor).Underline());
                     properties.LinkUrl = link.Url;
                     properties.IsImage = link.IsImage;
                     break;
@@ -273,7 +275,7 @@ internal class MarkdownRenderer
                             case ('+', 2):
                                 return t.Underline();
                             case ('=', 2):
-                                return t.BackgroundColor(Colors.Yellow.Lighten2);
+                                return t.BackgroundColor(_config.MarkedTextBackgroundColor);
                         }
                         return emphasis.DelimiterCount == 2 ? t.Bold() : t.Italic();
                     });
@@ -346,16 +348,18 @@ internal class MarkdownRenderer
                 // Ignore markdown line breaks, they are used for formatting the source code.
                 //span = text.Span("\n");
                 break;
-            case TaskList task:
-                var taskSpan = task.Checked ? text.Span("\u25a0") : text.Span("\u25a1");
-                taskSpan.FontFamily(Fonts.CourierNew);
+            case TaskList task: 
+                text.Span(task.Checked ? _config.TaskListCheckedGlyph : _config.TaskListUncheckedGlyph)
+                    .FontFamily(_config.UnicodeGlyphFont);
                 break;
             case LiteralInline literal:
                 ProcessLiteralInline(literal, text, properties)
                     .ApplyStyles(properties.TextStyles.ToList());
                 break;
             case CodeInline code:
-                text.Span(code.Content).BackgroundColor(Colors.Grey.Lighten3).FontFamily(Fonts.CourierNew);
+                text.Span(code.Content)
+                    .BackgroundColor(_config.CodeInlineBackground)
+                    .FontFamily(_config.CodeFont);
                 break;
             default:
                 text.Span($"Unknown LeafInline: {inline.GetType()}").BackgroundColor(Colors.Orange.Medium);
