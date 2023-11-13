@@ -224,12 +224,12 @@ internal class MarkdownRenderer
         {
             pdf.RenderDebug(Colors.Green.Medium, _debug)
                 .LineHorizontal(2)
-                .LineColor(Colors.Grey.Lighten3);
+                .LineColor(Colors.Grey.Lighten2);
         }
         else if (block is CodeBlock code)
         {
             pdf.RenderDebug(Colors.Yellow.Medium, _debug)
-                .Background(Colors.Grey.Lighten3)
+                .Background(Colors.Grey.Lighten4)
                 .Padding(5)
                 .Text(code.Lines.ToString())
                 .FontFamily(Fonts.CourierNew);
