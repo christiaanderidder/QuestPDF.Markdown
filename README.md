@@ -23,7 +23,7 @@ var document = Document.Create(container =>
 ![Usage](https://github.com/christiaanderidder/QuestPDF.Markdown/blob/main/img/usage.png?raw=true)
 
 ### Styling the output
-The styling used by the MarkdownRenderer class can be configured by passing an instance of MarkdownRendererOptions to the Markdown extension method.
+The styling used by QuestPDF.Markdown can be configured using `MarkdownRendererOptions`.
 ```csharp
 var text = @"> Hello, world!";
 
@@ -44,8 +44,9 @@ var document = Document.Create(container =>
 ```
 
 ### Rendering images
-By default, downloading and rendering external images is disabled. This can be enabled by setting the ImageDownloaderEnabled property of the MarkdownRendererOptions class to true.
-Optionally you can provide your own HttpClient instance.
+By default, downloading and rendering external images is disabled.
+It can be enabled by setting the `ImageDownloaderEnabled` property of the `MarkdownRendererOptions` class to `true`.
+Optionally, you can provide your own `HttpClient` instance.
 ```csharp
 var text = @"![title](https://placehold.co/100x50.png)";
 
