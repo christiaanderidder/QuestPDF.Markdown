@@ -146,9 +146,6 @@ internal class MarkdownRenderer
                 {
                     var colDef = table.ColumnDefinitions[colIdx];
                     
-                    Console.WriteLine($"{rowIdx},{colIdx}");
-                    Console.WriteLine(cell.ToString());
-                    
                     var container = td.Cell()
                         .RowSpan((uint)cell.RowSpan)
                         .Row(rowIdx + 1)
