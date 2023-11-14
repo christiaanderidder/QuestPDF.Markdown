@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
@@ -21,7 +22,9 @@ internal class MarkdownRenderer
 {
     private readonly MarkdownRendererOptions _options;
     private readonly MarkdownPipeline _pipeline;
-
+    private readonly HttpClient _httpClient;
+    private readonly ConcurrentDictionary<string, SKImage> _imageCache = new();
+    
     internal MarkdownRenderer(MarkdownRendererOptions? options = null)
     {
         _options = options ?? new MarkdownRendererOptions();
@@ -33,13 +36,59 @@ internal class MarkdownRenderer
             .UseTaskLists()
             .UseAutoLinks()
             .Build();
+
+        _httpClient = _options.HttpClient ?? new();
     }
 
     internal IContainer ConvertMarkdown(string markdownText, IContainer pdf)
     {
         var document = Markdig.Markdown.Parse(markdownText, _pipeline);
-        var properties = new TextProperties();
-        return ProcessContainerBlock(document, pdf, properties);
+
+        if(_options.ImageDownloaderEnabled)
+        {
+            var task = Task.Run(() => DownloadImages(document));
+            task.Wait();
+        }
+
+        return ProcessContainerBlock(document, pdf, new TextProperties());
+    }
+
+    private async Task DownloadImages(MarkdownObject md)
+    {
+        if (!_options.ImageDownloaderEnabled) return;
+        
+        var parallelism = Math.Max(1, _options.ImageDownloaderMaxParallelism);
+        var semaphore = new SemaphoreSlim(parallelism);
+        
+        var urls = md.Descendants<LinkInline>()
+            .Where(l => l.IsImage && l.Url != null && Uri.IsWellFormedUriString(l.Url, UriKind.Absolute))
+            .Select(l => l.Url)
+            .ToHashSet();
+
+        var tasks = urls.Select(async url =>
+        {
+            if (url == null) return;
+            
+            await semaphore.WaitAsync();
+            
+            try
+            {
+                var stream = await _httpClient.GetStreamAsync(url);
+                var data = SKData.Create(stream);
+                var image = SKImage.FromEncodedData(data);
+                _imageCache.TryAdd(url, image);
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        });
+        
+        await Task.WhenAll(tasks);
     }
     
     /// <summary>
@@ -307,31 +356,6 @@ internal class MarkdownRenderer
         }
     }
 
-    private (Stream Bytes, int Width, int Height) DownloadImage(Uri uri)
-    {
-        var ms = new MemoryStream();
-        
-        if (_options.HttpClient == null) return (ms, 0, 0);
-        
-        var response = _options.HttpClient.GetAsync(uri)
-            .GetAwaiter()
-            .GetResult();
-        
-        if (!response.IsSuccessStatusCode) return (ms, 0, 0);
-        
-        using var stream = response.Content.ReadAsStreamAsync()
-            .GetAwaiter()
-            .GetResult();
-
-        stream.CopyTo(ms);
-        ms.Position = 0;
-
-        var skData = SKData.Create(ms);
-        var image = SKBitmap.Decode(skData);
-        ms.Position = 0;
-        return (ms, image.Width, image.Height);
-    }
-
     /// <summary>
     /// Processes a LeafInline. Regular inline elements (LeafInline) contain plain text.
     /// This method receives an existing PDF text element and adds a text span containing the plain text to it.
@@ -369,12 +393,19 @@ internal class MarkdownRenderer
 
     private TextSpanDescriptor ProcessLiteralInline(LiteralInline literal, TextDescriptor text, TextProperties properties)
     {
-        if (string.IsNullOrEmpty(properties.LinkUrl) || !Uri.TryCreate(properties.LinkUrl, UriKind.Absolute, out var uri)) return text.Span(literal.ToString());
+        // Plain text
+        if (string.IsNullOrEmpty(properties.LinkUrl)) return text.Span(literal.ToString());
 
-        if (!properties.IsImage || !_options.DownloadImages) return text.Hyperlink(literal.ToString(), properties.LinkUrl);
+        // Regular links, or images that could not be downloaded
+        if (!properties.IsImage || !_options.ImageDownloaderEnabled || !_imageCache.TryGetValue(properties.LinkUrl, out var image))
+            return text.Hyperlink(literal.ToString(), properties.LinkUrl);
+
+        // Images
+        text.Element(e => e
+            .Width(image.Width)
+            .Height(image.Height)
+            .Image(image.EncodedData.AsStream()));
         
-        var (image, width, height) = DownloadImage(uri);
-        text.Element(e => e.Width(width).Height(height).Image(image));
         return text.Span(string.Empty);
     }
 }

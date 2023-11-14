@@ -5,8 +5,10 @@ namespace QuestPDF.Markdown;
 
 public class MarkdownRendererOptions
 {
+    /// <summary>
+    /// Render DebugAreas in the output
+    /// </summary>
     public bool Debug { get; set; }
-    public bool DownloadImages { get; set; }
 
     public string LinkTextColor { get; set; } = Colors.Blue.Medium;
     public string MarkedTextBackgroundColor { get; set; } = Colors.Yellow.Lighten2;
@@ -32,5 +34,16 @@ public class MarkdownRendererOptions
     public string HorizontalRuleColor { get; set; } = Colors.Grey.Lighten2;
     public int HorizontalRuleThickness { get; set; } = 2;
 
+    /// <summary>
+    /// Optionally provide your own HttpClient for downloading images
+    /// </summary>
     public HttpClient? HttpClient { get; set; }
+    /// <summary>
+    /// Enable image downloads
+    /// </summary>
+    public bool ImageDownloaderEnabled { get; set; }
+    /// <summary>
+    /// The maximum number of images to download in parallel
+    /// </summary>
+    public int ImageDownloaderMaxParallelism { get; set; } = 4;
 }

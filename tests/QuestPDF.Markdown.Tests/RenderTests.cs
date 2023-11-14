@@ -10,7 +10,6 @@ namespace QuestPDF.Markdown.Tests;
 public class RenderTests
 {
     private string _markdown = string.Empty;
-    private readonly HttpClient _httpClient = new();
     
     [SetUp]
     public void Setup()
@@ -24,8 +23,7 @@ public class RenderTests
     {
         var options = new MarkdownRendererOptions
         {
-            DownloadImages = true,
-            HttpClient = _httpClient
+            ImageDownloaderEnabled = true
         };
         var document = GenerateDocument(item => item.Markdown(_markdown, options));
         
@@ -45,8 +43,7 @@ public class RenderTests
         var options = new MarkdownRendererOptions
         {
             Debug = true,
-            DownloadImages = true,
-            HttpClient = _httpClient
+            ImageDownloaderEnabled = true
         };
         var document = GenerateDocument(item => item.Markdown(_markdown, options));
         
