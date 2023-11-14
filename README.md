@@ -22,6 +22,50 @@ var document = Document.Create(container =>
 
 ![Usage](https://github.com/christiaanderidder/QuestPDF.Markdown/blob/main/img/usage.png?raw=true)
 
+### Styling the output
+The styling used by QuestPDF.Markdown can be configured using `MarkdownRendererOptions`.
+```csharp
+var text = @"> Hello, world!";
+
+var options = new MarkdownRendererOptions
+{
+    BlockQuoteBorderColor = Colors.Red.Medium,
+    BlockQuoteBorderThickness = 5
+};
+
+var document = Document.Create(container =>
+{
+    container.Page(page =>
+    {
+        page.Margin(20);
+        page.Content().Markdown(text, options);
+    });
+});
+```
+
+### Rendering images
+By default, downloading and rendering external images is disabled.
+It can be enabled by setting the `ImageDownloaderEnabled` property of the `MarkdownRendererOptions` class to `true`.
+Optionally, you can provide your own `HttpClient` instance.
+```csharp
+var text = @"![title](https://placehold.co/100x50.png)";
+
+var options = new MarkdownRendererOptions
+{
+    ImageDownloaderEnabled = true,
+    HttpClient = myHttpClient // Optional
+};
+
+var document = Document.Create(container =>
+{
+    container.Page(page =>
+    {
+        page.Margin(20);
+        page.Content().Markdown(text, options);
+    });
+});
+```
+
 ## What's supported?
 The aim of this library is to support all basic markdown functionality and some of the extensions supported by markdig.
 
@@ -29,21 +73,19 @@ Currently the following features are supported:
 - Headings
 - Block quotes
 - Code blocks
-- Lists (ordered and unordered)
+- Lists (ordered, unordered)
 - Emphasis (bold, italic)
 - Task lists
 - Extra emphasis (subscript, superscript, strikethrough, marked, inserted)
 - Tables
-
-Support for the following features will be added in the future:
 - Images
-- Footnotes
-- A way to configure the styling of rendered components
 
-Support for the following features is not planned:
+Support for the following extensions is currently not planned:
 - Raw HTML
 - Math blocks
 - Diagrams
+
+A full sample can be found in [test.md](tests/QuestPDF.Markdown.Tests/test.md) and the resulting [test.pdf](tests/QuestPDF.Markdown.Tests/test.pdf).
 
 ## Contributing
 To quickly test changes made in the library, you can make use of the excellent QuestPDF previewer in combination with the QuestPDF.Markdown.Tests project and `dotnet watch`
