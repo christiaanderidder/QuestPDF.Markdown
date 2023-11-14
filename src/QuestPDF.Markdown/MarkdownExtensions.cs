@@ -18,11 +18,8 @@ public static class MarkdownExtensions
         return renderer.ConvertMarkdown(markdown, container); 
     }
     
-    internal static IContainer RenderDebug(this IContainer container, string color, bool debug)
-        => debug ? container.Background(color).Padding(5) : container;
-    
-    internal static TextSpanDescriptor RenderDebug(this TextSpanDescriptor span, string color, bool debug)
-        => debug ? span.BackgroundColor(color) : span;
+    internal static IContainer PaddedDebugArea(this IContainer container, string label, string color)
+        => container.DebugArea(label, color).PaddingTop(20);
     
     internal static TextSpanDescriptor ApplyStyles(this TextSpanDescriptor span, IList<Func<TextSpanDescriptor, TextSpanDescriptor>> applyStyles)
     {

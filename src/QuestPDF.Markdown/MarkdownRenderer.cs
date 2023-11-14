@@ -114,6 +114,8 @@ internal class MarkdownRenderer
     private IContainer ProcessContainerBlock(ContainerBlock block, IContainer pdf, TextProperties properties)
     {
         if (!block.Any()) return pdf;
+
+        if(_options.Debug && block is not MarkdownDocument) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Blue.Medium);
         
         // Push any styles that should be applied to the entire container on the stack
         switch (block)
@@ -132,7 +134,7 @@ internal class MarkdownRenderer
         }
         else
         {
-            pdf.RenderDebug(Colors.Red.Medium, _options.Debug).Column(col =>
+            pdf.Column(col =>
             {
                 col.Spacing(10);
                 
@@ -169,7 +171,7 @@ internal class MarkdownRenderer
 
     private IContainer ProcessTableBlock(Table table, IContainer pdf, TextProperties properties)
     {
-        pdf.RenderDebug(Colors.Green.Medium, _options.Debug).Table(td =>
+        pdf.Table(td =>
         {
             td.ColumnsDefinition(cd =>
             {
@@ -206,8 +208,7 @@ internal class MarkdownRenderer
                         .BorderBottom(rowIdx < rows.Count ? (row.IsHeader ? _options.TableHeaderBorderThickness : _options.TableBorderThickness) : 0)
                         .BorderColor(_options.TableBorderColor)
                         .Background(rowIdx % 2 == 0 ? _options.TableEvenRowBackgroundColor : _options.TableOddRowBackgroundColor)
-                        .Padding(5)
-                        .RenderDebug(Colors.Orange.Medium, _options.Debug);
+                        .Padding(5);
                     
                     switch (colDef.Alignment)
                     {
@@ -242,6 +243,8 @@ internal class MarkdownRenderer
     /// </summary>
     private void ProcessLeafBlock(LeafBlock block, IContainer pdf, TextProperties properties)
     {
+        if(_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Red.Medium);
+        
         // Push any styles that should be applied to the entire block on the stack
         switch (block)
         {
@@ -252,7 +255,7 @@ internal class MarkdownRenderer
 
         if (block.Inline != null && block.Inline.Any())
         {
-            pdf.RenderDebug(Colors.Yellow.Medium, _options.Debug).Text(text =>
+            pdf.Text(text =>
             {
                 // Process the block's inline elements
                 foreach (var item in block.Inline)
@@ -271,14 +274,12 @@ internal class MarkdownRenderer
         }
         else if (block is ThematicBreakBlock)
         {
-            pdf.RenderDebug(Colors.Green.Medium, _options.Debug)
-                .LineHorizontal(_options.HorizontalRuleThickness)
+            pdf.LineHorizontal(_options.HorizontalRuleThickness)
                 .LineColor(_options.HorizontalRuleColor);
         }
         else if (block is CodeBlock code)
         {
-            pdf.RenderDebug(Colors.Yellow.Medium, _options.Debug)
-                .Background(_options.CodeBlockBackground)
+            pdf.Background(_options.CodeBlockBackground)
                 .Padding(5)
                 .Text(code.Lines.ToString())
                 .FontFamily(_options.CodeFont);
