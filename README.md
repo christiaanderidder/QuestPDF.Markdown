@@ -44,14 +44,15 @@ var document = Document.Create(container =>
 ```
 
 ### Rendering images
-By default image rendering is disabled. To enable image rendering, a HttpClient has to be provided to the MarkdownRendererOptions instance.
+By default, downloading and rendering external images is disabled. This can be enabled by setting the ImageDownloaderEnabled property of the MarkdownRendererOptions class to true.
+Optionally you can provide your own HttpClient instance.
 ```csharp
 var text = @"![title](https://placehold.co/100x50.png)";
 
 var options = new MarkdownRendererOptions
 {
-    HttpClient = new HttpClient(),
-    DownloadImages = true
+    ImageDownloaderEnabled = true,
+    HttpClient = myHttpClient // Optional
 };
 
 var document = Document.Create(container =>
