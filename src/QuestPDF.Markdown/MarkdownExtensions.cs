@@ -10,19 +10,16 @@ public static class MarkdownExtensions
     /// </summary>
     /// <param name="container">The QuestPDF container to render in</param>
     /// <param name="markdown">The markdown text to render</param>
-    /// <param name="debug">Adds background colors and margins to elements to help debugging</param>
+    /// <param name="options">Optional configuration of the renderer</param>
     /// <returns>The QuestPDF container that the markdown text was rendered in</returns>
-    public static IContainer Markdown(this IContainer container, string markdown, bool debug = false)
+    public static IContainer Markdown(this IContainer container, string markdown, MarkdownRendererOptions? options = null)
     {
-        var renderer = new MarkdownRenderer(debug);
+        var renderer = new MarkdownRenderer(options);
         return renderer.ConvertMarkdown(markdown, container); 
     }
     
-    internal static IContainer RenderDebug(this IContainer container, string color, bool debug)
-        => debug ? container.Background(color).Padding(5) : container;
-    
-    internal static TextSpanDescriptor RenderDebug(this TextSpanDescriptor span, string color, bool debug)
-        => debug ? span.BackgroundColor(color) : span;
+    internal static IContainer PaddedDebugArea(this IContainer container, string label, string color)
+        => container.DebugArea(label, color).PaddingTop(20);
     
     internal static TextSpanDescriptor ApplyStyles(this TextSpanDescriptor span, IList<Func<TextSpanDescriptor, TextSpanDescriptor>> applyStyles)
     {

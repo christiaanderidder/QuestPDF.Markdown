@@ -21,11 +21,16 @@ public class RenderTests
     [Test]
     public async Task Render()
     {
-        var document = GenerateDocument(item => item.Markdown(_markdown));
+        var options = new MarkdownRendererOptions
+        {
+            ImageDownloaderEnabled = true
+        };
+        var document = GenerateDocument(item => item.Markdown(_markdown, options));
         
         try
         {
-            await document.ShowInPreviewerAsync();    
+            document.GeneratePdf(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "test.pdf"));
+            await document.ShowInPreviewerAsync();
         }
         catch(OperationCanceledException)
         {
@@ -36,7 +41,12 @@ public class RenderTests
     [Test]
     public async Task RenderDebug()
     {
-        var document = GenerateDocument(item => item.Markdown(_markdown, true));
+        var options = new MarkdownRendererOptions
+        {
+            Debug = true,
+            ImageDownloaderEnabled = true
+        };
+        var document = GenerateDocument(item => item.Markdown(_markdown, options));
         
         try
         {

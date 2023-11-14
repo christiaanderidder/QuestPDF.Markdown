@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
@@ -6,6 +7,7 @@ using Markdig.Syntax.Inlines;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Markdown;
 
@@ -18,23 +20,75 @@ namespace QuestPDF.Markdown;
 /// </remarks>
 internal class MarkdownRenderer
 {
-    private readonly bool _debug;
+    private readonly MarkdownRendererOptions _options;
     private readonly MarkdownPipeline _pipeline;
-
-    internal MarkdownRenderer(bool debug)
+    private readonly HttpClient _httpClient;
+    private readonly ConcurrentDictionary<string, SKImage> _imageCache = new();
+    
+    internal MarkdownRenderer(MarkdownRendererOptions? options = null)
     {
-        _debug = debug;
+        _options = options ?? new MarkdownRendererOptions();
         _pipeline = new MarkdownPipelineBuilder()
             .DisableHtml()
-            .UseAdvancedExtensions()
+            .UseEmphasisExtras()
+            .UseGridTables()
+            .UsePipeTables()
+            .UseTaskLists()
+            .UseAutoLinks()
             .Build();
+
+        _httpClient = _options.HttpClient ?? new();
     }
-    
-    internal IContainer ConvertMarkdown(string markdownText, IContainer pdf, bool debug = false)
+
+    internal IContainer ConvertMarkdown(string markdownText, IContainer pdf)
     {
         var document = Markdig.Markdown.Parse(markdownText, _pipeline);
-        var properties = new TextProperties();
-        return ProcessContainerBlock(document, pdf, properties);
+
+        if(_options.ImageDownloaderEnabled)
+        {
+            var task = Task.Run(() => DownloadImages(document));
+            task.Wait();
+        }
+
+        return ProcessContainerBlock(document, pdf, new TextProperties());
+    }
+
+    private async Task DownloadImages(MarkdownObject md)
+    {
+        if (!_options.ImageDownloaderEnabled) return;
+        
+        var parallelism = Math.Max(1, _options.ImageDownloaderMaxParallelism);
+        var semaphore = new SemaphoreSlim(parallelism);
+        
+        var urls = md.Descendants<LinkInline>()
+            .Where(l => l.IsImage && l.Url != null && Uri.IsWellFormedUriString(l.Url, UriKind.Absolute))
+            .Select(l => l.Url)
+            .ToHashSet();
+
+        var tasks = urls.Select(async url =>
+        {
+            if (url == null) return;
+            
+            await semaphore.WaitAsync();
+            
+            try
+            {
+                var stream = await _httpClient.GetStreamAsync(url);
+                var data = SKData.Create(stream);
+                var image = SKImage.FromEncodedData(data);
+                _imageCache.TryAdd(url, image);
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        });
+        
+        await Task.WhenAll(tasks);
     }
     
     /// <summary>
@@ -60,13 +114,17 @@ internal class MarkdownRenderer
     private IContainer ProcessContainerBlock(ContainerBlock block, IContainer pdf, TextProperties properties)
     {
         if (!block.Any()) return pdf;
+
+        if(_options.Debug && block is not MarkdownDocument) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Blue.Medium);
         
         // Push any styles that should be applied to the entire container on the stack
         switch (block)
         {
             case QuoteBlock:
-                pdf = pdf.BorderLeft(2).BorderColor(Colors.Grey.Lighten2).PaddingLeft(10);
-                properties.TextStyles.Push(t => t.FontColor(Colors.Grey.Darken1));
+                pdf = pdf.BorderLeft(_options.BlockQuoteBorderThickness)
+                    .BorderColor(_options.BlockQuoteBorderColor)
+                    .PaddingLeft(10);
+                properties.TextStyles.Push(t => t.FontColor(_options.BlockQuoteTextColor));
                 break;
         }
 
@@ -76,21 +134,19 @@ internal class MarkdownRenderer
         }
         else
         {
-            pdf.RenderDebug(Colors.Red.Medium, _debug).Column(col =>
+            pdf.Column(col =>
             {
                 col.Spacing(10);
-            
-                var rowNum = 1;
+                
                 foreach (var item in block)
                 {
                     var container = col.Item();
-                    if (block is ListBlock list)
+                    if (block is ListBlock list && item is ListItemBlock listItem)
                     {
-                        var num = rowNum;
                         container.Row(li =>
                         {
                             li.Spacing(5);
-                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{num}{list.OrderedDelimiter}" : "•");
+                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{listItem.Order}{list.OrderedDelimiter}" : "•");
                             ProcessBlock(item, li.RelativeItem(), properties);
                         });
                     }
@@ -98,7 +154,6 @@ internal class MarkdownRenderer
                     {
                         ProcessBlock(item, container, properties);
                     }
-                    rowNum++;
                 }
             });
         }
@@ -116,7 +171,7 @@ internal class MarkdownRenderer
 
     private IContainer ProcessTableBlock(Table table, IContainer pdf, TextProperties properties)
     {
-        pdf.RenderDebug(Colors.Green.Medium, _debug).Table(td =>
+        pdf.Table(td =>
         {
             td.ColumnsDefinition(cd =>
             {
@@ -145,20 +200,15 @@ internal class MarkdownRenderer
                 foreach (var cell in cells)
                 {
                     var colDef = table.ColumnDefinitions[colIdx];
-                    
-                    Console.WriteLine($"{rowIdx},{colIdx}");
-                    Console.WriteLine(cell.ToString());
-                    
                     var container = td.Cell()
                         .RowSpan((uint)cell.RowSpan)
                         .Row(rowIdx + 1)
                         .Column((uint)(cell.ColumnIndex >= 0 ? cell.ColumnIndex : colIdx) + 1)
                         .ColumnSpan((uint)cell.RowSpan)
-                        .BorderBottom(rowIdx < rows.Count ? (row.IsHeader ? 3 : 1) : 0)
-                        .BorderColor(Colors.Grey.Lighten2)
-                        .Background(rowIdx % 2 == 0 ? Colors.Grey.Lighten4 : Colors.White)
-                        .Padding(5)
-                        .RenderDebug(Colors.Orange.Medium, _debug);
+                        .BorderBottom(rowIdx < rows.Count ? (row.IsHeader ? _options.TableHeaderBorderThickness : _options.TableBorderThickness) : 0)
+                        .BorderColor(_options.TableBorderColor)
+                        .Background(rowIdx % 2 == 0 ? _options.TableEvenRowBackgroundColor : _options.TableOddRowBackgroundColor)
+                        .Padding(5);
                     
                     switch (colDef.Alignment)
                     {
@@ -193,6 +243,8 @@ internal class MarkdownRenderer
     /// </summary>
     private void ProcessLeafBlock(LeafBlock block, IContainer pdf, TextProperties properties)
     {
+        if(_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Red.Medium);
+        
         // Push any styles that should be applied to the entire block on the stack
         switch (block)
         {
@@ -203,7 +255,7 @@ internal class MarkdownRenderer
 
         if (block.Inline != null && block.Inline.Any())
         {
-            pdf.RenderDebug(Colors.Yellow.Medium, _debug).Text(text =>
+            pdf.Text(text =>
             {
                 // Process the block's inline elements
                 foreach (var item in block.Inline)
@@ -220,19 +272,17 @@ internal class MarkdownRenderer
                 }
             });
         }
-        else if (block is ThematicBreakBlock rule)
+        else if (block is ThematicBreakBlock)
         {
-            pdf.RenderDebug(Colors.Green.Medium, _debug)
-                .LineHorizontal(2)
-                .LineColor(Colors.Grey.Lighten2);
+            pdf.LineHorizontal(_options.HorizontalRuleThickness)
+                .LineColor(_options.HorizontalRuleColor);
         }
         else if (block is CodeBlock code)
         {
-            pdf.RenderDebug(Colors.Yellow.Medium, _debug)
-                .Background(Colors.Grey.Lighten4)
+            pdf.Background(_options.CodeBlockBackground)
                 .Padding(5)
                 .Text(code.Lines.ToString())
-                .FontFamily(Fonts.CourierNew);
+                .FontFamily(_options.CodeFont);
         }
 
         
@@ -257,8 +307,9 @@ internal class MarkdownRenderer
             switch (inline)
             {
                 case LinkInline link:
-                    properties.TextStyles.Push(t => t.FontColor(Colors.Blue.Medium).Underline());
+                    properties.TextStyles.Push(t => t.FontColor(_options.LinkTextColor).Underline());
                     properties.LinkUrl = link.Url;
+                    properties.IsImage = link.IsImage;
                     break;
                 case EmphasisInline emphasis:
                     properties.TextStyles.Push(t =>
@@ -274,7 +325,7 @@ internal class MarkdownRenderer
                             case ('+', 2):
                                 return t.Underline();
                             case ('=', 2):
-                                return t.BackgroundColor(Colors.Yellow.Lighten2);
+                                return t.BackgroundColor(_options.MarkedTextBackgroundColor);
                         }
                         return emphasis.DelimiterCount == 2 ? t.Bold() : t.Italic();
                     });
@@ -302,6 +353,7 @@ internal class MarkdownRenderer
 
             // Reset the link URL
             properties.LinkUrl = null;
+            properties.IsImage = false;
         }
     }
 
@@ -321,22 +373,40 @@ internal class MarkdownRenderer
                 // Ignore markdown line breaks, they are used for formatting the source code.
                 //span = text.Span("\n");
                 break;
-            case TaskList task:
-                var taskSpan = task.Checked ? text.Span("\u25a0") : text.Span("\u25a1");
-                taskSpan.FontFamily(Fonts.CourierNew);
+            case TaskList task: 
+                text.Span(task.Checked ? _options.TaskListCheckedGlyph : _options.TaskListUncheckedGlyph)
+                    .FontFamily(_options.UnicodeGlyphFont);
                 break;
             case LiteralInline literal:
-                var literalSpan = !string.IsNullOrEmpty(properties.LinkUrl)
-                    ? text.Hyperlink(literal.ToString(), properties.LinkUrl)
-                    : text.Span(literal.ToString());
-                literalSpan.ApplyStyles(properties.TextStyles.ToList());
+                ProcessLiteralInline(literal, text, properties)
+                    .ApplyStyles(properties.TextStyles.ToList());
                 break;
             case CodeInline code:
-                text.Span(code.Content).BackgroundColor(Colors.Grey.Lighten3).FontFamily(Fonts.CourierNew);
+                text.Span(code.Content)
+                    .BackgroundColor(_options.CodeInlineBackground)
+                    .FontFamily(_options.CodeFont);
                 break;
             default:
                 text.Span($"Unknown LeafInline: {inline.GetType()}").BackgroundColor(Colors.Orange.Medium);
                 break;
         }
+    }
+
+    private TextSpanDescriptor ProcessLiteralInline(LiteralInline literal, TextDescriptor text, TextProperties properties)
+    {
+        // Plain text
+        if (string.IsNullOrEmpty(properties.LinkUrl)) return text.Span(literal.ToString());
+
+        // Regular links, or images that could not be downloaded
+        if (!properties.IsImage || !_options.ImageDownloaderEnabled || !_imageCache.TryGetValue(properties.LinkUrl, out var image))
+            return text.Hyperlink(literal.ToString(), properties.LinkUrl);
+
+        // Images
+        text.Element(e => e
+            .Width(image.Width)
+            .Height(image.Height)
+            .Image(image.EncodedData.AsStream()));
+        
+        return text.Span(string.Empty);
     }
 }
