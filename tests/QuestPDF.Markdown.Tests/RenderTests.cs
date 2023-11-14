@@ -29,7 +29,8 @@ public class RenderTests
         
         try
         {
-            await document.ShowInPreviewerAsync();    
+            document.GeneratePdf(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "test.pdf"));
+            await document.ShowInPreviewerAsync();
         }
         catch(OperationCanceledException)
         {
