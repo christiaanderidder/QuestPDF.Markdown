@@ -85,6 +85,8 @@ Support for the following extensions is currently not planned:
 - Math blocks
 - Diagrams
 
+A full sample can be found in [test.md](tests/QuestPDF.Markdown.Tests/test.md) and the resulting [test.pdf](tests/QuestPDF.Markdown.Tests/pdf.md).
+
 ## Contributing
 To quickly test changes made in the library, you can make use of the excellent QuestPDF previewer in combination with the QuestPDF.Markdown.Tests project and `dotnet watch`
 
