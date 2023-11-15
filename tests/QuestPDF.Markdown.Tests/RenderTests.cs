@@ -21,11 +21,10 @@ public class RenderTests
     [Test]
     public async Task Render()
     {
-        var options = new MarkdownRendererOptions
-        {
-            ImageDownloaderEnabled = true
-        };
-        var document = GenerateDocument(item => item.Markdown(_markdown, options));
+        var markdown = ParsedMarkdownDocument.FromText(_markdown);
+        await markdown.DownloadImages();
+        
+        var document = GenerateDocument(item => item.Markdown(markdown));
         
         try
         {
@@ -41,12 +40,12 @@ public class RenderTests
     [Test]
     public async Task RenderDebug()
     {
-        var options = new MarkdownRendererOptions
-        {
-            Debug = true,
-            ImageDownloaderEnabled = true
-        };
-        var document = GenerateDocument(item => item.Markdown(_markdown, options));
+        var options = new MarkdownRendererOptions { Debug = true };
+        
+        var markdown = ParsedMarkdownDocument.FromText(_markdown);
+        await markdown.DownloadImages();
+        
+        var document = GenerateDocument(item => item.Markdown(markdown, options));
         
         try
         {
