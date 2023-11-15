@@ -345,9 +345,11 @@ internal class MarkdownRenderer
 
         // Images
         text.Element(e => e
-            .Width(image.Width)
-            .Height(image.Height)
-            .Image(image.Image));
+            .Width(image.Width * _options.ImageScalingFactor)
+            .Height(image.Height * _options.ImageScalingFactor)
+            .Image(image.Image)
+            .FitArea()
+        );
  
         return text.Span(string.Empty);
     }

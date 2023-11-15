@@ -33,4 +33,9 @@ public class MarkdownRendererOptions
     
     public string HorizontalRuleColor { get; set; } = Colors.Grey.Lighten2;
     public int HorizontalRuleThickness { get; set; } = 2;
+
+    /// <summary>
+    /// The conversion factor used to scale images from pixel size to point size
+    /// </summary>
+    public float ImageScalingFactor { get; set; } = 0.5f;
 }
