@@ -15,7 +15,7 @@ namespace QuestPDF.Markdown;
 /// <remarks>
 /// The markdig parser is documented in https://github.com/xoofx/markdig/blob/master/doc/parsing-ast.md
 /// </remarks>
-internal class MarkdownRenderer
+internal class MarkdownRenderer : IComponent
 {
     private readonly MarkdownRendererOptions _options;
     private readonly ParsedMarkdownDocument _document;
@@ -28,10 +28,7 @@ internal class MarkdownRenderer
         _textProperties = new TextProperties();
     }
 
-    internal IContainer ConvertMarkdown(IContainer pdf)
-    {
-        return ProcessContainerBlock(_document.MarkdigDocument, pdf);
-    }
+    public void Compose(IContainer pdf) => ProcessContainerBlock(_document.MarkdigDocument, pdf);
 
     /// <summary>
     /// Processes a Block, which can be a ContainerBlock or a LeafBlock.
