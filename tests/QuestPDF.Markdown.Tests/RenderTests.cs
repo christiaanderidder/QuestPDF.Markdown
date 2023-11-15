@@ -94,6 +94,14 @@ public class RenderTests
                         body(main.Item());
                     });
             });
+        }).WithMetadata(new DocumentMetadata
+        {
+            Author = "QuestPDF.Markdown",
+            Title = "QuestPDF.Markdown",
+            Subject = "QuestPDF.Markdown",
+            Keywords = "questpdf, markdown, pdf",
+            CreationDate = new DateTime(2023, 11, 15, 12, 00, 00),
+            ModifiedDate = new DateTime(2023, 11, 15, 12, 00, 00),
         });
     }
 }
