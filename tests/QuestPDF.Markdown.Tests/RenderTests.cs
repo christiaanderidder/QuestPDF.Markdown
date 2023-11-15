@@ -1,3 +1,4 @@
+using System.Reflection;
 using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -15,9 +16,23 @@ public class RenderTests
     public void Setup()
     {
         Settings.License = LicenseType.Community;
-        _markdown = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "test.md"));
+        var assembly = Assembly.GetExecutingAssembly();
+        const string resourceName = "QuestPDF.Markdown.Tests.test.md";
+        using var stream = assembly.GetManifestResourceStream(resourceName);
+        using var reader = new StreamReader(stream!);
+        _markdown = reader.ReadToEnd();
     }
 
+    [Test]
+    public async Task RenderToFile()
+    {
+        var markdown = ParsedMarkdownDocument.FromText(_markdown);
+        await markdown.DownloadImages();
+        
+        var document = GenerateDocument(item => item.Markdown(markdown));
+        document.GeneratePdf(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "test.pdf"));
+    }
+    
     [Test]
     public async Task Render()
     {
@@ -28,7 +43,6 @@ public class RenderTests
         
         try
         {
-            document.GeneratePdf(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "test.pdf"));
             await document.ShowInPreviewerAsync();
         }
         catch(OperationCanceledException)
