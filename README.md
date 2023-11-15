@@ -45,23 +45,20 @@ var document = Document.Create(container =>
 
 ### Rendering images
 By default, downloading and rendering external images is disabled.
-It can be enabled by setting the `ImageDownloaderEnabled` property of the `MarkdownRendererOptions` class to `true`.
-Optionally, you can provide your own `HttpClient` instance.
+Images can be downloaded using the `ParsedMarkdownDocument.DownloadImages()` method.
+The parsed markdown document can then be passed to the `Markdown()` extension method.
 ```csharp
-var text = @"![title](https://placehold.co/100x50.png)";
+var text = @"![title](https://placehold.co/100x50.jpg)";
 
-var options = new MarkdownRendererOptions
-{
-    ImageDownloaderEnabled = true,
-    HttpClient = myHttpClient // Optional
-};
+var markdown = ParsedMarkdownDocument.FromText(text);
+await markdown.DownloadImages(httpClient: myHttpClient /* Optionally provide your own HttpClient */);
 
 var document = Document.Create(container =>
 {
     container.Page(page =>
     {
         page.Margin(20);
-        page.Content().Markdown(text, options);
+        page.Content().Markdown(markdown, options);
     });
 });
 ```

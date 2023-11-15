@@ -264,16 +264,16 @@ Some text to show that the reference links can follow later.
 Inline images:
 
 Inline-style:
-![alt text](https://placehold.co/48.png "Logo Title Text 1")
+![alt text](https://placehold.co/48.jpg "Logo Title Text 1")
 
 Reference-style:
 ![alt text][logo]
 
-[logo]: https://placehold.co/48.png "Logo Title Text 2"
+[logo]: https://placehold.co/48.jpg "Logo Title Text 2"
 
-![200x200 image](https://placehold.co/200.png)
+![200x200 image](https://placehold.co/200.jpg)
 
-![200x200 image with title](https://placehold.co/200.png "The title")
+![200x200 image with title](https://placehold.co/200.jpg "The title")
 
 Like links, Images also have a footnote style syntax
 
@@ -281,7 +281,7 @@ Like links, Images also have a footnote style syntax
 
 With a reference later in the document defining the URL location:
 
-[id]:https://placehold.co/200.png "The title"
+[id]:https://placehold.co/200.jpg "The title"
 
 ------
 
@@ -289,16 +289,16 @@ With a reference later in the document defining the URL location:
 Inline images:
 
 Inline-style:
-![48x48 image](https://placehold.co/48.png "Logo Title Text 1")
+![48x48 image](https://placehold.co/48.jpg "Logo Title Text 1")
 
 Reference-style:
 ![48x48 image][logo]
 
-[logo]: https://placehold.co/48.png "Logo Title Text 2"
+[logo]: https://placehold.co/48.jpg "Logo Title Text 2"
 
-![200x200 image](https://placehold.co/200.png)
+![200x200 image](https://placehold.co/200.jpg)
 
-![200x200 image with title](https://placehold.co/200.png "The title")
+![200x200 image with title](https://placehold.co/200.jpg "The title")
 
 Like links, Images also have a footnote style syntax
 
@@ -306,7 +306,7 @@ Like links, Images also have a footnote style syntax
 
 With a reference later in the document defining the URL location:
 
-[id]:https://placehold.co/200.png "The title"
+[id]:https://placehold.co/200.jpg "The title"
 
 ```
 
@@ -318,114 +318,20 @@ Inline `code` has `back-ticks around` it.
 Inline `code` has `back-ticks around` it.
 ```
 
-```c#
-using System.IO.Compression;
+```csharp
+var text = 
+@"# Hello, world!
+*Greetings* from **markdown**!
+> Hello, back!";
 
-#pragma warning disable 414, 3021
-
-namespace MyApplication
+var document = Document.Create(container =>
 {
-    [Obsolete("...")]
-    class Program : IInterface
+    container.Page(page =>
     {
-        public static List<int> JustDoIt(int count)
-        {
-            Console.WriteLine($"Hello {Name}!");
-            return new List<int>(new int[] { 1, 2, 3 })
-        }
-    }
-}
-```
-
-```css
-@font-face {
-  font-family: Chunkfive; src: url('Chunkfive.otf');
-}
-
-body, .usertext {
-  color: #F0F0F0; background: #600;
-  font-family: Chunkfive, sans;
-}
-
-@import url(print.css);
-@media print {
-  a[href^=http]::after {
-    content: attr(href)
-  }
-}
-```
-
-```javascript
-function $initHighlight(block, cls) {
-  try {
-    if (cls.search(/\bno\-highlight\b/) != -1)
-      return process(block, true, 0x0F) +
-             ` class="${cls}"`;
-  } catch (e) {
-    /* handle exception */
-  }
-  for (var i = 0 / 2; i < classes.length; i++) {
-    if (checkCondition(classes[i]) === undefined)
-      console.log('undefined');
-  }
-}
-
-export  $initHighlight;
-```
-
-```php
-require_once 'Zend/Uri/Http.php';
-
-namespace Location\Web;
-
-interface Factory
-{
-    static function _factory();
-}
-
-abstract class URI extends BaseURI implements Factory
-{
-    abstract function test();
-
-    public static $st1 = 1;
-    const ME = "Yo";
-    var $list = NULL;
-    private $var;
-
-    /**
-     * Returns a URI
-     *
-     * @return URI
-     */
-    static public function _factory($stats = array(), $uri = 'http')
-    {
-        echo __METHOD__;
-        $uri = explode(':', $uri, 0b10);
-        $schemeSpecific = isset($uri[1]) ? $uri[1] : '';
-        $desc = 'Multi
-line description';
-
-        // Security check
-        if (!ctype_alnum($scheme)) {
-            throw new Zend_Uri_Exception('Illegal scheme');
-        }
-
-        $this->var = 0 - self::$st;
-        $this->list = list(Array("1"=> 2, 2=>self::ME, 3 => \Location\Web\URI::class));
-
-        return [
-            'uri'   => $uri,
-            'value' => null,
-        ];
-    }
-}
-
-echo URI::ME . URI::$st1;
-
-__halt_compiler () ; datahere
-datahere
-datahere */
-datahere
+        page.Margin(20);
+        page.Content().Markdown(text);
+    });
+});
 ```
 
 ------
