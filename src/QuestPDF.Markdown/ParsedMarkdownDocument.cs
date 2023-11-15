@@ -58,9 +58,8 @@ public class ParsedMarkdownDocument
                 var client = httpClient ?? HttpClient;
                 var stream = await client.GetStreamAsync(url);
                 
-                // QuestPDF uses SkiaSharp internally, but does not allow setting image dimensionswhen creating an image
-                // object directly from a stream. To work around this we will parse the image ourselves first and keep
-                // track of the dimensions.
+                // QuestPDF uses SkiaSharp internally, but does not allow accessing image dimensions on the Image class
+                // To work around this we will parse the image ourselves first and keep track of the dimensions
                 using var skImage = SKImage.FromEncodedData(stream);
                 var pdfImage = Image.FromBinaryData(skImage.EncodedData.ToArray());
                 
