@@ -1,3 +1,5 @@
+<img src="/img/logo.svg?raw=true" width="128" align="right">
+
 # QuestPDF.Markdown
 QuestPDF.Markdown allows rendering markdown into a [QuestPDF](https://www.questpdf.com/) document using the [markdig](https://github.com/xoofx/markdig) parser.
 
@@ -20,7 +22,7 @@ var document = Document.Create(container =>
 });
 ```
 
-![Usage](https://github.com/christiaanderidder/QuestPDF.Markdown/blob/main/img/usage.png?raw=true)
+![Usage](/img/usage.png?raw=true)
 
 ### Styling the output
 The styling used by QuestPDF.Markdown can be configured using `MarkdownRendererOptions`.
