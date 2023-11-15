@@ -264,16 +264,16 @@ Some text to show that the reference links can follow later.
 Inline images:
 
 Inline-style:
-![alt text](https://placehold.co/48.png "Logo Title Text 1")
+![alt text](https://placehold.co/48.jpg "Logo Title Text 1")
 
 Reference-style:
 ![alt text][logo]
 
-[logo]: https://placehold.co/48.png "Logo Title Text 2"
+[logo]: https://placehold.co/48.jpg "Logo Title Text 2"
 
-![200x200 image](https://placehold.co/200.png)
+![200x200 image](https://placehold.co/200.jpg)
 
-![200x200 image with title](https://placehold.co/200.png "The title")
+![200x200 image with title](https://placehold.co/200.jpg "The title")
 
 Like links, Images also have a footnote style syntax
 
@@ -281,7 +281,7 @@ Like links, Images also have a footnote style syntax
 
 With a reference later in the document defining the URL location:
 
-[id]:https://placehold.co/200.png "The title"
+[id]:https://placehold.co/200.jpg "The title"
 
 ------
 
@@ -289,16 +289,16 @@ With a reference later in the document defining the URL location:
 Inline images:
 
 Inline-style:
-![48x48 image](https://placehold.co/48.png "Logo Title Text 1")
+![48x48 image](https://placehold.co/48.jpg "Logo Title Text 1")
 
 Reference-style:
 ![48x48 image][logo]
 
-[logo]: https://placehold.co/48.png "Logo Title Text 2"
+[logo]: https://placehold.co/48.jpg "Logo Title Text 2"
 
-![200x200 image](https://placehold.co/200.png)
+![200x200 image](https://placehold.co/200.jpg)
 
-![200x200 image with title](https://placehold.co/200.png "The title")
+![200x200 image with title](https://placehold.co/200.jpg "The title")
 
 Like links, Images also have a footnote style syntax
 
@@ -306,7 +306,7 @@ Like links, Images also have a footnote style syntax
 
 With a reference later in the document defining the URL location:
 
-[id]:https://placehold.co/200.png "The title"
+[id]:https://placehold.co/200.jpg "The title"
 
 ```
 
