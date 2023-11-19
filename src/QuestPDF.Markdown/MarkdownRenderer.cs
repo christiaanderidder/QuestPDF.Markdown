@@ -15,7 +15,7 @@ namespace QuestPDF.Markdown;
 /// <remarks>
 /// The markdig parser is documented in https://github.com/xoofx/markdig/blob/master/doc/parsing-ast.md
 /// </remarks>
-internal class MarkdownRenderer : IComponent
+internal sealed class MarkdownRenderer : IComponent
 {
     private readonly MarkdownRendererOptions _options;
     private readonly ParsedMarkdownDocument _document;
@@ -52,7 +52,7 @@ internal class MarkdownRenderer : IComponent
     /// </summary>
     private IContainer ProcessContainerBlock(ContainerBlock block, IContainer pdf)
     {
-        if (!block.Any()) return pdf;
+        if (block.Count == 0) return pdf;
 
         if(_options.Debug && block is not MarkdownDocument) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Blue.Medium);
         

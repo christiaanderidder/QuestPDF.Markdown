@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -47,16 +48,17 @@ public class ParsedMarkdownDocument
             .Select(l => l.Url)
             .ToHashSet();
 
-        var tasks = urls.Select(async url =>
+        // The semaphore is disposed after all tasks have completed, we can safely disable AccessToDisposedClosure
+        var tasks = urls.Select([SuppressMessage("ReSharper", "AccessToDisposedClosure")] async (url) =>
         {
             if (url == null) return;
             
-            await semaphore.WaitAsync();
+            await semaphore.WaitAsync().ConfigureAwait(false);
             
             try
             {
                 var client = httpClient ?? HttpClient;
-                var stream = await client.GetStreamAsync(url);
+                var stream = await client.GetStreamAsync(url).ConfigureAwait(false);
                 
                 // QuestPDF uses SkiaSharp internally, but does not allow accessing image dimensions on the Image class
                 // To work around this we will parse the image ourselves first and keep track of the dimensions
@@ -66,17 +68,16 @@ public class ParsedMarkdownDocument
                 var image = new ImageWithDimensions(skImage.Width, skImage.Height, pdfImage);
                 _imageCache.TryAdd(url, image);
             }
-            catch (Exception)
-            {
-                // Ignore
-            }
             finally
             {
                 semaphore.Release();
             }
         });
-        
-        await Task.WhenAll(tasks);
+
+        await Task.WhenAll(tasks).ConfigureAwait(false);
+
+        // Dispose semaphore after completing all tasks
+        semaphore.Dispose();
     }
 
     internal MarkdownDocument MarkdigDocument => _document;

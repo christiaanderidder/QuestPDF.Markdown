@@ -27,7 +27,7 @@ public class RenderTests
     public async Task RenderToFile()
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
-        await markdown.DownloadImages();
+        await markdown.DownloadImages().ConfigureAwait(false);
         
         var document = GenerateDocument(item => item.Markdown(markdown));
         document.GeneratePdf(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "test.pdf"));
@@ -37,13 +37,13 @@ public class RenderTests
     public async Task Render()
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
-        await markdown.DownloadImages();
+        await markdown.DownloadImages().ConfigureAwait(false);
         
         var document = GenerateDocument(item => item.Markdown(markdown));
         
         try
         {
-            await document.ShowInPreviewerAsync();
+            await document.ShowInPreviewerAsync().ConfigureAwait(true);
         }
         catch(OperationCanceledException)
         {
@@ -57,13 +57,13 @@ public class RenderTests
         var options = new MarkdownRendererOptions { Debug = true };
         
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
-        await markdown.DownloadImages();
+        await markdown.DownloadImages().ConfigureAwait(false);
         
         var document = GenerateDocument(item => item.Markdown(markdown, options));
         
         try
         {
-            await document.ShowInPreviewerAsync();    
+            await document.ShowInPreviewerAsync().ConfigureAwait(true);    
         }
         catch(OperationCanceledException)
         {
@@ -71,7 +71,7 @@ public class RenderTests
         }
     }
     
-    private Document GenerateDocument(Action<IContainer> body)
+    private static Document GenerateDocument(Action<IContainer> body)
     {
         return Document.Create(container =>
         {

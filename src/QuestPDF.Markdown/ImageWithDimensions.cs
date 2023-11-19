@@ -2,7 +2,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Markdown;
 
-internal class ImageWithDimensions
+internal sealed class ImageWithDimensions
 {
     internal int Width { get; }
     internal int Height { get; }
