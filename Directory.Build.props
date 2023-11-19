@@ -4,5 +4,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
+        <AnalysisLevel>latest</AnalysisLevel>
+        <AnalysisMode>All</AnalysisMode>
     </PropertyGroup>
 </Project>

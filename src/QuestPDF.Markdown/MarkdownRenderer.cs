@@ -15,7 +15,7 @@ namespace QuestPDF.Markdown;
 /// <remarks>
 /// The markdig parser is documented in https://github.com/xoofx/markdig/blob/master/doc/parsing-ast.md
 /// </remarks>
-internal class MarkdownRenderer
+internal sealed class MarkdownRenderer : IComponent
 {
     private readonly MarkdownRendererOptions _options;
     private readonly ParsedMarkdownDocument _document;
@@ -28,10 +28,7 @@ internal class MarkdownRenderer
         _textProperties = new TextProperties();
     }
 
-    internal IContainer ConvertMarkdown(IContainer pdf)
-    {
-        return ProcessContainerBlock(_document.MarkdigDocument, pdf);
-    }
+    public void Compose(IContainer pdf) => ProcessContainerBlock(_document.MarkdigDocument, pdf);
 
     /// <summary>
     /// Processes a Block, which can be a ContainerBlock or a LeafBlock.
@@ -55,7 +52,7 @@ internal class MarkdownRenderer
     /// </summary>
     private IContainer ProcessContainerBlock(ContainerBlock block, IContainer pdf)
     {
-        if (!block.Any()) return pdf;
+        if (block.Count == 0) return pdf;
 
         if(_options.Debug && block is not MarkdownDocument) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Blue.Medium);
         
@@ -345,9 +342,11 @@ internal class MarkdownRenderer
 
         // Images
         text.Element(e => e
-            .Width(image.Width)
-            .Height(image.Height)
-            .Image(image.Image));
+            .Width(image.Width * _options.ImageScalingFactor)
+            .Height(image.Height * _options.ImageScalingFactor)
+            .Image(image.Image)
+            .FitArea()
+        );
  
         return text.Span(string.Empty);
     }

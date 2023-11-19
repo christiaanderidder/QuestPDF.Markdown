@@ -15,9 +15,8 @@ public static class MarkdownExtensions
     /// <param name="container">The QuestPDF container to render in</param>
     /// <param name="markdown">The markdown text to render</param>
     /// <param name="options">Optional configuration of the renderer</param>
-    /// <returns>The QuestPDF container that the markdown text was rendered in</returns>
-    public static IContainer Markdown(this IContainer container, string markdown, MarkdownRendererOptions? options = null) =>
-        MarkdownRenderer.Create(markdown, options).ConvertMarkdown(container);
+    public static void Markdown(this IContainer container, string markdown, MarkdownRendererOptions? options = null) =>
+        container.Component(MarkdownRenderer.Create(markdown, options));
     
     /// <summary>
     /// Renders a pre-parsed markdown document into a QuestPDF container
@@ -25,12 +24,11 @@ public static class MarkdownExtensions
     /// <param name="container">The QuestPDF container to render in</param>
     /// <param name="markdown">An instance of ParsedMarkdownDocument, which allows for preloading external resources</param>
     /// <param name="options">Optional configuration of the renderer</param>
-    /// <returns>The QuestPDF container that the markdown text was rendered in</returns>
-    public static IContainer Markdown(this IContainer container, ParsedMarkdownDocument markdown, MarkdownRendererOptions? options = null) =>
-        MarkdownRenderer.Create(markdown, options).ConvertMarkdown(container);
+    public static void Markdown(this IContainer container, ParsedMarkdownDocument markdown, MarkdownRendererOptions? options = null) =>
+        container.Component(MarkdownRenderer.Create(markdown, options));
 
-    internal static IContainer PaddedDebugArea(this IContainer container, string label, string color)
-        => container.DebugArea(label, color).PaddingTop(20);
+    internal static IContainer PaddedDebugArea(this IContainer container, string label, string color) =>
+        container.DebugArea(label, color).PaddingTop(20);
     
     internal static TextSpanDescriptor ApplyStyles(this TextSpanDescriptor span, IList<Func<TextSpanDescriptor, TextSpanDescriptor>> applyStyles)
     {
