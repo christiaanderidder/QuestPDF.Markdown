@@ -7,19 +7,25 @@ jobs:
     name: Release package
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 8.0.x
+
     - name: Create package
       run: dotnet pack -c Release -p:Version=${{ github.event.release.tag_name }}
+
     - name: Archive package
       uses: actions/upload-artifact@v3
       with:
         name: QuestPDF.Markdown
         path: ./package/QuestPDF.Markdown.${{ github.event.release.tag_name }}.nupkg
+
     - name: Publish package (GitHub)
       run: dotnet nuget push ./package/*.nupkg --api-key ${{ secrets.GH_API_KEY }} --source https://nuget.pkg.github.com/christiaanderidder/index.json
+
     - name: Publish package (NuGet)
       run: dotnet nuget push ./package/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
