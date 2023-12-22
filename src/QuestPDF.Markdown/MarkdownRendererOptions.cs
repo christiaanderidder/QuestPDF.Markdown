@@ -38,4 +38,7 @@ public class MarkdownRendererOptions
     /// The conversion factor used to scale images from pixel size to point size
     /// </summary>
     public float ImageScalingFactor { get; set; } = 0.5f;
+
+    public float ParagraphSpacing { get; set; } = 10;
+    public float ListItemSpacing { get; set; } = 10;
 }
