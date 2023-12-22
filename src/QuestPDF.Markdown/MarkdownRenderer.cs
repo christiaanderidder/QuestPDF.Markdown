@@ -75,13 +75,12 @@ internal sealed class MarkdownRenderer : IComponent
         {
             pdf.Column(col =>
             {
-                col.Spacing(10);
-                
                 foreach (var item in block)
                 {
                     var container = col.Item();
                     if (block is ListBlock list && item is ListItemBlock listItem)
                     {
+                        col.Spacing(_options.ListItemSpacing);
                         container.Row(li =>
                         {
                             li.Spacing(5);
@@ -91,6 +90,8 @@ internal sealed class MarkdownRenderer : IComponent
                     }
                     else
                     {
+                        // Paragraphs inside a list get the same spacing as the list items themselves
+                        col.Spacing(item.Parent is ListItemBlock ? _options.ListItemSpacing : _options.ParagraphSpacing);
                         ProcessBlock(item, container);
                     }
                 }
