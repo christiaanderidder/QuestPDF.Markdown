@@ -40,5 +40,5 @@ public class MarkdownRendererOptions
     public float ImageScalingFactor { get; set; } = 0.5f;
 
     public float ParagraphSpacing { get; set; } = 10;
-    public float ListItemSpacing { get; set; } = 10;
+    public float ListItemSpacing { get; set; } = 5;
 }
