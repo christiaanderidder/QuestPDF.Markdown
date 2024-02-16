@@ -84,7 +84,7 @@ internal sealed class MarkdownRenderer : IComponent
                         container.Row(li =>
                         {
                             li.Spacing(5);
-                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{listItem.Order}{list.OrderedDelimiter}" : "•");
+                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{listItem.Order}{list.OrderedDelimiter}" : _options.UnorderedListGlyph);
                             ProcessBlock(item, li.RelativeItem());
                         });
                     }
