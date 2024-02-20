@@ -41,4 +41,6 @@ public class MarkdownRendererOptions
 
     public float ParagraphSpacing { get; set; } = 10;
     public float ListItemSpacing { get; set; } = 5;
+    public string UnorderedListGlyph { get; set; } = "•";
+
 }
