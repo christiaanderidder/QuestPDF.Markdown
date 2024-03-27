@@ -8,4 +8,12 @@
         <AnalysisLevel>latest</AnalysisLevel>
         <AnalysisMode>All</AnalysisMode>
     </PropertyGroup>
+    <!--
+        Perform a deep clean using `dotnet clean -p:deep=true` to remove obj and bin folders
+        After a deep clean make sure to restore NuGet packages
+    -->
+    <Target Name="PostClean" AfterTargets="Clean" Condition="$(Deep)==True">
+        <RemoveDir Directories="$(BaseIntermediateOutputPath)" /><!-- obj -->
+        <RemoveDir Directories="$(BaseOutputPath)" /><!-- bin -->
+    </Target>
 </Project>
