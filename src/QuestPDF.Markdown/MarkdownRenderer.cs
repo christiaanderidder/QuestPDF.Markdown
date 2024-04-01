@@ -189,7 +189,7 @@ internal sealed class MarkdownRenderer : IComponent
         switch (block)
         {
             case HeadingBlock heading:
-                _textProperties.TextStyles.Push(t => t.FontSize(-2 * (heading.Level - 1) + 28).Bold());
+                _textProperties.TextStyles.Push(t => t.FontSize(Math.Max(0, _options.CalculateHeadingSize(heading.Level))).Bold());
                 break;
         }
 

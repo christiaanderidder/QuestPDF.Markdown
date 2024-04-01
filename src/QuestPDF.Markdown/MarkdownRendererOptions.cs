@@ -42,5 +42,12 @@ public class MarkdownRendererOptions
     public float ParagraphSpacing { get; set; } = 10;
     public float ListItemSpacing { get; set; } = 5;
     public string UnorderedListGlyph { get; set; } = "•";
-
+    
+    /// <summary>
+    /// The formula used to calculate heading sizes based on their level.
+    /// </summary>
+    /// <remarks>
+    /// Level is non zero-indexed and starts at 1 for the largest heading
+    /// </remarks>
+    public Func<int, int> CalculateHeadingSize { get; set; } = level => 28 - 2 * (level - 1);
 }
