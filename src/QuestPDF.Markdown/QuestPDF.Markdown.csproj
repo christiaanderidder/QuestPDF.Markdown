@@ -20,7 +20,7 @@
 
     <ItemGroup>
         <PackageReference Include="Markdig" Version="0.36.2" />
-        <PackageReference Include="QuestPDF" Version="2024.3.0-rc" />
+        <PackageReference Include="QuestPDF" Version="2024.3.0-rc2" />
         <PackageReference Include="SkiaSharp" Version="2.88.7" />
     </ItemGroup>
 
