@@ -247,7 +247,11 @@ internal sealed class MarkdownRenderer : IComponent
             switch (inline)
             {
                 case LinkInline link:
-                    _textProperties.TextStyles.Push(t => t.FontColor(_options.LinkTextColor).Underline());
+                    _textProperties.TextStyles.Push(t => t
+                        .FontColor(_options.LinkTextColor)
+                        .DecorationColor(_options.LinkTextColor)
+                        .Underline()
+                    );
                     _textProperties.LinkUrl = link.Url;
                     _textProperties.IsImage = link.IsImage;
                     break;
