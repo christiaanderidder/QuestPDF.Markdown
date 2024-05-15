@@ -79,6 +79,7 @@ Currently the following features are supported:
 - Extra emphasis (subscript, superscript, strikethrough, marked, inserted)
 - Tables
 - Images
+- HTML encoded entities (e.g. `&amp;`, `&lt;`, `&gt;`)
 
 Support for the following extensions is currently not planned:
 - Raw HTML
