@@ -330,6 +330,9 @@ internal sealed class MarkdownRenderer : IComponent
                     .BackgroundColor(_options.CodeInlineBackground)
                     .FontFamily(_options.CodeFont);
                 break;
+            case HtmlEntityInline htmlEntity:
+                text.Span(htmlEntity.Transcoded.ToString());
+                break;
             default:
                 text.Span($"Unknown LeafInline: {inline.GetType()}").BackgroundColor(Colors.Orange.Medium);
                 break;
