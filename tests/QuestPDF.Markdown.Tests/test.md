@@ -476,6 +476,16 @@ Quote break.
 
 ------
 
+# HTML entities
+
+HTML entities should be converted to characters: &copy; &amp; &gt; &trade; &iexcl; &pound;
+
+```
+HTML entities should be converted to actual characters: &copy; &amp; &gt; &trade; &iexcl; &pound;
+```
+
+------
+
 # Horizontal Rules
 
 Three or more...
