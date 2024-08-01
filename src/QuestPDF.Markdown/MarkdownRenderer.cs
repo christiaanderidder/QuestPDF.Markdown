@@ -313,9 +313,8 @@ internal sealed class MarkdownRenderer : IComponent
                 var linkSpan = text.Hyperlink(autoLink.Url, autoLink.Url);
                 linkSpan.ApplyStyles(_textProperties.TextStyles.ToList());
                 break;
-            case LineBreakInline:
-                // Ignore markdown line breaks, they are used for formatting the source code.
-                //span = text.Span("\n");
+            case LineBreakInline linebreak:
+                if (linebreak.IsBackslash) text.Span("\n");
                 break;
             case TaskList task: 
                 text.Span(task.Checked ? _options.TaskListCheckedGlyph : _options.TaskListUncheckedGlyph)
