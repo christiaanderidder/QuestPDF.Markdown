@@ -125,7 +125,9 @@ internal sealed class MarkdownRenderer : IComponent
                         if(result <= 1)
                         {
                             cd.RelativeColumn();
-                        }else{
+                        }
+                        else
+                        {
                             cd.RelativeColumn(fraction);
                         }                        
                     }
