@@ -52,6 +52,28 @@ public class ParsedMarkdownDocument
         var tasks = urls.Select([SuppressMessage("ReSharper", "AccessToDisposedClosure")] async (url) =>
         {
             if (url == null) return;
+
+            try
+            {
+                if(url.StartsWith("data:image"))
+                {
+                    // ![base64_image](data:image/png;base64,..{{base64 string}}..)
+                    var base64 = test.Split(",")[1];
+                    var data = Convert.FromBase64String(base64);
+                    using var skImage = SKImage.FromEncodedData(data);
+                    var pdfImage = Image.FromBinaryData(data);
+
+                    var image = new ImageWithDimensions(skImage.Width, skImage.Height, pdfImage);
+                    _imageCache.TryAdd(url, image);
+
+                    return;
+                }
+            }
+            finally
+            {
+                return;
+            }
+            
             
             await semaphore.WaitAsync().ConfigureAwait(false);
             
