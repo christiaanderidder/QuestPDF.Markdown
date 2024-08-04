@@ -120,7 +120,13 @@ internal sealed class MarkdownRenderer : IComponent
                     // Width is set to 0 for relative columns
                     if (col.Width > 0)
                     {
-                        cd.ConstantColumn(col.Width);
+                        // Make a relative column out of ?/4
+                        var fraction = Math.Round(col.Width / 25);
+                        if(result <= 1)
+                        {
+                            cd.RelativeColumn();
+                        }
+                        cd.RelativeColumn(fraction);
                     }
                     else
                     {
