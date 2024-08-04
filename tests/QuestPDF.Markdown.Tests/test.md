@@ -424,6 +424,24 @@ Markdown | Less | Pretty
 | Pipe     | \|        |
 ```
 
+Headerless table using GridTables with variable column widths.
+
+_Won't render on GitHub, but will show in the PDF_
+
++------------------+--------------------------------------------------------------+
+| _A column spanning two columns._
++------------------+--------------------------------------------------------------+
+| **Small Column** | A much larger column that spans more of the available space. |
++------------------+--------------------------------------------------------------+
+
+```
++------------------+--------------------------------------------------------------+
+| _A column spanning two columns._
++------------------+--------------------------------------------------------------+
+| **Small Column** | A much larger column that spans more of the available space. |
++------------------+--------------------------------------------------------------+
+```
+
 ------
 
 # Blockquotes
