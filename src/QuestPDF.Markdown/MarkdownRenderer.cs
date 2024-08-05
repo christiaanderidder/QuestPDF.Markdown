@@ -313,8 +313,9 @@ internal sealed class MarkdownRenderer : IComponent
                 var linkSpan = text.Hyperlink(autoLink.Url, autoLink.Url);
                 linkSpan.ApplyStyles(_textProperties.TextStyles.ToList());
                 break;
-            case LineBreakInline linebreak:
-                if (linebreak.IsBackslash) text.Span("\n");
+            case LineBreakInline lineBreak:
+                // Only add a line break within a paragraph if trailing spaces or a backslash are used.
+                if(lineBreak.IsBackslash || lineBreak.IsHard) text.Span("\n");
                 break;
             case TaskList task: 
                 text.Span(task.Checked ? _options.TaskListCheckedGlyph : _options.TaskListUncheckedGlyph)
