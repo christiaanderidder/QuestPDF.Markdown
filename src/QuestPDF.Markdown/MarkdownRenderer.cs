@@ -117,15 +117,8 @@ internal sealed class MarkdownRenderer : IComponent
             {
                 foreach(var col in table.ColumnDefinitions)
                 {
-                    // Width is set to 0 for relative columns
-                    if (col.Width > 0)
-                    {
-                        cd.ConstantColumn(col.Width);
-                    }
-                    else
-                    {
-                        cd.RelativeColumn();
-                    }
+                    // Widths are provided as a percentage
+                    cd.RelativeColumn(col.Width > 0 ? col.Width : 1f);
                 }
             });
 
