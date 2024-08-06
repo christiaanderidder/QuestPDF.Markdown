@@ -1,10 +1,11 @@
-using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace QuestPDF.Markdown;
 
@@ -57,14 +58,31 @@ public class ParsedMarkdownDocument
             
             try
             {
-                var client = httpClient ?? HttpClient;
-                var stream = await client.GetStreamAsync(url).ConfigureAwait(false);
-                
+                byte[]? imageBytes = null;
+
+                var base64Match = Regex.Match(url, @"data:image\/.+?;base64,(?<data>.+)");
+                if (base64Match.Success)
+                {
+                    imageBytes = Convert.FromBase64String(base64Match.Groups["data"].Value);
+                }
+                else
+                {
+                    var client = httpClient ?? HttpClient;
+                    var stream = await client.GetStreamAsync(url).ConfigureAwait(false);
+
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        await stream.CopyToAsync(ms).ConfigureAwait(false);
+                        imageBytes = ms.ToArray();
+                    }
+                }
+
                 // QuestPDF does not allow accessing image dimensions on loaded images
                 // To work around this we will parse the image ourselves first and keep track of the dimensions
-                using var skImage = SKImage.FromEncodedData(stream);
+                using var skImage = SKImage.FromEncodedData(imageBytes);
+
                 var pdfImage = Image.FromBinaryData(skImage.EncodedData.ToArray());
-                
+
                 var image = new ImageWithDimensions(skImage.Width, skImage.Height, pdfImage);
                 _imageCache.TryAdd(url, image);
             }
