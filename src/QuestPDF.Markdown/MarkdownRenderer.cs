@@ -123,7 +123,7 @@ internal sealed class MarkdownRenderer : IComponent
                 }
             });
 
-            uint rowIdx = 1;
+            uint rowIdx = 0;
             var rows = table.OfType<TableRow>().ToList();
             foreach (var row in rows)
             {
@@ -141,7 +141,7 @@ internal sealed class MarkdownRenderer : IComponent
                         .Column((uint)(cell.ColumnIndex >= 0 ? cell.ColumnIndex : colIdx) + 1)
                         .ColumnSpan((uint)cell.ColumnSpan)
                         .Border(_options, row.IsHeader, isLast)
-                        .Background(rowIdx % 2 == 0 ? _options.TableEvenRowBackgroundColor : _options.TableOddRowBackgroundColor)
+                        .Background(rowIdx % 2 == 1 ? _options.TableEvenRowBackgroundColor : _options.TableOddRowBackgroundColor)
                         .Padding(5);
                     
                     switch (colDef.Alignment)
