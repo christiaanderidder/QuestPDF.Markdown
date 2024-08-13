@@ -1,11 +1,11 @@
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
-using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
 
 namespace QuestPDF.Markdown;
 
