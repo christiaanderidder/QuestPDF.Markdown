@@ -13,7 +13,8 @@ internal static class TableCellExtensions
             TableBorderStyle.Horizontal => cell
                 .BorderBottom(isLast ? 0 : (isHeader ? options.TableHeaderBorderThickness : options.TableBorderThickness))
                 .BorderColor(options.TableBorderColor),
-            TableBorderStyle.Full => cell.Border(options.TableBorderThickness)
+            TableBorderStyle.Full => cell
+                .Border(options.TableBorderThickness)
                 .BorderBottom(isHeader ? options.TableHeaderBorderThickness : options.TableBorderThickness)
                 .BorderColor(options.TableBorderColor),
             _ => throw new InvalidOperationException()
