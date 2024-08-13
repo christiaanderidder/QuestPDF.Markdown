@@ -137,7 +137,7 @@ internal sealed class MarkdownRenderer : IComponent
                         .RowSpan((uint)cell.RowSpan)
                         .Row(rowIdx + 1)
                         .Column((uint)(cell.ColumnIndex >= 0 ? cell.ColumnIndex : colIdx) + 1)
-                        .ColumnSpan((uint)cell.RowSpan)
+                        .ColumnSpan((uint)cell.ColumnSpan)
                         .BorderBottom(rowIdx < rows.Count ? (row.IsHeader ? _options.TableHeaderBorderThickness : _options.TableBorderThickness) : 0)
                         .BorderColor(_options.TableBorderColor)
                         .Background(rowIdx % 2 == 0 ? _options.TableEvenRowBackgroundColor : _options.TableOddRowBackgroundColor)
