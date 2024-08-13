@@ -31,6 +31,7 @@ public class MarkdownRendererOptions
     public Color TableOddRowBackgroundColor { get; set; } = Colors.White;
     public int TableHeaderBorderThickness { get; set; } = 3;
     public int TableBorderThickness { get; set; } = 1;
+    public TableBorderStyle TableBorderStyle { get; set; } = TableBorderStyle.Horizontal;
     
     public Color HorizontalRuleColor { get; set; } = Colors.Grey.Lighten2;
     public int HorizontalRuleThickness { get; set; } = 2;
@@ -51,4 +52,11 @@ public class MarkdownRendererOptions
     /// Level is non zero-indexed and starts at 1 for the largest heading
     /// </remarks>
     public Func<int, int> CalculateHeadingSize { get; set; } = level => 28 - 2 * (level - 1);
+}
+
+public enum TableBorderStyle
+{
+    None,
+    Horizontal,
+    Full
 }

@@ -5,6 +5,7 @@ using Markdig.Syntax.Inlines;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Markdown.Extensions;
 
 namespace QuestPDF.Markdown;
 
@@ -132,14 +133,14 @@ internal sealed class MarkdownRenderer : IComponent
                 var cells = row.OfType<TableCell>().ToList();
                 foreach (var cell in cells)
                 {
+                    var isLast = rowIdx == rows.Count - 1;
                     var colDef = table.ColumnDefinitions[colIdx];
                     var container = td.Cell()
                         .RowSpan((uint)cell.RowSpan)
                         .Row(rowIdx + 1)
                         .Column((uint)(cell.ColumnIndex >= 0 ? cell.ColumnIndex : colIdx) + 1)
                         .ColumnSpan((uint)cell.ColumnSpan)
-                        .BorderBottom(rowIdx < rows.Count ? (row.IsHeader ? _options.TableHeaderBorderThickness : _options.TableBorderThickness) : 0)
-                        .BorderColor(_options.TableBorderColor)
+                        .Border(_options, row.IsHeader, isLast)
                         .Background(rowIdx % 2 == 0 ? _options.TableEvenRowBackgroundColor : _options.TableOddRowBackgroundColor)
                         .Padding(5);
                     
