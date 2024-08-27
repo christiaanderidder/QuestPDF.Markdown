@@ -17,7 +17,7 @@ public class ParsedMarkdownDocument
 {
     private readonly MarkdownDocument _document;
     private readonly ConcurrentDictionary<string, ImageWithDimensions> _imageCache = new();
-    private static readonly Regex DataUri = new(@"data:image\/.+?;base64,(?<data>.+)", RegexOptions.Compiled);
+    private static readonly Regex DataUri = new(@"data:image\/.+?;base64,(?<data>.+)", RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
 
     private static readonly HttpClient HttpClient = new();
 
