@@ -17,6 +17,7 @@ public class ParsedMarkdownDocument
 {
     private readonly MarkdownDocument _document;
     private readonly ConcurrentDictionary<string, ImageWithDimensions> _imageCache = new();
+    private static readonly Regex DataUri = new(@"data:image\/.+?;base64,(?<data>.+)", RegexOptions.Compiled);
 
     private static readonly HttpClient HttpClient = new();
 
@@ -45,7 +46,7 @@ public class ParsedMarkdownDocument
         var semaphore = new SemaphoreSlim(parallelism);
         
         var urls = _document.Descendants<LinkInline>()
-            .Where(l => l.IsImage && l.Url != null && Uri.IsWellFormedUriString(l.Url, UriKind.Absolute))
+            .Where(l => l.IsImage && l.Url != null)
             .Select(l => l.Url)
             .ToHashSet();
 
@@ -58,29 +59,12 @@ public class ParsedMarkdownDocument
             
             try
             {
-                byte[]? imageBytes = null;
-
-                var base64Match = Regex.Match(url, @"data:image\/.+?;base64,(?<data>.+)");
-                if (base64Match.Success)
-                {
-                    imageBytes = Convert.FromBase64String(base64Match.Groups["data"].Value);
-                }
-                else
-                {
-                    var client = httpClient ?? HttpClient;
-                    var stream = await client.GetStreamAsync(url).ConfigureAwait(false);
-
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        await stream.CopyToAsync(ms).ConfigureAwait(false);
-                        imageBytes = ms.ToArray();
-                    }
-                }
+                var (success, imageData) = await GetImageData(httpClient, url).ConfigureAwait(false);
+                if (!success) return;
 
                 // QuestPDF does not allow accessing image dimensions on loaded images
                 // To work around this we will parse the image ourselves first and keep track of the dimensions
-                using var skImage = SKImage.FromEncodedData(imageBytes);
-
+                using var skImage = SKImage.FromEncodedData(imageData);
                 var pdfImage = Image.FromBinaryData(skImage.EncodedData.ToArray());
 
                 var image = new ImageWithDimensions(skImage.Width, skImage.Height, pdfImage);
@@ -96,6 +80,29 @@ public class ParsedMarkdownDocument
 
         // Dispose semaphore after completing all tasks
         semaphore.Dispose();
+    }
+
+    private static async Task<(bool Success, byte[] ImageData)> GetImageData(HttpClient? httpClient, string url)
+    {
+        // Check for Base64 data URI first, as this might exceed Uri.
+        var base64Match = DataUri.Match(url);
+        if (base64Match.Success && base64Match.Groups["data"].Success)
+            return (true, Convert.FromBase64String(base64Match.Groups["data"].Value));
+        
+        if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            return (true, await DownloadImage(httpClient, uri).ConfigureAwait(false));
+
+        return (false, []);
+    }
+
+    private static async Task<byte[]> DownloadImage(HttpClient? httpClient, Uri uri)
+    {
+        var client = httpClient ?? HttpClient;
+        var stream = await client.GetStreamAsync(uri).ConfigureAwait(false);
+
+        using var ms = new MemoryStream();
+        await stream.CopyToAsync(ms).ConfigureAwait(false);
+        return ms.ToArray();
     }
 
     internal MarkdownDocument MarkdigDocument => _document;
