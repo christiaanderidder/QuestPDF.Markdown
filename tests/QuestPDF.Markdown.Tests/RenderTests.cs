@@ -1,9 +1,9 @@
 using System.Reflection;
 using NUnit.Framework;
+using QuestPDF.Companion;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 
 namespace QuestPDF.Markdown.Tests;
 
@@ -43,7 +43,7 @@ public class RenderTests
         
         try
         {
-            await document.ShowInPreviewerAsync().ConfigureAwait(true);
+            await document.ShowInCompanionAsync().ConfigureAwait(true);
         }
         catch(OperationCanceledException)
         {
@@ -63,7 +63,7 @@ public class RenderTests
         
         try
         {
-            await document.ShowInPreviewerAsync().ConfigureAwait(true);    
+            await document.ShowInCompanionAsync().ConfigureAwait(true);    
         }
         catch(OperationCanceledException)
         {
