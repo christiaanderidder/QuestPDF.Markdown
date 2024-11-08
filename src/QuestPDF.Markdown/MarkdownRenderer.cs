@@ -309,7 +309,8 @@ internal sealed class MarkdownRenderer : IComponent
                 break;
             case LineBreakInline lineBreak:
                 // Only add a line break within a paragraph if trailing spaces or a backslash are used.
-                if(lineBreak.IsBackslash || lineBreak.IsHard) text.Span("\n");
+                if (lineBreak.IsBackslash || lineBreak.IsHard) text.Span("\n");
+                    else text.Span(" ");
                 break;
             case TaskList task: 
                 text.Span(task.Checked ? _options.TaskListCheckedGlyph : _options.TaskListUncheckedGlyph)
