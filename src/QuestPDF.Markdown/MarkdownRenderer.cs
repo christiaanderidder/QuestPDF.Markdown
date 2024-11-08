@@ -191,6 +191,8 @@ internal sealed class MarkdownRenderer : IComponent
         {
             pdf.Text(text =>
             {
+                text.Align(_options.ParagraphAlignment);
+                
                 // Process the block's inline elements
                 foreach (var item in block.Inline)
                 {

@@ -11,6 +11,8 @@ public class MarkdownRendererOptions
     /// </summary>
     public bool Debug { get; set; }
 
+    public TextHorizontalAlignment ParagraphAlignment { get; set; } = TextHorizontalAlignment.Left;
+
     public Color LinkTextColor { get; set; } = Colors.Blue.Medium;
     public Color MarkedTextBackgroundColor { get; set; } = Colors.Yellow.Lighten2;
 
