@@ -6,6 +6,9 @@ QuestPDF.Markdown allows rendering markdown into a [QuestPDF](https://www.questp
 [![Nuget](https://img.shields.io/nuget/v/QuestPDF.Markdown)](https://www.nuget.org/packages/QuestPDF.Markdown)
 [![Nuget Prerelease](https://img.shields.io/nuget/vpre/QuestPDF.Markdown?label=nuget%20prerelease)](https://www.nuget.org/packages/QuestPDF.Markdown)
 
+> [!IMPORTANT]  
+> QuestPDF.Markdown is **not** a HTML-to-PDF conversion library and does intend to become one. It aims to use markdown to add basic user-provided content into PDFs without the pitfalls of HTML-to-PDF conversion.
+
 ## Usage
 ```csharp
 var text = 
