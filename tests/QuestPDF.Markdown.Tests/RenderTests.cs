@@ -8,7 +8,7 @@ using QuestPDF.Infrastructure;
 namespace QuestPDF.Markdown.Tests;
 
 [Explicit("These tests are disabled for automated workflows because they open a QuestPDF previewer window")]
-public class RenderTests
+internal sealed class RenderTests
 {
     private string _markdown = string.Empty;
     
