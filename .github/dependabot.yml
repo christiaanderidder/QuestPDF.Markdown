@@ -4,11 +4,16 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "saturday"
+      time: "10:00"
+      timezone: "Europe/Amsterdam"
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "saturday"
+      time: "10:00"
+      timezone: "Europe/Amsterdam"
     groups:
       nuget:
         patterns:
@@ -19,7 +24,10 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "saturday"
+      time: "10:00"
+      timezone: "Europe/Amsterdam"
     groups:
       actions:
         patterns:
