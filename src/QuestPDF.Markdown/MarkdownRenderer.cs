@@ -1,3 +1,4 @@
+using System.Globalization;
 using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
 using Markdig.Syntax;
@@ -76,6 +77,16 @@ internal sealed class MarkdownRenderer : IComponent
         {
             pdf.Column(col =>
             {
+                // Determine the max number of characters needed to express the list index / bullets
+                var bulletWidth = block is ListBlock listBlock
+                    ? listBlock.IsOrdered
+                        ? listBlock.OfType<ListItemBlock>()
+                            .Max(i => i.Order)
+                            .ToString(CultureInfo.InvariantCulture)
+                            .Length + 1 // +1 for list.OrderedDelimiter
+                        : _options.UnorderedListGlyph.Length
+                    : 0;
+                
                 foreach (var item in block)
                 {
                     var container = col.Item();
@@ -85,7 +96,9 @@ internal sealed class MarkdownRenderer : IComponent
                         container.Row(li =>
                         {
                             li.Spacing(5);
-                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{listItem.Order}{list.OrderedDelimiter}" : _options.UnorderedListGlyph);
+                            li.ConstantItem(bulletWidth * _options.ListGlyphWidth)
+                                .Text(list.IsOrdered ? $"{listItem.Order}{list.OrderedDelimiter}" : _options.UnorderedListGlyph);
+                            
                             ProcessBlock(item, li.RelativeItem());
                         });
                     }

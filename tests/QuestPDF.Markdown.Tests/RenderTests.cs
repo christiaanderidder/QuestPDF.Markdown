@@ -16,6 +16,7 @@ internal sealed class RenderTests
     public void Setup()
     {
         Settings.License = LicenseType.Community;
+        Settings.EnableDebugging = true;
         var assembly = Assembly.GetExecutingAssembly();
         const string resourceName = "QuestPDF.Markdown.Tests.test.md";
         using var stream = assembly.GetManifestResourceStream(resourceName);

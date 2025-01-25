@@ -44,6 +44,14 @@ public class MarkdownRendererOptions
     public float ImageScalingFactor { get; set; } = 0.5f;
 
     public float ParagraphSpacing { get; set; } = 10;
+    
+    /// <summary>
+    /// Sets the fixed width for a single list index / bullet glyph
+    /// It might be necessary to adjust this value based on the font used
+    /// Using an automatic width leads to issues when lists across page boundaries
+    /// See: https://github.com/QuestPDF/QuestPDF/issues/1091
+    /// </summary>
+    public float ListGlyphWidth { get; set; } = 6.5f;
     public float ListItemSpacing { get; set; } = 5;
     public string UnorderedListGlyph { get; set; } = "•";
     
