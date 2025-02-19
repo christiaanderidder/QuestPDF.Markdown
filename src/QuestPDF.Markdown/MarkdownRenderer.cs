@@ -35,29 +35,30 @@ internal sealed class MarkdownRenderer : IComponent
 
     public void Compose(IContainer pdf) => Render(_document.MarkdigDocument, pdf);
     
-    /// <remarks>Each render method returns a dummy boolean because void switch expression are not supported</remarks>
-    private bool Render(Block block, IContainer pdf) => block switch
+    private void Render(Block block, IContainer pdf)
     {
-        QuoteBlock quoteBlock => Render(quoteBlock, pdf),
-        Table table => Render(table, pdf),
-        ListBlock listBlock => Render(listBlock, pdf),
-        ListItemBlock listItemBlock => Render(listItemBlock, pdf),
-        HeadingBlock headingBlock => Render(headingBlock, pdf),
-        ThematicBreakBlock thematicBreakBlock => Render(thematicBreakBlock, pdf),
-        CodeBlock codeBlock => Render(codeBlock, pdf),
-        TableRow tableRow => Render(tableRow, pdf),
-        TableCell tableCell => Render(tableCell, pdf),
-        ContainerBlock containerBlock => Render(containerBlock, pdf),
-        LeafBlock leafBlock => Render(leafBlock, pdf),
-        _ => throw new InvalidOperationException($"Unsupported block type {block.GetType().Name}")
-    };
+        if(_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, block is LeafBlock ? Colors.Red.Medium : Colors.Blue.Medium);
+        
+        _ = block switch
+        {
+            QuoteBlock quoteBlock => Render(quoteBlock, pdf),
+            Table table => Render(table, pdf),
+            ListBlock listBlock => Render(listBlock, pdf),
+            ListItemBlock listItemBlock => Render(listItemBlock, pdf),
+            HeadingBlock headingBlock => Render(headingBlock, pdf),
+            ThematicBreakBlock thematicBreakBlock => Render(thematicBreakBlock, pdf),
+            CodeBlock codeBlock => Render(codeBlock, pdf),
+            TableRow tableRow => Render(tableRow, pdf),
+            TableCell tableCell => Render(tableCell, pdf),
+            ContainerBlock containerBlock => Render(containerBlock, pdf),
+            LeafBlock leafBlock => Render(leafBlock, pdf),
+            _ => throw new InvalidOperationException($"Unsupported block type {block.GetType().Name}")
+        };
+    }
 
-    private bool Render(ContainerBlock block, IContainer pdf)
+    private IContainer Render(ContainerBlock block, IContainer pdf)
     {
-        if (block.Count == 0) return true;
-
-        if (_options.Debug && block is not MarkdownDocument)
-            pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Blue.Medium);
+        if (block.Count == 0) return pdf;
 
         pdf.Column(col =>
         {
@@ -72,10 +73,10 @@ internal sealed class MarkdownRenderer : IComponent
             }
         });
 
-        return true;
+        return pdf;
     }
 
-    private bool Render(Table table, IContainer pdf)
+    private IContainer Render(Table table, IContainer pdf)
     {
         pdf.Table(td =>
         {
@@ -92,7 +93,7 @@ internal sealed class MarkdownRenderer : IComponent
             RenderTableRows(table, rows, td);
         });
 
-        return true;
+        return pdf;
     }
 
     private void RenderTableRows(Table table, List<TableRow> rows, TableDescriptor td)
@@ -124,7 +125,7 @@ internal sealed class MarkdownRenderer : IComponent
         }
     }
     
-    private bool RenderTableCell(TableCell cell, uint rowIdx, uint columnIdx, bool isHeader, bool isLast, TableDescriptor table, TableColumnDefinition columnDefinition)
+    private IContainer RenderTableCell(TableCell cell, uint rowIdx, uint columnIdx, bool isHeader, bool isLast, TableDescriptor table, TableColumnDefinition columnDefinition)
     {
         var container = table.Cell()
             .RowSpan((uint)cell.RowSpan)
@@ -153,10 +154,9 @@ internal sealed class MarkdownRenderer : IComponent
         return Render(cell, container);
     }
 
-    private bool Render(LeafBlock block, IContainer pdf)
+    private IContainer Render(LeafBlock block, IContainer pdf)
     {
-        if (_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Red.Medium);
-
+        // Some blocks don't contain any further inline elements, render the text directly
         if (block.Inline != null && block.Inline.Any())
         {
             pdf.Text(text =>
@@ -169,22 +169,28 @@ internal sealed class MarkdownRenderer : IComponent
                     Render(item, text);
                 }
             });
+            
         }
-
-        return true;
+        else if (block.Lines.Count != 0)
+        {
+            pdf.Text(block.Lines.ToString())
+                .ApplyStyles(_textProperties.TextStyles.ToList());
+        }
+        
+        return pdf;
     }
     
-    private bool Render(ContainerInline inline, TextDescriptor text)
+    private TextDescriptor Render(ContainerInline inline, TextDescriptor text)
     {
         foreach (var item in inline)
         {
             Render(item, text);
         }
 
-        return true;
+        return text;
     }
 
-    private bool Render(QuoteBlock block, IContainer pdf)
+    private IContainer Render(QuoteBlock block, IContainer pdf)
     {
         pdf = pdf.BorderLeft(_options.BlockQuoteBorderThickness)
             .BorderColor(_options.BlockQuoteBorderColor)
@@ -198,17 +204,17 @@ internal sealed class MarkdownRenderer : IComponent
         // Pop any styles that were applied to the entire container off the stack
         _textProperties.TextStyles.Pop();
 
-        return true;
+        return pdf;
     }
 
-    private bool Render(ListBlock block, IContainer pdf)
+    private IContainer Render(ListBlock block, IContainer pdf)
     {
         return Render(block as ContainerBlock, pdf);
     }
 
-    private bool Render(ListItemBlock block, IContainer pdf)
+    private IContainer Render(ListItemBlock block, IContainer pdf)
     {
-        if (block.Parent is not ListBlock list) return true;
+        if (block.Parent is not ListBlock list) return pdf;
 
         pdf.Row(li =>
         {
@@ -219,10 +225,10 @@ internal sealed class MarkdownRenderer : IComponent
             Render(block as ContainerBlock, li.RelativeItem());
         });
 
-        return true;
+        return pdf;
     }
 
-    private bool Render(HeadingBlock block, IContainer pdf)
+    private IContainer Render(HeadingBlock block, IContainer pdf)
     {
         // Push any styles that should be applied to the entire block on the stack
         _textProperties.TextStyles.Push(t =>
@@ -233,31 +239,32 @@ internal sealed class MarkdownRenderer : IComponent
         // Pop any styles that were applied to the entire block off the stack
         _textProperties.TextStyles.Pop();
 
-        return true;
+        return pdf;
     }
 
-    private bool Render(ThematicBreakBlock block, IContainer pdf)
+    private IContainer Render(ThematicBreakBlock block, IContainer pdf)
     {
         pdf.LineHorizontal(_options.HorizontalRuleThickness)
             .LineColor(_options.HorizontalRuleColor);
 
-        return true;
+        return pdf;
     }
 
-    private bool Render(CodeBlock block, IContainer pdf)
+    private IContainer Render(CodeBlock block, IContainer pdf)
     {
-        Render(block as LeafBlock, pdf);
+        // Push any styles that should be applied to the entire block on the stack
+        _textProperties.TextStyles.Push(t => t.FontFamily(_options.CodeFont));
+        
+        pdf = pdf.Background(_options.CodeBlockBackground).Padding(5);
+        pdf = Render(block as LeafBlock, pdf);
+        
+        // Pop any styles that were applied to the entire block off the stack
+        _textProperties.TextStyles.Pop();
 
-        pdf.Background(_options.CodeBlockBackground)
-            .Padding(5)
-            .Text(block.Lines.ToString())
-            .FontFamily(_options.CodeFont);
-
-        return true;
+        return pdf;
     }
     
-    /// <remarks>Each render method returns a dummy boolean because void switch expression are not supported</remarks>
-    private bool Render(Inline inline, TextDescriptor text) => inline switch
+    private TextDescriptor Render(Inline inline, TextDescriptor text) => inline switch
     {
         LinkInline linkInline => Render(linkInline, text),
         EmphasisInline emphasisInline => Render(emphasisInline, text),
@@ -272,14 +279,14 @@ internal sealed class MarkdownRenderer : IComponent
         _ => throw new InvalidOperationException($"Unsupported inline type {inline.GetType().Name}")
     };
 
-    private static bool Render(LeafInline inline, TextDescriptor text)
+    private static TextDescriptor Render(LeafInline inline, TextDescriptor text)
     {
         text.Span($"Unknown LeafInline: {inline.GetType()}").BackgroundColor(Colors.Orange.Medium);
 
-        return true;
+        return text;
     }
 
-    private bool Render(LinkInline inline, TextDescriptor text)
+    private TextDescriptor Render(LinkInline inline, TextDescriptor text)
     {
         // Push any styles that should be applied to the entire span on the stack
         _textProperties.TextStyles.Push(t => t
@@ -297,10 +304,10 @@ internal sealed class MarkdownRenderer : IComponent
         _textProperties.LinkUrl = null;
         _textProperties.IsImage = false;
 
-        return true;
+        return text;
     }
 
-    private bool Render(EmphasisInline inline, TextDescriptor text)
+    private TextDescriptor Render(EmphasisInline inline, TextDescriptor text)
     {
         _textProperties.TextStyles.Push(t =>
         {
@@ -325,48 +332,48 @@ internal sealed class MarkdownRenderer : IComponent
 
         _textProperties.TextStyles.Pop();
         
-        return true;
+        return text;
     }
 
-    private bool Render(AutolinkInline inline, TextDescriptor text)
+    private TextDescriptor Render(AutolinkInline inline, TextDescriptor text)
     {
         var linkSpan = text.Hyperlink(inline.Url, inline.Url);
         linkSpan.ApplyStyles(_textProperties.TextStyles.ToList());
         
-        return true;
+        return text;
     }
 
-    private static bool Render(LineBreakInline inline, TextDescriptor text)
+    private static TextDescriptor Render(LineBreakInline inline, TextDescriptor text)
     {
         // Only add a line break within a paragraph if trailing spaces or a backslash are used.
         if (inline.IsBackslash || inline.IsHard) text.Span("\n");
         else text.Span(" ");
         
-        return true;
+        return text;
     }
 
-    private bool Render(TaskList inline, TextDescriptor text)
+    private TextDescriptor Render(TaskList inline, TextDescriptor text)
     {
         text.Span(inline.Checked ? _options.TaskListCheckedGlyph : _options.TaskListUncheckedGlyph)
             .FontFamily(_options.UnicodeGlyphFont);
 
-        return true;
+        return text;
     }
 
-    private bool Render(LiteralInline inline, TextDescriptor text)
+    private TextDescriptor Render(LiteralInline inline, TextDescriptor text)
     {
         // Plain text
         if (string.IsNullOrEmpty(_textProperties.LinkUrl))
         {
             text.Span(inline.ToString()).ApplyStyles(_textProperties.TextStyles.ToList());
-            return true;
+            return text;
         }
 
         // Regular links, or images that could not be downloaded
         if (!_textProperties.IsImage || !_document.TryGetImageFromCache(_textProperties.LinkUrl, out var image))
         {
             text.Hyperlink(inline.ToString(), _textProperties.LinkUrl).ApplyStyles(_textProperties.TextStyles.ToList());
-            return true;
+            return text;
         }
 
 
@@ -380,22 +387,22 @@ internal sealed class MarkdownRenderer : IComponent
 
         text.Span(string.Empty).ApplyStyles(_textProperties.TextStyles.ToList());
 
-        return true;
+        return text;
     }
 
-    private bool Render(CodeInline inline, TextDescriptor text)
+    private TextDescriptor Render(CodeInline inline, TextDescriptor text)
     {
         text.Span(inline.Content)
             .BackgroundColor(_options.CodeInlineBackground)
             .FontFamily(_options.CodeFont);
 
-        return true;
+        return text;
     }
 
-    private static bool Render(HtmlEntityInline inline, TextDescriptor text)
+    private static TextDescriptor Render(HtmlEntityInline inline, TextDescriptor text)
     {
         text.Span(inline.Transcoded.ToString());
         
-        return true;
+        return text;
     }
 }
