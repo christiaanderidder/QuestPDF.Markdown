@@ -1,4 +1,3 @@
-using System.Globalization;
 using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
 using Markdig.Syntax;
@@ -10,7 +9,6 @@ using QuestPDF.Markdown.Extensions;
 
 namespace QuestPDF.Markdown;
 
-
 /// <summary>
 /// This class uses markdig to parse a provided markdown text and convert it to QuestPDF elements
 /// </summary>
@@ -21,331 +19,354 @@ internal sealed class MarkdownRenderer : IComponent
 {
     private readonly MarkdownRendererOptions _options;
     private readonly ParsedMarkdownDocument _document;
-    private readonly TextProperties _textProperties;
+    private readonly TextProperties _textProperties = new();
 
     private MarkdownRenderer(ParsedMarkdownDocument document, MarkdownRendererOptions? options)
     {
         _document = document;
         _options = options ?? new MarkdownRendererOptions();
-        _textProperties = new TextProperties();
     }
+    
+    internal static MarkdownRenderer Create(string markdownText, MarkdownRendererOptions? options = null) =>
+        new(ParsedMarkdownDocument.FromText(markdownText), options);
 
-    public void Compose(IContainer pdf) => ProcessContainerBlock(_document.MarkdigDocument, pdf);
+    internal static MarkdownRenderer Create(ParsedMarkdownDocument document, MarkdownRendererOptions? options = null) =>
+        new(document, options);
 
-    /// <summary>
-    /// Processes a Block, which can be a ContainerBlock or a LeafBlock.
-    /// </summary>
-    private void ProcessBlock(Block block, IContainer pdf)
+    public void Compose(IContainer pdf) => Render(_document.MarkdigDocument, pdf);
+    
+    private bool Render(Block block, IContainer pdf) => block switch
     {
-        switch (block)
-        {
-            case ContainerBlock container:
-                ProcessContainerBlock(container, pdf);
-                break;
-            case LeafBlock leaf:
-                ProcessLeafBlock(leaf, pdf);
-                break;
-        }
-    }
+        QuoteBlock quoteBlock => Render(quoteBlock, pdf),
+        Table table => Render(table, pdf),
+        ListBlock listBlock => Render(listBlock, pdf),
+        ListItemBlock listItemBlock => Render(listItemBlock, pdf),
+        HeadingBlock headingBlock => Render(headingBlock, pdf),
+        ThematicBreakBlock thematicBreakBlock => Render(thematicBreakBlock, pdf),
+        CodeBlock codeBlock => Render(codeBlock, pdf),
+        TableRow tableRow => Render(tableRow, pdf),
+        TableCell tableCell => Render(tableCell, pdf),
+        ContainerBlock containerBlock => Render(containerBlock, pdf),
+        LeafBlock leafBlock => Render(leafBlock, pdf),
+        _ => throw new InvalidOperationException($"Unsupported block type {block.GetType().Name}")
+    };
 
-    /// <summary>
-    /// Processes a ContainerBlock. Containers blocks contain other containers blocks or regular blocks (LeafBlock).
-    /// Container blocks are represented by a QuestPDF column with a row for each child item
-    /// </summary>
-    private IContainer ProcessContainerBlock(ContainerBlock block, IContainer pdf)
+    private bool Render(ContainerBlock block, IContainer pdf)
     {
-        if (block.Count == 0) return pdf;
+        if (block.Count == 0) return true;
 
-        if(_options.Debug && block is not MarkdownDocument) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Blue.Medium);
-        
-        // Push any styles that should be applied to the entire container on the stack
-        switch (block)
-        {
-            case QuoteBlock:
-                pdf = pdf.BorderLeft(_options.BlockQuoteBorderThickness)
-                    .BorderColor(_options.BlockQuoteBorderColor)
-                    .PaddingLeft(10);
-                _textProperties.TextStyles.Push(t => t.FontColor(_options.BlockQuoteTextColor));
-                break;
-        }
+        if (_options.Debug && block is not MarkdownDocument)
+            pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Blue.Medium);
 
-        if (block is Table table)
+        pdf.Column(col =>
         {
-            pdf = ProcessTableBlock(table, pdf);
-        }
-        else
-        {
-            pdf.Column(col =>
+            foreach (var item in block)
             {
-                foreach (var item in block)
-                {
-                    var container = col.Item();
-                    if (block is ListBlock list && item is ListItemBlock listItem)
-                    {
-                        col.Spacing(_options.ListItemSpacing);
-                        container.Row(li =>
-                        {
-                            li.Spacing(5);
-                            li.AutoItem().PaddingLeft(10).Text(list.IsOrdered ? $"{listItem.Order}{list.OrderedDelimiter}" : _options.UnorderedListGlyph);
-                            
-                            ProcessBlock(item, li.RelativeItem());
-                        });
-                    }
-                    else
-                    {
-                        // Paragraphs inside a list get the same spacing as the list items themselves
-                        col.Spacing(item.Parent is ListItemBlock ? _options.ListItemSpacing : _options.ParagraphSpacing);
-                        ProcessBlock(item, container);
-                    }
-                }
-            });
-        }
-        
-        // Pop any styles that were applied to the entire container off the stack
-        switch (block)
-        {
-            case QuoteBlock:
-                _textProperties.TextStyles.Pop();
-                break;
-        }
+                // Blocks inside a list get the same spacing as the list items themselves
+                col.Spacing(item.Parent is ListBlock or ListItemBlock
+                    ? _options.ListItemSpacing
+                    : _options.ParagraphSpacing);
 
-        return pdf;
+                Render(item, col.Item());
+            }
+        });
+
+        return true;
     }
 
-    private IContainer ProcessTableBlock(Table table, IContainer pdf)
+    private bool Render(Table table, IContainer pdf)
     {
         pdf.Table(td =>
         {
             td.ColumnsDefinition(cd =>
             {
-                foreach(var col in table.ColumnDefinitions)
+                foreach (var col in table.ColumnDefinitions)
                 {
                     // Widths are provided as a percentage
                     cd.RelativeColumn(col.Width > 0 ? col.Width : 1f);
                 }
             });
-
-            uint rowIdx = 0;
+            
             var rows = table.OfType<TableRow>().ToList();
-            foreach (var row in rows)
-            {
-                if (row.IsHeader) _textProperties.TextStyles.Push(t => t.Bold());
-                
-                var colIdx = 0;
-                var cells = row.OfType<TableCell>().ToList();
-                foreach (var cell in cells)
-                {
-                    var isLast = rowIdx == rows.Count - 1;
-                    var colDef = table.ColumnDefinitions[colIdx];
-                    var container = td.Cell()
-                        .RowSpan((uint)cell.RowSpan)
-                        .Row(rowIdx + 1)
-                        .Column((uint)(cell.ColumnIndex >= 0 ? cell.ColumnIndex : colIdx) + 1)
-                        .ColumnSpan((uint)cell.ColumnSpan)
-                        .Border(_options, row.IsHeader, isLast)
-                        .Background(rowIdx % 2 == 1 ? _options.TableEvenRowBackgroundColor : _options.TableOddRowBackgroundColor)
-                        .Padding(5);
-                    
-                    switch (colDef.Alignment)
-                    {
-                        case TableColumnAlign.Left:
-                            container = container.AlignLeft();
-                            break;
-                        case TableColumnAlign.Center:
-                            container = container.AlignCenter();
-                            break;
-                        case TableColumnAlign.Right:
-                            container = container.AlignRight();
-                            break;
-                    }
-                    
-                    ProcessBlock(cell, container);
-
-                    colIdx++;
-                }
-                
-                if (row.IsHeader) _textProperties.TextStyles.Pop();
-                
-                rowIdx++;
-            }
+            RenderTableRows(table, rows, td);
         });
 
-        return pdf;
+        return true;
     }
 
-    /// <summary>
-    /// Processes a LeafBlock. Blocks contain container inlines (ContainerInline) or regular inline elements (LeafInline).
-    /// Leaf blocks are represented by a QuestPDF text element with a text span for each child element
-    /// </summary>
-    private void ProcessLeafBlock(LeafBlock block, IContainer pdf)
+    private void RenderTableRows(Table table, List<TableRow> rows, TableDescriptor td)
     {
-        if(_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Red.Medium);
-        
-        // Push any styles that should be applied to the entire block on the stack
-        switch (block)
+        uint rowIdx = 0;
+        foreach (var row in rows)
         {
-            case HeadingBlock heading:
-                _textProperties.TextStyles.Push(t => t.FontSize(Math.Max(0, _options.CalculateHeadingSize(heading.Level))).Bold());
+            if (row.IsHeader) _textProperties.TextStyles.Push(t => t.Bold());
+            var isLast = rowIdx + 1 == table.Count;
+        
+            var cells = row.OfType<TableCell>().ToList();
+            RenderTableCells(table, td, cells, rowIdx, row, isLast);
+
+            if (row.IsHeader) _textProperties.TextStyles.Pop();
+
+            rowIdx++;
+        }
+    }
+
+    private void RenderTableCells(Table table, TableDescriptor td, List<TableCell> cells, uint rowIdx, TableRow row, bool isLast)
+    {
+        uint columnIdx = 0;
+        foreach (var cell in cells)
+        {
+            var cd = table.ColumnDefinitions[(int)columnIdx];
+            RenderTableCell(cell, rowIdx, columnIdx, row.IsHeader, isLast, td, cd);
+            
+            columnIdx++;
+        }
+    }
+    
+    private bool RenderTableCell(TableCell cell, uint rowIdx, uint columnIdx, bool isHeader, bool isLast, TableDescriptor table, TableColumnDefinition columnDefinition)
+    {
+        var container = table.Cell()
+            .RowSpan((uint)cell.RowSpan)
+            .Row(rowIdx + 1)
+            .Column((cell.ColumnIndex >= 0 ? (uint)cell.ColumnIndex : columnIdx) + 1)
+            .ColumnSpan((uint)cell.ColumnSpan)
+            .Border(_options, isHeader, isLast)
+            .Background(rowIdx % 2 == 1
+                ? _options.TableEvenRowBackgroundColor
+                : _options.TableOddRowBackgroundColor)
+            .Padding(5);
+        
+        switch (columnDefinition.Alignment)
+        {
+            case TableColumnAlign.Left:
+                container = container.AlignLeft();
+                break;
+            case TableColumnAlign.Center:
+                container = container.AlignCenter();
+                break;
+            case TableColumnAlign.Right:
+                container = container.AlignRight();
                 break;
         }
+        
+        return Render(cell, container);
+    }
+
+    private bool Render(LeafBlock block, IContainer pdf)
+    {
+        if (_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, Colors.Red.Medium);
 
         if (block.Inline != null && block.Inline.Any())
         {
             pdf.Text(text =>
             {
                 text.Align(_options.ParagraphAlignment);
-                
+
                 // Process the block's inline elements
                 foreach (var item in block.Inline)
                 {
-                    switch (item)
-                    {
-                        case ContainerInline container:
-                            ProcessContainerInline(container, text);
-                            break;
-                        case LeafInline leaf:
-                            ProcessLeafInline(leaf, text);
-                            break;
-                    }
+                    Render(item, text);
                 }
             });
         }
-        else if (block is ThematicBreakBlock)
-        {
-            pdf.LineHorizontal(_options.HorizontalRuleThickness)
-                .LineColor(_options.HorizontalRuleColor);
-        }
-        else if (block is CodeBlock code)
-        {
-            pdf.Background(_options.CodeBlockBackground)
-                .Padding(5)
-                .Text(code.Lines.ToString())
-                .FontFamily(_options.CodeFont);
-        }
 
-        
-        // Pop any styles that were applied to the entire block off the stack
-        switch (block)
-        {
-            case HeadingBlock:
-                _textProperties.TextStyles.Pop();
-                break;
-        }
+        return true;
     }
-
-    /// <summary>
-    /// Processes a ContainerInline. A container inline contains other container inlines or regular inline elements (LeafInline) that are part of the same span of text.
-    /// This method receives an existing PDF text element and adds text span elements to it for each child item
-    /// </summary>
-    private void ProcessContainerInline(ContainerInline inline, TextDescriptor text)
+    
+    private bool Render(ContainerInline inline, TextDescriptor text)
     {
         foreach (var item in inline)
         {
-            // Push any styles that should be applied to the entire span on the stack
-            switch (inline)
-            {
-                case LinkInline link:
-                    _textProperties.TextStyles.Push(t => t
-                        .FontColor(_options.LinkTextColor)
-                        .DecorationColor(_options.LinkTextColor)
-                        .Underline()
-                    );
-                    _textProperties.LinkUrl = link.Url;
-                    _textProperties.IsImage = link.IsImage;
-                    break;
-                case EmphasisInline emphasis:
-                    _textProperties.TextStyles.Push(t =>
-                    {
-                        switch (emphasis.DelimiterChar, emphasis.DelimiterCount)
-                        {
-                            case ('^', 1):
-                                return t.Superscript();
-                            case ('~', 1):
-                                return t.Subscript();
-                            case ('~', 2):
-                                return t.Strikethrough();
-                            case ('+', 2):
-                                return t.Underline();
-                            case ('=', 2):
-                                return t.BackgroundColor(_options.MarkedTextBackgroundColor);
-                        }
-                        return emphasis.DelimiterCount == 2 ? t.Bold() : t.Italic();
-                    });
-                    break;
-            }
-
-            switch (item)
-            {
-                case ContainerInline container:
-                    ProcessContainerInline(container, text);
-                    break;
-                case LeafInline leaf:
-                    ProcessLeafInline(leaf, text);
-                    break;
-            }
-
-            // Pop any styles that were applied to the entire span off the stack
-            switch (inline)
-            {
-                case EmphasisInline:
-                case LinkInline:
-                    _textProperties.TextStyles.Pop();
-                    break;
-            }
-
-            // Reset the link URL
-            _textProperties.LinkUrl = null;
-            _textProperties.IsImage = false;
+            Render(item, text);
         }
+
+        return true;
     }
 
-    /// <summary>
-    /// Processes a LeafInline. Regular inline elements (LeafInline) contain plain text.
-    /// This method receives an existing PDF text element and adds a text span containing the plain text to it.
-    /// </summary>
-    private void ProcessLeafInline(LeafInline inline, TextDescriptor text)
+    private bool Render(QuoteBlock block, IContainer pdf)
     {
-        switch (inline)
-        {
-            case AutolinkInline autoLink:
-                var linkSpan = text.Hyperlink(autoLink.Url, autoLink.Url);
-                linkSpan.ApplyStyles(_textProperties.TextStyles.ToList());
-                break;
-            case LineBreakInline lineBreak:
-                // Only add a line break within a paragraph if trailing spaces or a backslash are used.
-                if (lineBreak.IsBackslash || lineBreak.IsHard) text.Span("\n");
-                    else text.Span(" ");
-                break;
-            case TaskList task: 
-                text.Span(task.Checked ? _options.TaskListCheckedGlyph : _options.TaskListUncheckedGlyph)
-                    .FontFamily(_options.UnicodeGlyphFont);
-                break;
-            case LiteralInline literal:
-                ProcessLiteralInline(literal, text)
-                    .ApplyStyles(_textProperties.TextStyles.ToList());
-                break;
-            case CodeInline code:
-                text.Span(code.Content)
-                    .BackgroundColor(_options.CodeInlineBackground)
-                    .FontFamily(_options.CodeFont);
-                break;
-            case HtmlEntityInline htmlEntity:
-                text.Span(htmlEntity.Transcoded.ToString());
-                break;
-            default:
-                text.Span($"Unknown LeafInline: {inline.GetType()}").BackgroundColor(Colors.Orange.Medium);
-                break;
-        }
+        pdf = pdf.BorderLeft(_options.BlockQuoteBorderThickness)
+            .BorderColor(_options.BlockQuoteBorderColor)
+            .PaddingLeft(10);
+
+        // Push any styles that should be applied to the entire container on the stack
+        _textProperties.TextStyles.Push(t => t.FontColor(_options.BlockQuoteTextColor));
+
+        Render(block as ContainerBlock, pdf);
+
+        // Pop any styles that were applied to the entire container off the stack
+        _textProperties.TextStyles.Pop();
+
+        return true;
     }
 
-    private TextSpanDescriptor ProcessLiteralInline(LiteralInline literal, TextDescriptor text)
+    private bool Render(ListBlock block, IContainer pdf)
+    {
+        return Render(block as ContainerBlock, pdf);
+    }
+
+    private bool Render(ListItemBlock block, IContainer pdf)
+    {
+        if (block.Parent is not ListBlock list) return true;
+
+        pdf.Row(li =>
+        {
+            li.Spacing(5);
+            li.AutoItem().PaddingLeft(10)
+                .Text(list.IsOrdered ? $"{block.Order}{list.OrderedDelimiter}" : _options.UnorderedListGlyph);
+
+            Render(block as ContainerBlock, li.RelativeItem());
+        });
+
+        return true;
+    }
+
+    private bool Render(HeadingBlock block, IContainer pdf)
+    {
+        // Push any styles that should be applied to the entire block on the stack
+        _textProperties.TextStyles.Push(t =>
+            t.FontSize(Math.Max(0, _options.CalculateHeadingSize(block.Level))).Bold());
+
+        Render(block as LeafBlock, pdf);
+
+        // Pop any styles that were applied to the entire block off the stack
+        _textProperties.TextStyles.Pop();
+
+        return true;
+    }
+
+    private bool Render(ThematicBreakBlock block, IContainer pdf)
+    {
+        pdf.LineHorizontal(_options.HorizontalRuleThickness)
+            .LineColor(_options.HorizontalRuleColor);
+
+        return true;
+    }
+
+    private bool Render(CodeBlock block, IContainer pdf)
+    {
+        Render(block as LeafBlock, pdf);
+
+        pdf.Background(_options.CodeBlockBackground)
+            .Padding(5)
+            .Text(block.Lines.ToString())
+            .FontFamily(_options.CodeFont);
+
+        return true;
+    }
+    
+    private bool Render(Inline inline, TextDescriptor text) => inline switch
+    {
+        LinkInline linkInline => Render(linkInline, text),
+        EmphasisInline emphasisInline => Render(emphasisInline, text),
+        AutolinkInline autolinkInline => Render(autolinkInline, text),
+        LineBreakInline lineBreakInline => Render(lineBreakInline, text),
+        TaskList taskList => Render(taskList, text),
+        LiteralInline literalInline => Render(literalInline, text),
+        CodeInline codeInline => Render(codeInline, text),
+        HtmlEntityInline htmlEntityInline => Render(htmlEntityInline, text),
+        ContainerInline containerInline => Render(containerInline, text),
+        LeafInline leafInline => Render(leafInline, text),
+        _ => throw new InvalidOperationException($"Unsupported inline type {inline.GetType().Name}")
+    };
+
+    private static bool Render(LeafInline inline, TextDescriptor text)
+    {
+        text.Span($"Unknown LeafInline: {inline.GetType()}").BackgroundColor(Colors.Orange.Medium);
+
+        return true;
+    }
+
+    private bool Render(LinkInline inline, TextDescriptor text)
+    {
+        // Push any styles that should be applied to the entire span on the stack
+        _textProperties.TextStyles.Push(t => t
+            .FontColor(_options.LinkTextColor)
+            .DecorationColor(_options.LinkTextColor)
+            .Underline()
+        );
+        _textProperties.LinkUrl = inline.Url;
+        _textProperties.IsImage = inline.IsImage;
+
+        Render(inline as ContainerInline, text);
+
+        // Pop any styles that were applied to the entire span off the stack
+        _textProperties.TextStyles.Pop();
+        _textProperties.LinkUrl = null;
+        _textProperties.IsImage = false;
+
+        return true;
+    }
+
+    private bool Render(EmphasisInline inline, TextDescriptor text)
+    {
+        _textProperties.TextStyles.Push(t =>
+        {
+            switch (inline.DelimiterChar, inline.DelimiterCount)
+            {
+                case ('^', 1):
+                    return t.Superscript();
+                case ('~', 1):
+                    return t.Subscript();
+                case ('~', 2):
+                    return t.Strikethrough();
+                case ('+', 2):
+                    return t.Underline();
+                case ('=', 2):
+                    return t.BackgroundColor(_options.MarkedTextBackgroundColor);
+            }
+
+            return inline.DelimiterCount == 2 ? t.Bold() : t.Italic();
+        });
+
+        Render(inline as ContainerInline, text);
+
+        _textProperties.TextStyles.Pop();
+        
+        return true;
+    }
+
+    private bool Render(AutolinkInline inline, TextDescriptor text)
+    {
+        var linkSpan = text.Hyperlink(inline.Url, inline.Url);
+        linkSpan.ApplyStyles(_textProperties.TextStyles.ToList());
+        
+        return true;
+    }
+
+    private static bool Render(LineBreakInline inline, TextDescriptor text)
+    {
+        // Only add a line break within a paragraph if trailing spaces or a backslash are used.
+        if (inline.IsBackslash || inline.IsHard) text.Span("\n");
+        else text.Span(" ");
+        
+        return true;
+    }
+
+    private bool Render(TaskList inline, TextDescriptor text)
+    {
+        text.Span(inline.Checked ? _options.TaskListCheckedGlyph : _options.TaskListUncheckedGlyph)
+            .FontFamily(_options.UnicodeGlyphFont);
+
+        return true;
+    }
+
+    private bool Render(LiteralInline inline, TextDescriptor text)
     {
         // Plain text
-        if (string.IsNullOrEmpty(_textProperties.LinkUrl)) return text.Span(literal.ToString());
+        if (string.IsNullOrEmpty(_textProperties.LinkUrl))
+        {
+            text.Span(inline.ToString()).ApplyStyles(_textProperties.TextStyles.ToList());
+            return true;
+        }
 
         // Regular links, or images that could not be downloaded
         if (!_textProperties.IsImage || !_document.TryGetImageFromCache(_textProperties.LinkUrl, out var image))
-            return text.Hyperlink(literal.ToString(), _textProperties.LinkUrl);
+        {
+            text.Hyperlink(inline.ToString(), _textProperties.LinkUrl).ApplyStyles(_textProperties.TextStyles.ToList());
+            return true;
+        }
+
 
         // Images
         text.Element(e => e
@@ -354,13 +375,25 @@ internal sealed class MarkdownRenderer : IComponent
             .Image(image.Image)
             .FitArea()
         );
- 
-        return text.Span(string.Empty);
+
+        text.Span(string.Empty).ApplyStyles(_textProperties.TextStyles.ToList());
+
+        return true;
     }
-    
-    internal static MarkdownRenderer Create(string markdownText, MarkdownRendererOptions? options = null) =>
-        new(ParsedMarkdownDocument.FromText(markdownText), options);
-    
-    internal static MarkdownRenderer Create(ParsedMarkdownDocument document, MarkdownRendererOptions? options = null) =>
-        new(document, options);
+
+    private bool Render(CodeInline inline, TextDescriptor text)
+    {
+        text.Span(inline.Content)
+            .BackgroundColor(_options.CodeInlineBackground)
+            .FontFamily(_options.CodeFont);
+
+        return true;
+    }
+
+    private static bool Render(HtmlEntityInline inline, TextDescriptor text)
+    {
+        text.Span(inline.Transcoded.ToString());
+        
+        return true;
+    }
 }
