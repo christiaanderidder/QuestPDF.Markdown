@@ -35,6 +35,7 @@ internal sealed class MarkdownRenderer : IComponent
 
     public void Compose(IContainer pdf) => Render(_document.MarkdigDocument, pdf);
     
+    /// <remarks>Each render method returns a dummy boolean because void switch expression are not supported</remarks>
     private bool Render(Block block, IContainer pdf) => block switch
     {
         QuoteBlock quoteBlock => Render(quoteBlock, pdf),
@@ -255,6 +256,7 @@ internal sealed class MarkdownRenderer : IComponent
         return true;
     }
     
+    /// <remarks>Each render method returns a dummy boolean because void switch expression are not supported</remarks>
     private bool Render(Inline inline, TextDescriptor text) => inline switch
     {
         LinkInline linkInline => Render(linkInline, text),
