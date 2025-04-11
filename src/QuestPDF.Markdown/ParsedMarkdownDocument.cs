@@ -5,6 +5,7 @@ using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using QuestPDF.Infrastructure;
+using QuestPDF.Markdown.Extensions;
 using SkiaSharp;
 
 namespace QuestPDF.Markdown;
@@ -48,7 +49,7 @@ public class ParsedMarkdownDocument
         var urls = _document.Descendants<LinkInline>()
             .Where(l => l.IsImage && l.Url != null)
             .Select(l => l.Url)
-            .ToHashSet();
+            .ToHashSetShim();
 
         // The semaphore is disposed after all tasks have completed, we can safely disable AccessToDisposedClosure
         var tasks = urls.Select([SuppressMessage("ReSharper", "AccessToDisposedClosure")] async (url) =>
@@ -107,8 +108,11 @@ public class ParsedMarkdownDocument
 
     internal MarkdownDocument MarkdigDocument => _document;
     
-    internal bool TryGetImageFromCache(string url, out ImageWithDimensions image) => _imageCache.TryGetValue(url, out image);
-    
+    internal bool TryGetImageFromCache(string url, [MaybeNullWhen(false)] out ImageWithDimensions image)
+    {
+        return _imageCache.TryGetValue(url, out image);
+    }
+
     /// <summary>
     /// Parses the provided markdown text into a ParsedMarkdownDocument instance
     /// </summary>
