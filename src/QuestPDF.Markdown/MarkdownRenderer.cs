@@ -363,7 +363,7 @@ internal sealed class MarkdownRenderer : IComponent
     private TextDescriptor Render(LiteralInline inline, TextDescriptor text)
     {
         // Plain text
-        if (string.IsNullOrEmpty(_textProperties.LinkUrl))
+        if (_textProperties.LinkUrl.IsNullOrEmpty())
         {
             text.Span(inline.ToString()).ApplyStyles(_textProperties.TextStyles.ToList());
             return text;
