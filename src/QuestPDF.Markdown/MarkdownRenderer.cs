@@ -376,7 +376,6 @@ internal sealed class MarkdownRenderer : IComponent
             return text;
         }
 
-
         // Images
         text.Element(e => e
             .Width(image.Width * _options.ImageScalingFactor)
