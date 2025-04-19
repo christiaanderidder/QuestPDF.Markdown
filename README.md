@@ -11,10 +11,13 @@ QuestPDF.Markdown allows rendering markdown into a [QuestPDF](https://www.questp
 
 ## Usage
 ```csharp
-var text = 
-@"# Hello, world!
-*Greetings* from **markdown**!
-> Hello, back!";
+var text = """
+           # Hello, world!
+
+           *Greetings* from **markdown**!
+
+           > Hello, back!
+           """;
 
 var document = Document.Create(container =>
 {
