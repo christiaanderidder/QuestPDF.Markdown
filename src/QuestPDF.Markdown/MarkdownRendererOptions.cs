@@ -1,6 +1,6 @@
-using System.Runtime.InteropServices;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System.Runtime.InteropServices;
 
 namespace QuestPDF.Markdown;
 
@@ -19,10 +19,12 @@ public class MarkdownRendererOptions
     public Color BlockQuoteBorderColor { get; set; } = Colors.Grey.Lighten2;
     public Color BlockQuoteTextColor { get; set; } = Colors.Grey.Darken1;
     public int BlockQuoteBorderThickness { get; set; } = 2;
-    
+
     public string CodeFont { get; set; } = Fonts.CourierNew;
     public Color CodeBlockBackground { get; set; } = Colors.Grey.Lighten4;
     public Color CodeInlineBackground { get; set; } = Colors.Grey.Lighten3;
+
+    public string FontFamily { get; set; } = Fonts.Lato;
 
     public string TaskListCheckedGlyph { get; set; } = "☑";
     public string TaskListUncheckedGlyph { get; set; } = "☐";
@@ -34,7 +36,7 @@ public class MarkdownRendererOptions
     public int TableHeaderBorderThickness { get; set; } = 3;
     public int TableBorderThickness { get; set; } = 1;
     public TableBorderStyle TableBorderStyle { get; set; } = TableBorderStyle.Horizontal;
-    
+
     public Color HorizontalRuleColor { get; set; } = Colors.Grey.Lighten2;
     public int HorizontalRuleThickness { get; set; } = 2;
 
@@ -46,7 +48,7 @@ public class MarkdownRendererOptions
     public float ParagraphSpacing { get; set; } = 10;
     public float ListItemSpacing { get; set; } = 5;
     public string UnorderedListGlyph { get; set; } = "•";
-    
+
     /// <summary>
     /// The formula used to calculate heading sizes based on their level.
     /// </summary>
