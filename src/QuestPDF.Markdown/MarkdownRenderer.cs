@@ -26,7 +26,7 @@ internal sealed class MarkdownRenderer : IComponent
         _document = document;
         _options = options ?? new MarkdownRendererOptions();
     }
-    
+
     internal static MarkdownRenderer Create(string markdownText, MarkdownRendererOptions? options = null) =>
         new(ParsedMarkdownDocument.FromText(markdownText), options);
 
@@ -34,11 +34,11 @@ internal sealed class MarkdownRenderer : IComponent
         new(document, options);
 
     public void Compose(IContainer pdf) => Render(_document.MarkdigDocument, pdf);
-    
+
     private void Render(Block block, IContainer pdf)
     {
-        if(_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, block is LeafBlock ? Colors.Red.Medium : Colors.Blue.Medium);
-        
+        if (_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, block is LeafBlock ? Colors.Red.Medium : Colors.Blue.Medium);
+
         _ = block switch
         {
             QuoteBlock quoteBlock => Render(quoteBlock, pdf),
@@ -88,7 +88,7 @@ internal sealed class MarkdownRenderer : IComponent
                     cd.RelativeColumn(col.Width > 0 ? col.Width : 1f);
                 }
             });
-            
+
             var rows = table.OfType<TableRow>().ToList();
             RenderTableRows(table, rows, td);
         });
@@ -103,7 +103,7 @@ internal sealed class MarkdownRenderer : IComponent
         {
             if (row.IsHeader) _textProperties.TextStyles.Push(t => t.Bold());
             var isLast = rowIdx + 1 == table.Count;
-        
+
             var cells = row.OfType<TableCell>().ToList();
             RenderTableCells(table, td, cells, rowIdx, row, isLast);
 
@@ -120,11 +120,11 @@ internal sealed class MarkdownRenderer : IComponent
         {
             var cd = table.ColumnDefinitions[(int)columnIdx];
             RenderTableCell(cell, rowIdx, columnIdx, row.IsHeader, isLast, td, cd);
-            
+
             columnIdx++;
         }
     }
-    
+
     private IContainer RenderTableCell(TableCell cell, uint rowIdx, uint columnIdx, bool isHeader, bool isLast, TableDescriptor table, TableColumnDefinition columnDefinition)
     {
         var container = table.Cell()
@@ -137,7 +137,7 @@ internal sealed class MarkdownRenderer : IComponent
                 ? _options.TableEvenRowBackgroundColor
                 : _options.TableOddRowBackgroundColor)
             .Padding(5);
-        
+
         switch (columnDefinition.Alignment)
         {
             case TableColumnAlign.Left:
@@ -150,7 +150,7 @@ internal sealed class MarkdownRenderer : IComponent
                 container = container.AlignRight();
                 break;
         }
-        
+
         return Render(cell, container);
     }
 
@@ -162,6 +162,7 @@ internal sealed class MarkdownRenderer : IComponent
             pdf.Text(text =>
             {
                 text.Align(_options.ParagraphAlignment);
+                text.DefaultTextStyle(t => t.FontFamily(_options.FontFamily));
 
                 // Process the block's inline elements
                 foreach (var item in block.Inline)
@@ -169,17 +170,17 @@ internal sealed class MarkdownRenderer : IComponent
                     Render(item, text);
                 }
             });
-            
+
         }
         else if (block.Lines.Count != 0)
         {
             pdf.Text(block.Lines.ToString())
                 .ApplyStyles(_textProperties.TextStyles.ToList());
         }
-        
+
         return pdf;
     }
-    
+
     private TextDescriptor Render(ContainerInline inline, TextDescriptor text)
     {
         foreach (var item in inline)
@@ -198,6 +199,7 @@ internal sealed class MarkdownRenderer : IComponent
 
         // Push any styles that should be applied to the entire container on the stack
         _textProperties.TextStyles.Push(t => t.FontColor(_options.BlockQuoteTextColor));
+        _textProperties.TextStyles.Push(t => t.FontFamily(_options.FontFamily));
 
         Render(block as ContainerBlock, pdf);
 
@@ -232,7 +234,7 @@ internal sealed class MarkdownRenderer : IComponent
     {
         // Push any styles that should be applied to the entire block on the stack
         _textProperties.TextStyles.Push(t =>
-            t.FontSize(Math.Max(0, _options.CalculateHeadingSize(block.Level))).Bold());
+            t.FontFamily(_options.FontFamily).FontSize(Math.Max(0, _options.CalculateHeadingSize(block.Level))).Bold());
 
         Render(block as LeafBlock, pdf);
 
@@ -254,16 +256,16 @@ internal sealed class MarkdownRenderer : IComponent
     {
         // Push any styles that should be applied to the entire block on the stack
         _textProperties.TextStyles.Push(t => t.FontFamily(_options.CodeFont));
-        
+
         pdf = pdf.Background(_options.CodeBlockBackground).Padding(5);
         pdf = Render(block as LeafBlock, pdf);
-        
+
         // Pop any styles that were applied to the entire block off the stack
         _textProperties.TextStyles.Pop();
 
         return pdf;
     }
-    
+
     private TextDescriptor Render(Inline inline, TextDescriptor text) => inline switch
     {
         LinkInline linkInline => Render(linkInline, text),
@@ -331,7 +333,7 @@ internal sealed class MarkdownRenderer : IComponent
         Render(inline as ContainerInline, text);
 
         _textProperties.TextStyles.Pop();
-        
+
         return text;
     }
 
@@ -339,7 +341,7 @@ internal sealed class MarkdownRenderer : IComponent
     {
         var linkSpan = text.Hyperlink(inline.Url, inline.Url);
         linkSpan.ApplyStyles(_textProperties.TextStyles.ToList());
-        
+
         return text;
     }
 
@@ -348,7 +350,7 @@ internal sealed class MarkdownRenderer : IComponent
         // Only add a line break within a paragraph if trailing spaces or a backslash are used.
         if (inline.IsBackslash || inline.IsHard) text.Span("\n");
         else text.Span(" ");
-        
+
         return text;
     }
 
@@ -401,7 +403,7 @@ internal sealed class MarkdownRenderer : IComponent
     private static TextDescriptor Render(HtmlEntityInline inline, TextDescriptor text)
     {
         text.Span(inline.Transcoded.ToString());
-        
+
         return text;
     }
 }
