@@ -32,22 +32,20 @@ var document = Document.Create(container =>
 ![Usage](/img/usage.png?raw=true)
 
 ### Styling the output
-The styling used by QuestPDF.Markdown can be configured using `MarkdownRendererOptions`.
+The styling used by QuestPDF.Markdown can be configured using the configure action.
 ```csharp
 var text = @"> Hello, world!";
-
-var options = new MarkdownRendererOptions
-{
-    BlockQuoteBorderColor = Colors.Red.Medium,
-    BlockQuoteBorderThickness = 5
-};
 
 var document = Document.Create(container =>
 {
     container.Page(page =>
     {
         page.Margin(20);
-        page.Content().Markdown(text, options);
+        page.Content().Markdown(text, options => 
+        {
+            BlockQuoteBorderColor = Colors.Red.Medium,
+            BlockQuoteBorderThickness = 5
+        });
     });
 });
 ```
@@ -67,10 +65,33 @@ var document = Document.Create(container =>
     container.Page(page =>
     {
         page.Margin(20);
-        page.Content().Markdown(markdown, options);
+        page.Content().Markdown(markdown);
     });
 });
 ```
+
+### Rendering custom text
+In some cases it can be helpful to render custom text content in the PDF (e.g. allowing a user to inject the page number).
+
+This is possible by using the template tag feature:
+```csharp
+var text = @"This is page {currentPage}/{totalPages}";
+
+var document = Document.Create(container =>
+{
+    container.Page(page =>
+    {
+        page.Margin(20);
+        page.Content().Markdown(text, options =>
+        {
+            options.AddTemplateTag("currentPage", t => t.TotalPages());
+            options.AddTemplateTag("totalPages", t => t.CurrentPageNumber());
+        }));
+    });
+});
+```
+> [!NOTE]  
+> Note that the template tags are only used to replace simple text content and not larger blocks like tables.
 
 ## What's supported?
 The aim of this library is to support all basic markdown functionality and some of the extensions supported by markdig.
@@ -86,6 +107,7 @@ Currently the following features are supported:
 - Tables
 - Images
 - HTML encoded entities (e.g. `&amp;`, `&lt;`, `&gt;`)
+- Custom renderers for text content
 
 Support for the following extensions is currently not planned:
 - Raw HTML

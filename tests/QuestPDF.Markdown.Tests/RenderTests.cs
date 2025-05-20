@@ -74,9 +74,11 @@ internal sealed class RenderTests
     public async Task RenderTag()
     {
         var document = GenerateDocument(item => item.Markdown("This is page {currentPage}/{totalPages}.",
-            options => options
-                .AddTemplateTag("totalPages", t => t.CurrentPageNumber())
-                .AddTemplateTag("currentPage", t => t.TotalPages())));
+            options =>
+            {
+                options.AddTemplateTag("currentPage", t => t.TotalPages());
+                options.AddTemplateTag("totalPages", t => t.CurrentPageNumber());
+            }));
 
         try
         {
