@@ -76,8 +76,8 @@ internal sealed class RenderTests
         var document = GenerateDocument(item => item.Markdown("This is page {currentPage}/{totalPages}.",
             options =>
             {
-                options.AddTemplateTag("currentPage", t => t.TotalPages());
-                options.AddTemplateTag("totalPages", t => t.CurrentPageNumber());
+                options.AddTemplateTag("currentPage", t => t.CurrentPageNumber());
+                options.AddTemplateTag("totalPages", t => t.TotalPages());
             }));
 
         try

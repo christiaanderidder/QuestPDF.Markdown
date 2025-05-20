@@ -84,8 +84,8 @@ var document = Document.Create(container =>
         page.Margin(20);
         page.Content().Markdown(text, options =>
         {
-            options.AddTemplateTag("currentPage", t => t.TotalPages());
-            options.AddTemplateTag("totalPages", t => t.CurrentPageNumber());
+            options.AddTemplateTag("currentPage", t => t.CurrentPageNumber());
+            options.AddTemplateTag("totalPages", t => t.TotalPages());
         }));
     });
 });
