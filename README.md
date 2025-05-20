@@ -45,8 +45,8 @@ var document = Document.Create(container =>
         page.Margin(20);
         page.Content().Markdown(text, options => 
         {
-            BlockQuoteBorderColor = Colors.Red.Medium,
-            BlockQuoteBorderThickness = 5
+            options.BlockQuoteBorderColor = Colors.Red.Medium;
+            options.BlockQuoteBorderThickness = 5;
         });
     });
 });
