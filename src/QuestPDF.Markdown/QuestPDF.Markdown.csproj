@@ -17,6 +17,10 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <PackageOutputPath>../../package</PackageOutputPath>
     </PropertyGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="QuestPDF.Markdown.Tests" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Markdig" Version="0.41.1"/>

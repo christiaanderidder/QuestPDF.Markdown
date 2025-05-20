@@ -6,6 +6,7 @@ using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using QuestPDF.Infrastructure;
 using QuestPDF.Markdown.Compatibility;
+using QuestPDF.Markdown.Parsing;
 using SkiaSharp;
 
 namespace QuestPDF.Markdown;
@@ -31,6 +32,7 @@ public class ParsedMarkdownDocument
             .UsePipeTables()
             .UseTaskLists()
             .UseAutoLinks()
+            .Use<TemplateExtension>()
             .Build();
         
         _document = Markdig.Markdown.Parse(markdownText, pipeline);
