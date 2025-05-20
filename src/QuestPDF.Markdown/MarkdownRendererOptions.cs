@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -54,6 +55,8 @@ public class MarkdownRendererOptions
     /// Level is non zero-indexed and starts at 1 for the largest heading
     /// </remarks>
     public Func<int, int> CalculateHeadingSize { get; set; } = level => 28 - 2 * (level - 1);
+
+    public Dictionary<string, Action<TextDescriptor>> RenderTemplates { get; init; } = [];
 }
 
 public enum TableBorderStyle

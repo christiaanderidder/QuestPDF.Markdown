@@ -72,6 +72,34 @@ internal sealed class RenderTests
         }
     }
     
+    [Test]
+    public async Task RenderTag()
+    {
+        var options = new MarkdownRendererOptions
+        {
+            RenderTemplates = new()
+            {
+                ["currentPage"] = t => t.CurrentPageNumber(),
+                ["totalPages"] = t => t.TotalPages(),
+            }
+        };
+        
+        var markdown = ParsedMarkdownDocument.FromText("This is page {currentPage}/{totalPages}.");
+        
+        await markdown.DownloadImages().ConfigureAwait(false);
+        
+        var document = GenerateDocument(item => item.Markdown(markdown, options));
+        
+        try
+        {
+            await document.ShowInCompanionAsync().ConfigureAwait(true);    
+        }
+        catch(OperationCanceledException)
+        {
+            // Ignore
+        }
+    }
+    
     private static Document GenerateDocument(Action<IContainer> body)
     {
         return Document.Create(container =>
