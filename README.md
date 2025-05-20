@@ -23,6 +23,7 @@ var document = Document.Create(container =>
 {
     container.Page(page =>
     {
+        page.PageColor(Colors.White);
         page.Margin(20);
         page.Content().Markdown(text);
     });
@@ -40,6 +41,7 @@ var document = Document.Create(container =>
 {
     container.Page(page =>
     {
+        page.PageColor(Colors.White);
         page.Margin(20);
         page.Content().Markdown(text, options => 
         {
@@ -64,6 +66,7 @@ var document = Document.Create(container =>
 {
     container.Page(page =>
     {
+        page.PageColor(Colors.White);
         page.Margin(20);
         page.Content().Markdown(markdown);
     });
@@ -81,6 +84,7 @@ var document = Document.Create(container =>
 {
     container.Page(page =>
     {
+        page.PageColor(Colors.White);
         page.Margin(20);
         page.Content().Markdown(text, options =>
         {
