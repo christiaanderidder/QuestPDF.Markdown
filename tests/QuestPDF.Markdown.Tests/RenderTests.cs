@@ -11,7 +11,7 @@ namespace QuestPDF.Markdown.Tests;
 internal sealed class RenderTests
 {
     private string _markdown = string.Empty;
-    
+
     [SetUp]
     public void Setup()
     {
@@ -29,77 +29,65 @@ internal sealed class RenderTests
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
         await markdown.DownloadImages().ConfigureAwait(false);
-        
+
         var document = GenerateDocument(item => item.Markdown(markdown));
         document.GeneratePdf(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "test.pdf"));
     }
-    
+
     [Test]
     public async Task Render()
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
         await markdown.DownloadImages().ConfigureAwait(false);
-        
+
         var document = GenerateDocument(item => item.Markdown(markdown));
-        
+
         try
         {
             await document.ShowInCompanionAsync().ConfigureAwait(true);
         }
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // Ignore
         }
     }
-    
+
     [Test]
     public async Task RenderDebug()
     {
-        var options = new MarkdownRendererOptions { Debug = true };
-        
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
         await markdown.DownloadImages().ConfigureAwait(false);
-        
-        var document = GenerateDocument(item => item.Markdown(markdown, options));
-        
+
+        var document = GenerateDocument(item => item.Markdown(markdown, options => options.Debug = true));
+
         try
         {
-            await document.ShowInCompanionAsync().ConfigureAwait(true);    
+            await document.ShowInCompanionAsync().ConfigureAwait(true);
         }
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // Ignore
         }
     }
-    
+
     [Test]
     public async Task RenderTag()
     {
-        var options = new MarkdownRendererOptions
-        {
-            RenderTemplates = new()
-            {
-                ["currentPage"] = t => t.CurrentPageNumber(),
-                ["totalPages"] = t => t.TotalPages(),
-            }
-        };
-        
-        var markdown = ParsedMarkdownDocument.FromText("This is page {currentPage}/{totalPages}.");
-        
-        await markdown.DownloadImages().ConfigureAwait(false);
-        
-        var document = GenerateDocument(item => item.Markdown(markdown, options));
-        
+        var document = GenerateDocument(item => item.Markdown("This is page {currentPage}/{totalPages}.",
+            options => options
+                .AddTemplateTag("totalPages", t => t.CurrentPageNumber())
+                .AddTemplateTag("currentPage", t => t.TotalPages())));
+
         try
         {
-            await document.ShowInCompanionAsync().ConfigureAwait(true);    
+            await document.ShowInCompanionAsync().ConfigureAwait(true);
         }
-        catch(OperationCanceledException)
+        catch (OperationCanceledException)
         {
             // Ignore
         }
     }
-    
+
     private static Document GenerateDocument(Action<IContainer> body)
     {
         return Document.Create(container =>

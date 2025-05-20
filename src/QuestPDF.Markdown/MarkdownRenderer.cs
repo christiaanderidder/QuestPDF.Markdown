@@ -23,17 +23,25 @@ internal sealed class MarkdownRenderer : IComponent
     private readonly ParsedMarkdownDocument _document;
     private readonly TextProperties _textProperties = new();
 
-    private MarkdownRenderer(ParsedMarkdownDocument document, MarkdownRendererOptions? options)
+    private MarkdownRenderer(ParsedMarkdownDocument document, Action<MarkdownRendererOptions>? configure = null)
     {
         _document = document;
-        _options = options ?? new MarkdownRendererOptions();
+        _options = new MarkdownRendererOptions();
+        
+        configure?.Invoke(_options);
     }
     
-    internal static MarkdownRenderer Create(string markdownText, MarkdownRendererOptions? options = null) =>
-        new(ParsedMarkdownDocument.FromText(markdownText), options);
+    internal static MarkdownRenderer Create(string markdownText) =>
+        new(ParsedMarkdownDocument.FromText(markdownText));
+    
+    internal static MarkdownRenderer Create(string markdownText, Action<MarkdownRendererOptions> configure) =>
+        new(ParsedMarkdownDocument.FromText(markdownText), configure);
 
-    internal static MarkdownRenderer Create(ParsedMarkdownDocument document, MarkdownRendererOptions? options = null) =>
-        new(document, options);
+    internal static MarkdownRenderer Create(ParsedMarkdownDocument document) =>
+        new(document);
+
+    internal static MarkdownRenderer Create(ParsedMarkdownDocument document, Action<MarkdownRendererOptions> configure) =>
+        new(document, configure);
 
     public void Compose(IContainer pdf) => Render(_document.MarkdigDocument, pdf);
     

@@ -5,7 +5,7 @@ using QuestPDF.Markdown.Compatibility;
 
 namespace QuestPDF.Markdown.Parsing;
 
-internal sealed class TemplateParser : InlineParser 
+internal sealed class TemplateParser : InlineParser
 {
     private const char OpeningCharacter = '{';
     private const char ClosingCharacter = '}';

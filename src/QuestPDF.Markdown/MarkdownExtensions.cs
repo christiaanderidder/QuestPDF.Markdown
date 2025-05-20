@@ -10,22 +10,40 @@ public static class MarkdownExtensions
     /// </summary>
     /// <remarks>
     /// This method will not download and render external images.
-    /// To achieve this use <see cref="Markdown(QuestPDF.Infrastructure.IContainer,ParsedMarkdownDocument,QuestPDF.Markdown.MarkdownRendererOptions?)"/> instead.
     /// </remarks>
     /// <param name="container">The QuestPDF container to render in</param>
     /// <param name="markdown">The markdown text to render</param>
-    /// <param name="options">Optional configuration of the renderer</param>
-    public static void Markdown(this IContainer container, string markdown, MarkdownRendererOptions? options = null) =>
-        container.Component(MarkdownRenderer.Create(markdown, options));
+    public static void Markdown(this IContainer container, string markdown) =>
+        container.Component(MarkdownRenderer.Create(markdown));
+    
+    /// <summary>
+    /// Parses and renders a markdown text into a QuestPDF container
+    /// </summary>
+    /// <remarks>
+    /// This method will not download and render external images.
+    /// </remarks>
+    /// <param name="container">The QuestPDF container to render in</param>
+    /// <param name="markdown">The markdown text to render</param>
+    /// <param name="configure">Action to configure the renderer</param>
+    public static void Markdown(this IContainer container, string markdown, Action<MarkdownRendererOptions> configure) =>
+        container.Component(MarkdownRenderer.Create(markdown, configure));
     
     /// <summary>
     /// Renders a pre-parsed markdown document into a QuestPDF container
     /// </summary>
     /// <param name="container">The QuestPDF container to render in</param>
     /// <param name="markdown">An instance of ParsedMarkdownDocument, which allows for preloading external resources</param>
-    /// <param name="options">Optional configuration of the renderer</param>
-    public static void Markdown(this IContainer container, ParsedMarkdownDocument markdown, MarkdownRendererOptions? options = null) =>
-        container.Component(MarkdownRenderer.Create(markdown, options));
+    public static void Markdown(this IContainer container, ParsedMarkdownDocument markdown) =>
+        container.Component(MarkdownRenderer.Create(markdown));
+    
+    /// <summary>
+    /// Renders a pre-parsed markdown document into a QuestPDF container
+    /// </summary>
+    /// <param name="container">The QuestPDF container to render in</param>
+    /// <param name="markdown">An instance of ParsedMarkdownDocument, which allows for preloading external resources</param>
+    /// <param name="configure">Action to configure the renderer</param>
+    public static void Markdown(this IContainer container, ParsedMarkdownDocument markdown, Action<MarkdownRendererOptions> configure) =>
+        container.Component(MarkdownRenderer.Create(markdown, configure));
 
     internal static IContainer PaddedDebugArea(this IContainer container, string label, string color) =>
         container.DebugArea(label, color).PaddingTop(20);
