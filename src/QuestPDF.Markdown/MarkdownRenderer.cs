@@ -6,6 +6,8 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Markdown.Extensions;
+using QuestPDF.Markdown.Compatibility;
+using QuestPDF.Markdown.Parsing;
 
 namespace QuestPDF.Markdown;
 
@@ -21,17 +23,25 @@ internal sealed class MarkdownRenderer : IComponent
     private readonly ParsedMarkdownDocument _document;
     private readonly TextProperties _textProperties = new();
 
-    private MarkdownRenderer(ParsedMarkdownDocument document, MarkdownRendererOptions? options)
+    private MarkdownRenderer(ParsedMarkdownDocument document, Action<MarkdownRendererOptions>? configure = null)
     {
         _document = document;
-        _options = options ?? new MarkdownRendererOptions();
+        _options = new MarkdownRendererOptions();
+        
+        configure?.Invoke(_options);
     }
     
-    internal static MarkdownRenderer Create(string markdownText, MarkdownRendererOptions? options = null) =>
-        new(ParsedMarkdownDocument.FromText(markdownText), options);
+    internal static MarkdownRenderer Create(string markdownText) =>
+        new(ParsedMarkdownDocument.FromText(markdownText));
+    
+    internal static MarkdownRenderer Create(string markdownText, Action<MarkdownRendererOptions> configure) =>
+        new(ParsedMarkdownDocument.FromText(markdownText), configure);
 
-    internal static MarkdownRenderer Create(ParsedMarkdownDocument document, MarkdownRendererOptions? options = null) =>
-        new(document, options);
+    internal static MarkdownRenderer Create(ParsedMarkdownDocument document) =>
+        new(document);
+
+    internal static MarkdownRenderer Create(ParsedMarkdownDocument document, Action<MarkdownRendererOptions> configure) =>
+        new(document, configure);
 
     public void Compose(IContainer pdf) => Render(_document.MarkdigDocument, pdf);
     
@@ -266,6 +276,7 @@ internal sealed class MarkdownRenderer : IComponent
     
     private TextDescriptor Render(Inline inline, TextDescriptor text) => inline switch
     {
+        TemplateInline templateInline => Render(templateInline, text),
         LinkInline linkInline => Render(linkInline, text),
         EmphasisInline emphasisInline => Render(emphasisInline, text),
         AutolinkInline autolinkInline => Render(autolinkInline, text),
@@ -283,6 +294,14 @@ internal sealed class MarkdownRenderer : IComponent
     {
         text.Span($"Unknown LeafInline: {inline.GetType()}").BackgroundColor(Colors.Orange.Medium);
 
+        return text;
+    }
+
+    private TextDescriptor Render(TemplateInline inline, TextDescriptor text)
+    {
+        if (!_options.RenderTemplates.TryGetValue(inline.Tag, out var render) || render == null) return text;
+
+        render(text);
         return text;
     }
 

@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -54,6 +55,21 @@ public class MarkdownRendererOptions
     /// Level is non zero-indexed and starts at 1 for the largest heading
     /// </remarks>
     public Func<int, int> CalculateHeadingSize { get; set; } = level => 28 - 2 * (level - 1);
+
+    public Dictionary<string, Action<TextDescriptor>> RenderTemplates { get; } = [];
+
+    /// <summary>
+    /// Register a render function to replace a template tag in the markdown text with custom content
+    /// The tag 'my_tag' can be used in the markdown as {my_tag}
+    /// </summary>
+    /// <remarks>The rendered content must fit within a single line. Larger block elements are currently not supported</remarks>
+    /// <param name="tag">The tag to replace.</param>
+    /// <param name="render">The render function to render custom text in place of the template tag</param>
+    public MarkdownRendererOptions AddTemplateTag(string tag, Action<TextDescriptor> render)
+    {
+        RenderTemplates[tag] = render;
+        return this;
+    }
 }
 
 public enum TableBorderStyle
