@@ -6,6 +6,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Markdown.Extensions;
+using QuestPDF.Markdown.Compatibility;
 
 namespace QuestPDF.Markdown;
 

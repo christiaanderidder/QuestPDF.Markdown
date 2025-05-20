@@ -5,7 +5,7 @@ using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using QuestPDF.Infrastructure;
-using QuestPDF.Markdown.Extensions;
+using QuestPDF.Markdown.Compatibility;
 using SkiaSharp;
 
 namespace QuestPDF.Markdown;
