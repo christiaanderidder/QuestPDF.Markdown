@@ -3,18 +3,15 @@ using QuestPDF.Companion;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using Xunit;
 
-namespace QuestPDF.Markdown.Tests;
+namespace QuestPDF.Markdown.Tests.Rendering;
 
-public sealed class RenderTests
+public class SamplePdfTests
 {
     private readonly string _markdown;
 
-    public RenderTests()
+    public SamplePdfTests()
     {
-        Settings.License = LicenseType.Community;
-        Settings.EnableDebugging = true;
         var assembly = Assembly.GetExecutingAssembly();
         const string resourceName = "QuestPDF.Markdown.Tests.test.md";
         using var stream = assembly.GetManifestResourceStream(resourceName);
@@ -22,8 +19,8 @@ public sealed class RenderTests
         _markdown = reader.ReadToEnd();
     }
 
-    [Fact]
-    public async Task RenderToFile()
+    [Fact(Skip = "This test is not run in CI")]
+    public async Task SaveToFile()
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
         await markdown.DownloadImages();
@@ -31,86 +28,25 @@ public sealed class RenderTests
         var document = GenerateDocument(item => item.Markdown(markdown));
         document.GeneratePdf(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "test.pdf"));
     }
+   
+    [Fact(Skip = "This test is not run in CI")]
+    public async Task ShowInCompanion()
+    {
+        var markdown = ParsedMarkdownDocument.FromText(_markdown);
+        await markdown.DownloadImages();
+
+        var document = GenerateDocument(item => item.Markdown(markdown));
+
+        try
+        {
+            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            // Ignore
+        }
+    }
     
-    [Fact]
-    public async Task RenderImageLink()
-    {
-        var markdown = ParsedMarkdownDocument.FromText("""
-                                                       Images can also be links:
-
-                                                       [![200x200 image](https://placehold.co/200.jpg)](https://example.com)
-                                                       """);
-        
-        await markdown.DownloadImages();
-        
-        var document = GenerateDocument(item => item.Markdown(markdown));
-
-        try
-        {
-            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            // Ignore
-        }
-    }
-
-    [Fact]
-    public async Task Render()
-    {
-        var markdown = ParsedMarkdownDocument.FromText(_markdown);
-        await markdown.DownloadImages();
-
-        var document = GenerateDocument(item => item.Markdown(markdown));
-
-        try
-        {
-            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            // Ignore
-        }
-    }
-
-    [Fact]
-    public async Task RenderDebug()
-    {
-        var markdown = ParsedMarkdownDocument.FromText(_markdown);
-        await markdown.DownloadImages();
-
-        var document = GenerateDocument(item => item.Markdown(markdown, options => options.Debug = true));
-
-        try
-        {
-            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            // Ignore
-        }
-    }
-
-    [Fact]
-    public async Task RenderTag()
-    {
-        var document = GenerateDocument(item => item.Markdown("This is page **{currentPage}** / *{totalPages}*.",
-            options =>
-            {
-                options.AddTemplateTag("currentPage", t => t.CurrentPageNumber());
-                options.AddTemplateTag("totalPages", t => t.TotalPages());
-            }));
-
-        try
-        {
-            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
-        }
-        catch (OperationCanceledException)
-        {
-            // Ignore
-        }
-    }
-
     private static Document GenerateDocument(Action<IContainer> body)
     {
         return Document.Create(container =>

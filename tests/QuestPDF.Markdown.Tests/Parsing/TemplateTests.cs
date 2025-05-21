@@ -1,10 +1,9 @@
 using Markdig.Syntax;
 using QuestPDF.Markdown.Parsing;
-using Xunit;
 
-namespace QuestPDF.Markdown.Tests;
+namespace QuestPDF.Markdown.Tests.Parsing;
 
-public sealed class TemplateParsingTests
+public sealed class TemplateTests
 {
     [Fact]
     public void ParsesTemplate()
