@@ -33,6 +33,29 @@ internal sealed class RenderTests
         var document = GenerateDocument(item => item.Markdown(markdown));
         document.GeneratePdf(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "test.pdf"));
     }
+    
+    [Test]
+    public async Task RenderImageLink()
+    {
+        var markdown = ParsedMarkdownDocument.FromText("""
+                                                       Images can also be links:
+
+                                                       [![200x200 image](https://placehold.co/200.jpg)](https://example.com)
+                                                       """);
+        
+        await markdown.DownloadImages().ConfigureAwait(false);
+        
+        var document = GenerateDocument(item => item.Markdown(markdown));
+
+        try
+        {
+            await document.ShowInCompanionAsync().ConfigureAwait(true);
+        }
+        catch (OperationCanceledException)
+        {
+            // Ignore
+        }
+    }
 
     [Test]
     public async Task Render()
