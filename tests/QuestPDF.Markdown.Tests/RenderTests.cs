@@ -1,19 +1,17 @@
 using System.Reflection;
-using NUnit.Framework;
 using QuestPDF.Companion;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using Xunit;
 
 namespace QuestPDF.Markdown.Tests;
 
-[Explicit("These tests are disabled for automated workflows because they open a QuestPDF previewer window")]
-internal sealed class RenderTests
+public sealed class RenderTests
 {
-    private string _markdown = string.Empty;
+    private readonly string _markdown;
 
-    [SetUp]
-    public void Setup()
+    public RenderTests()
     {
         Settings.License = LicenseType.Community;
         Settings.EnableDebugging = true;
@@ -24,17 +22,17 @@ internal sealed class RenderTests
         _markdown = reader.ReadToEnd();
     }
 
-    [Test]
+    [Fact]
     public async Task RenderToFile()
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
-        await markdown.DownloadImages().ConfigureAwait(false);
+        await markdown.DownloadImages();
 
         var document = GenerateDocument(item => item.Markdown(markdown));
-        document.GeneratePdf(Path.Combine(TestContext.CurrentContext.TestDirectory, "..", "..", "..", "test.pdf"));
+        document.GeneratePdf(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "test.pdf"));
     }
     
-    [Test]
+    [Fact]
     public async Task RenderImageLink()
     {
         var markdown = ParsedMarkdownDocument.FromText("""
@@ -43,13 +41,13 @@ internal sealed class RenderTests
                                                        [![200x200 image](https://placehold.co/200.jpg)](https://example.com)
                                                        """);
         
-        await markdown.DownloadImages().ConfigureAwait(false);
+        await markdown.DownloadImages();
         
         var document = GenerateDocument(item => item.Markdown(markdown));
 
         try
         {
-            await document.ShowInCompanionAsync().ConfigureAwait(true);
+            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -57,17 +55,17 @@ internal sealed class RenderTests
         }
     }
 
-    [Test]
+    [Fact]
     public async Task Render()
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
-        await markdown.DownloadImages().ConfigureAwait(false);
+        await markdown.DownloadImages();
 
         var document = GenerateDocument(item => item.Markdown(markdown));
 
         try
         {
-            await document.ShowInCompanionAsync().ConfigureAwait(true);
+            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -75,17 +73,17 @@ internal sealed class RenderTests
         }
     }
 
-    [Test]
+    [Fact]
     public async Task RenderDebug()
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
-        await markdown.DownloadImages().ConfigureAwait(false);
+        await markdown.DownloadImages();
 
         var document = GenerateDocument(item => item.Markdown(markdown, options => options.Debug = true));
 
         try
         {
-            await document.ShowInCompanionAsync().ConfigureAwait(true);
+            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
         }
         catch (OperationCanceledException)
         {
@@ -93,7 +91,7 @@ internal sealed class RenderTests
         }
     }
 
-    [Test]
+    [Fact]
     public async Task RenderTag()
     {
         var document = GenerateDocument(item => item.Markdown("This is page **{currentPage}** / *{totalPages}*.",
@@ -105,7 +103,7 @@ internal sealed class RenderTests
 
         try
         {
-            await document.ShowInCompanionAsync().ConfigureAwait(true);
+            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
         }
         catch (OperationCanceledException)
         {

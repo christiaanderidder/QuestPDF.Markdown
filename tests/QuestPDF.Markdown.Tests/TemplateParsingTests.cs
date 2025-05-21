@@ -1,12 +1,12 @@
 using Markdig.Syntax;
-using NUnit.Framework;
 using QuestPDF.Markdown.Parsing;
+using Xunit;
 
 namespace QuestPDF.Markdown.Tests;
 
-internal sealed class TemplateParsingTests
+public sealed class TemplateParsingTests
 {
-    [Test]
+    [Fact]
     public void ParsesTemplate()
     {
         const string markdown = "This is a {template} test";
@@ -19,8 +19,8 @@ internal sealed class TemplateParsingTests
             .OfType<TemplateInline>()
             .Single();
         
-        Assert.That(block.Tag, Is.EqualTo("template"));
-        Assert.That(block.Span.Start, Is.EqualTo(11));
-        Assert.That(block.Span.End, Is.EqualTo(19));
+        Assert.Equal("template", block.Tag);
+        Assert.Equal(11, block.Span.Start);
+        Assert.Equal(19, block.Span.End);
     }
 }
