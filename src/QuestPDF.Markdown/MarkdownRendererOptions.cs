@@ -56,7 +56,7 @@ public class MarkdownRendererOptions
     /// </remarks>
     public Func<int, int> CalculateHeadingSize { get; set; } = level => 28 - 2 * (level - 1);
 
-    public Dictionary<string, Action<TextDescriptor>> RenderTemplates { get; } = [];
+    public Dictionary<string, Func<TextDescriptor, TextSpanDescriptor>> RenderTemplates { get; } = [];
 
     /// <summary>
     /// Register a render function to replace a template tag in the markdown text with custom content
@@ -65,7 +65,7 @@ public class MarkdownRendererOptions
     /// <remarks>The rendered content must fit within a single line. Larger block elements are currently not supported</remarks>
     /// <param name="tag">The tag to replace.</param>
     /// <param name="render">The render function to render custom text in place of the template tag</param>
-    public MarkdownRendererOptions AddTemplateTag(string tag, Action<TextDescriptor> render)
+    public MarkdownRendererOptions AddTemplateTag(string tag, Func<TextDescriptor, TextSpanDescriptor> render)
     {
         RenderTemplates[tag] = render;
         return this;
