@@ -7,19 +7,6 @@ namespace QuestPDF.Markdown.Tests.Rendering;
 public sealed class RenderTests
 {
     [Fact]
-    public async Task RendersTags()
-    {
-        var document = GenerateDocument(item => item.Markdown("This is page [**{currentPage}**](https://example.com) / *{totalPages}*.",
-            options =>
-            {
-                options.AddTemplateTag("currentPage", t => t.CurrentPageNumber());
-                options.AddTemplateTag("totalPages", t => t.TotalPages());
-            }));
-
-        await Verify(document);
-    }
-    
-    [Fact]
     public async Task RendersHeadings()
     {
         const string md = """
@@ -32,6 +19,64 @@ public sealed class RenderTests
                           """;
 
         var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
+    
+    [Fact]
+    public async Task RendersAlternativeHeadings()
+    {
+        const string md = """
+                          h1 heading
+                          ======
+                          h2 heading
+                          ------
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
+    
+    [Fact]
+    public async Task RendersLinks()
+    {
+        const string md = """
+                          Inline style link: [link](https://example.com)
+                          
+                          Inline-style link with title: [link](https://example.com "example title")
+                          
+                          Reference-style link with text: [link][ref]
+
+                          Reference-style link with number: [link][1]
+                          
+                          Reference-style link with link text: [link]
+                          
+                          Plaintext URL: https://example.com
+                          
+                          [ref]: https://example.com
+                          [1]: https://example.com
+                          [link]: https://example.com
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
+    
+    [Fact]
+    public async Task RendersTags()
+    {
+        const string md = """
+                          This is page [**{currentPage}**](https://example.com) / *{totalPages}*.
+                          """;
+        
+        var document = GenerateDocument(item => item.Markdown(md,
+            options =>
+            {
+                options.AddTemplateTag("currentPage", t => t.CurrentPageNumber());
+                options.AddTemplateTag("totalPages", t => t.TotalPages());
+            }));
 
         await Verify(document);
     }
