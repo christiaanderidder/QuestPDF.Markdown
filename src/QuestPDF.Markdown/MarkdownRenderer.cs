@@ -301,7 +301,8 @@ internal sealed class MarkdownRenderer : IComponent
     {
         if (!_options.RenderTemplates.TryGetValue(inline.Tag, out var render) || render == null) return text;
 
-        render(text);
+        render(text).ApplyStyles(_textProperties.TextStyles.ToList());
+
         return text;
     }
 
