@@ -397,16 +397,30 @@ internal sealed class MarkdownRenderer : IComponent
             text.Element(e =>
             {
                 // Image element wrapped in link
-                if(!_textProperties.LinkUrl.IsNullOrEmpty())
+                if (!_textProperties.LinkUrl.IsNullOrEmpty())
                     e = e.Hyperlink(_textProperties.LinkUrl);
-                
+
                 e.Width(image.Width * _options.ImageScalingFactor)
                     .Height(image.Height * _options.ImageScalingFactor)
                     .Image(image.Image)
                     .FitArea();
             });
 
-            text.Span(string.Empty).ApplyStyles(_textProperties.TextStyles.ToList());
+            return text;
+        }
+
+        // Regular links
+        if (!_textProperties.LinkUrl.IsNullOrEmpty())
+        {
+            text.Hyperlink(inline.ToString(), _textProperties.LinkUrl)
+                .ApplyStyles(_textProperties.TextStyles.ToList());
+
+            return text;
+        }
+
+        // Fallback to plain text
+        text.Span(inline.ToString())
+            .ApplyStyles(_textProperties.TextStyles.ToList());
 
         return text;
     }
@@ -417,18 +431,6 @@ internal sealed class MarkdownRenderer : IComponent
             .BackgroundColor(_options.CodeInlineBackground)
             .FontFamily(_options.CodeFont);
 
-            return text;
-        }
-
-        // Regular links
-        if (!_textProperties.LinkUrl.IsNullOrEmpty())
-        {
-            text.Hyperlink(inline.ToString(), _textProperties.LinkUrl).ApplyStyles(_textProperties.TextStyles.ToList());
-            return text;
-        }
-
-        // Fallback to plain text
-        text.Span(inline.ToString()).ApplyStyles(_textProperties.TextStyles.ToList());
         return text;
     }
 
