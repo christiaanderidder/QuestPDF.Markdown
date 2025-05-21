@@ -299,13 +299,15 @@ Reference-style:
 
 ![200x200 image with title](https://placehold.co/200.jpg "The title")
 
-Like links, Images also have a footnote style syntax
+Like links, Images also have a footnote style syntax with a reference later in the document defining the URL location:
 
 ![200x200 image with reference][id]
 
-With a reference later in the document defining the URL location:
-
 [id]:https://placehold.co/200.jpg "The title"
+
+Images can also be links:
+
+[![200x200 image](https://placehold.co/200.jpg)](https://example.com)
 
 ------
 
@@ -327,13 +329,15 @@ Reference-style:
 
 ![200x200 image with title](https://placehold.co/200.jpg "The title")
 
-Like links, Images also have a footnote style syntax
+Like links, Images also have a footnote style syntax with a reference later in the document defining the URL location:
 
 ![200x200 image with reference][id]
 
-With a reference later in the document defining the URL location:
-
 [id]:https://placehold.co/200.jpg "The title"
+
+Images can also be links:
+
+[![200x200 image](https://placehold.co/200.jpg)](https://example.com)
 
 ```
 

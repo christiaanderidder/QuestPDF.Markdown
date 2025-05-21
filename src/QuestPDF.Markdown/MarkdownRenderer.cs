@@ -313,15 +313,16 @@ internal sealed class MarkdownRenderer : IComponent
             .DecorationColor(_options.LinkTextColor)
             .Underline()
         );
-        _textProperties.LinkUrl = inline.Url;
-        _textProperties.IsImage = inline.IsImage;
+        
+        if (inline.IsImage) _textProperties.ImageUrl = inline.Url;
+        if (!inline.IsImage) _textProperties.LinkUrl = inline.Url;
 
         Render(inline as ContainerInline, text);
 
         // Pop any styles that were applied to the entire span off the stack
         _textProperties.TextStyles.Pop();
-        _textProperties.LinkUrl = null;
-        _textProperties.IsImage = false;
+        if (inline.IsImage) _textProperties.ImageUrl = null;
+        if (!inline.IsImage) _textProperties.LinkUrl = null;
 
         return text;
     }
@@ -381,29 +382,31 @@ internal sealed class MarkdownRenderer : IComponent
 
     private TextDescriptor Render(LiteralInline inline, TextDescriptor text)
     {
-        // Plain text
-        if (_textProperties.LinkUrl.IsNullOrEmpty())
+        if (!_textProperties.ImageUrl.IsNullOrEmpty())
         {
-            text.Span(inline.ToString()).ApplyStyles(_textProperties.TextStyles.ToList());
-            return text;
-        }
+            // Image could not be downloaded, display link to source
+            if (!_document.TryGetImageFromCache(_textProperties.ImageUrl, out var image))
+            {
+                text.Hyperlink(inline.ToString(), _textProperties.ImageUrl)
+                    .ApplyStyles(_textProperties.TextStyles.ToList());
 
-        // Regular links, or images that could not be downloaded
-        if (!_textProperties.IsImage || !_document.TryGetImageFromCache(_textProperties.LinkUrl, out var image))
-        {
-            text.Hyperlink(inline.ToString(), _textProperties.LinkUrl).ApplyStyles(_textProperties.TextStyles.ToList());
-            return text;
-        }
+                return text;
+            }
 
-        // Images
-        text.Element(e => e
-            .Width(image.Width * _options.ImageScalingFactor)
-            .Height(image.Height * _options.ImageScalingFactor)
-            .Image(image.Image)
-            .FitArea()
-        );
+            // Render image
+            text.Element(e =>
+            {
+                // Image element wrapped in link
+                if(!_textProperties.LinkUrl.IsNullOrEmpty())
+                    e = e.Hyperlink(_textProperties.LinkUrl);
+                
+                e.Width(image.Width * _options.ImageScalingFactor)
+                    .Height(image.Height * _options.ImageScalingFactor)
+                    .Image(image.Image)
+                    .FitArea();
+            });
 
-        text.Span(string.Empty).ApplyStyles(_textProperties.TextStyles.ToList());
+            text.Span(string.Empty).ApplyStyles(_textProperties.TextStyles.ToList());
 
         return text;
     }
@@ -414,6 +417,18 @@ internal sealed class MarkdownRenderer : IComponent
             .BackgroundColor(_options.CodeInlineBackground)
             .FontFamily(_options.CodeFont);
 
+            return text;
+        }
+
+        // Regular links
+        if (!_textProperties.LinkUrl.IsNullOrEmpty())
+        {
+            text.Hyperlink(inline.ToString(), _textProperties.LinkUrl).ApplyStyles(_textProperties.TextStyles.ToList());
+            return text;
+        }
+
+        // Fallback to plain text
+        text.Span(inline.ToString()).ApplyStyles(_textProperties.TextStyles.ToList());
         return text;
     }
 

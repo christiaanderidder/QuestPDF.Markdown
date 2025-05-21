@@ -6,5 +6,5 @@ internal sealed class TextProperties
 {
     public Stack<Func<TextSpanDescriptor, TextSpanDescriptor>> TextStyles { get; } = new();
     public string? LinkUrl { get; set; }
-    public bool IsImage { get; set; }
+    public string? ImageUrl { get; set; }
 }
