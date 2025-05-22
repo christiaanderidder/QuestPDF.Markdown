@@ -56,11 +56,6 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: "/language:${{matrix.language}}"
-
     - name: Test
       run: >
         dotnet test
@@ -68,3 +63,16 @@ jobs:
         --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
         --
         RunConfiguration.CollectSourceInformation=true
+        
+    - name: Upload Test Results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: verify-test-results
+        path: |
+          **/*.received.*
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
