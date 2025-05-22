@@ -56,18 +56,24 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
+    - name: Test
+      run: >
+        dotnet test
+        --no-build
+        --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+        --
+        RunConfiguration.CollectSourceInformation=true
+        
+    - name: Upload Test Results
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: verify-test-results
+        path: |
+          **/*.received.*
+          **/*.verified.*
+
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
       with:
         category: "/language:${{matrix.language}}"
-
-    - name: Test
-      run: dotnet test --no-build --verbosity normal --logger trx --results-directory "TestResults"
-
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      with:
-        name: dotnet-results
-        path: TestResults
-      # Use always() to always run this step to publish test results when there are test failures
-      if: ${{ always() }}
