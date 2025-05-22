@@ -88,7 +88,7 @@ public sealed class RenderTests
             container.Page(page =>
             {
                 page.PageColor(Colors.White);
-                page.Size(PageSizes.A4);
+                page.Size(PageSizes.A6);
                 page.Margin(1, Unit.Centimetre);
                 page.DefaultTextStyle(text =>
                 {
