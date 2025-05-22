@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using ImageMagick;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Markdown.Tests;
@@ -13,7 +14,7 @@ internal static class GlobalInitializer
         
         UseProjectRelativeDirectory("Verify");
         
-        VerifyImageMagick.RegisterComparers(threshold: 0.02);
+        VerifyImageMagick.RegisterComparers(threshold: 0.005, ErrorMetric.PerceptualHash);
         VerifyQuestPdf.Initialize();
     }
 }
