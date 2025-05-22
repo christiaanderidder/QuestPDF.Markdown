@@ -71,6 +71,7 @@ jobs:
         name: verify-test-results
         path: |
           **/*.received.*
+          **/*.verified.*
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
