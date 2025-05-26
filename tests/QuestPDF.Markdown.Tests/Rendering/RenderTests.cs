@@ -37,6 +37,24 @@ public sealed class RenderTests
 
         await Verify(document);
     }
+
+    [Fact]
+    public async Task RendersParagraphs()
+    {
+        const string md = """
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce tincidunt ullamcorper tellus quis rutrum. Mauris in nisl ornare, luctus mauris ut, scelerisque neque. Sed et lacinia dui. Pellentesque nec sagittis enim.
+                          
+                          Fusce egestas, tortor sit amet dictum malesuada, dui tortor venenatis tortor, et iaculis mi turpis in augue. Donec lobortis erat risus, sed viverra arcu aliquam vel.
+                          
+                          Nulla viverra, dui ut finibus feugiat, ante purus sagittis velit, eget dignissim erat mi at mi. Sed bibendum eu ipsum eget facilisis. Ut luctus lorem et tortor lacinia convallis. Nam malesuada ornare facilisis.
+                          
+                          Nullam scelerisque maximus pulvinar. Phasellus nec est venenatis, tincidunt ex vel, dictum nibh. Duis vel bibendum nibh. Praesent vehicula, tortor sit amet pharetra dapibus, tellus lacus lacinia mi, ac maximus metus ligula at sem.
+                          """;
+        
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
     
     [Fact]
     public async Task RendersLinks()
