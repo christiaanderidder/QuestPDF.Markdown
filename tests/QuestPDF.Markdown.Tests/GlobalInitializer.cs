@@ -14,7 +14,7 @@ internal static class GlobalInitializer
         
         UseProjectRelativeDirectory("Verify");
         
-        VerifyImageMagick.RegisterComparers(threshold: 0.015);
+        VerifyImageMagick.RegisterComparers();
         VerifyQuestPdf.Initialize();
     }
 }
