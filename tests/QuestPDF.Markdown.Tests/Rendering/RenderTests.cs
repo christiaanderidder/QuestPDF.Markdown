@@ -60,6 +60,28 @@ public sealed class RenderTests
     }
     
     [Fact]
+    public async Task RedersEmphasis()
+    {
+        const string md = """
+                          **This is bold text**
+                          
+                          __This is bold text__
+                          
+                          *This is italic text*
+                          
+                          _This is italic text_
+                          
+                          **This is bold and _italic_ text**
+                          
+                          ~~This is strikethrough text~~
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
+    
+    [Fact]
     public async Task RendersLinks()
     {
         const string md = """
