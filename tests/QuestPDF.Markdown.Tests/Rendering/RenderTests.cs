@@ -80,6 +80,24 @@ public sealed class RenderTests
 
         await Verify(document);
     }
+
+    [Fact]
+    public async Task RendersExtendedEmphasis()
+    {
+        const string md = """
+                          19^th^
+
+                          H~2~O
+
+                          ++Inserted text++
+
+                          ==Marked text==
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
     
     [Fact]
     public async Task RendersLinks()
