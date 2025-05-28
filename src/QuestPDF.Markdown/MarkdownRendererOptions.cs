@@ -46,11 +46,13 @@ public class MarkdownRendererOptions
 
     /// <summary>
     /// The maximum allowed width for rendered images, in points.
+    /// A value of 0 (the default) indicates no maximum width limit.
     /// </summary>
     public float MaxImageWidth { get; set; }
 
     /// <summary>
     /// The maximum allowed height for rendered images, in points.
+    /// A value of 0 (the default) indicates no maximum height limit.
     /// </summary>
     public float MaxImageHeight { get; set; }
 
