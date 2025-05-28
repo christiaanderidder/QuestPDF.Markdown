@@ -1,3 +1,4 @@
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -174,7 +175,7 @@ public sealed class RenderTests
                           ```
                           """;
 
-        var document = GenerateDocument(item => item.Markdown(md));
+        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = Fonts.Lato));
         
         await Verify(document);
     }
@@ -193,6 +194,42 @@ public sealed class RenderTests
         await markdown.DownloadImages();
         
         var document = GenerateDocument(item => item.Markdown(markdown));
+
+        await Verify(document);
+    }
+    
+    [Fact]
+    public async Task RendersImagesDownloadMaxSizeInvalid()
+    {
+        const string md = """
+                          ![Alt text](https://placehold.co/500x200.jpg)
+                          """;
+
+        var markdown = ParsedMarkdownDocument.FromText(md);
+        
+        await markdown.DownloadImages();
+        
+        var document = GenerateDocument(item => item.Markdown(markdown));
+
+        Assert.Throws<DocumentLayoutException>(() => document.GeneratePdf());
+    }
+    
+    [Fact]
+    public async Task RendersImagesDownloadMaxSizeValid()
+    {
+        const string md = """
+                          ![Alt text](https://placehold.co/500x200.jpg)
+                          """;
+
+        var markdown = ParsedMarkdownDocument.FromText(md);
+        
+        await markdown.DownloadImages();
+        
+        var document = GenerateDocument(item => item.Markdown(markdown, options =>
+        {
+            options.MaxImageWidth = 200;
+            options.MaxImageHeight = 50;
+        }));
 
         await Verify(document);
     }
@@ -268,7 +305,7 @@ public sealed class RenderTests
                           - List with `inline code` and **bold text**
                           """;
 
-        var document = GenerateDocument(item => item.Markdown(md));
+        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = Fonts.Lato));
 
         await Verify(document);
     }

@@ -411,20 +411,20 @@ internal sealed class MarkdownRenderer : IComponent
                 // Adjust dimensions to fit within max constraints
                 if (maxWidth > 0 || maxHeight > 0)
                 {
-                    const double Epsilon = 1e-6;
+                    const double epsilon = 1e-6;
                     
-                    bool widthNonZero = Math.Abs(scaledWidth) > Epsilon;
-                    bool heightNonZero = Math.Abs(scaledHeight) > Epsilon;
+                    var widthNonZero = Math.Abs(scaledWidth) > epsilon;
+                    var heightNonZero = Math.Abs(scaledHeight) > epsilon;
 
-                    double widthRatio = (maxWidth > 0 && widthNonZero)
+                    var widthRatio = (maxWidth > 0 && widthNonZero)
                         ? maxWidth / scaledWidth
                         : double.MaxValue;
 
-                    double heightRatio = (maxHeight > 0 && heightNonZero)
+                    var heightRatio = (maxHeight > 0 && heightNonZero)
                         ? maxHeight / scaledHeight
                         : double.MaxValue;
 
-                    double minRatio = Math.Min(widthRatio, heightRatio);
+                    var minRatio = Math.Min(widthRatio, heightRatio);
 
                     // Apply scaling only if necessary
                     if (minRatio < 1)
