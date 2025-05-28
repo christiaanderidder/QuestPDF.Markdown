@@ -124,14 +124,162 @@ public sealed class RenderTests
 
         await Verify(document);
     }
+
+    [Fact]
+    public async Task RendersLists()
+    {
+        const string md = """
+                          - Item 1
+                          - Item 2
+                            - Nested Item 2.1
+                            - Nested Item 2.2
+                          - Item 3
+
+                          1. First
+                          2. Second
+                          3. Third
+                             1. Subitem 3.1
+                             2. Subitem 3.2
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+        await Verify(document);
+    }
+
+    [Fact]
+    public async Task RendersBlockquotes()
+    {
+        const string md = """
+                          > Blockquote level 1
+                          >
+                          > > Blockquote level 2
+                          >
+                          > Back to level 1
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+        
+        await Verify(document);
+    }
+
+    [Fact]
+    public async Task RendersCodeBlocksAndInlineCode()
+    {
+        const string md = """
+                          Inline code: `var x = 1;`
+
+                          ```
+                          // Fenced code block
+                          Console.WriteLine("Hello, world!");
+                          ```
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+        
+        await Verify(document);
+    }
+
+    [Fact]
+    public async Task RendersImagesDownload()
+    {
+        const string md = """
+                          ![Alt text](https://placehold.co/100x50.jpg "Optional title")
+
+                          Inline image: ![Logo](https://placehold.co/100x50.jpg)
+                          """;
+
+        var markdown = ParsedMarkdownDocument.FromText(md);
+        
+        await markdown.DownloadImages();
+        
+        var document = GenerateDocument(item => item.Markdown(markdown));
+
+        await Verify(document);
+    }
     
+    [Fact]
+    public async Task RendersImagesNoDownload()
+    {
+        const string md = """
+                          ![Alt text](https://placehold.co/100x50.jpg "Optional title")
+
+                          Inline image: ![Logo](https://placehold.co/100x50.jpg)
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
+
+    [Fact]
+    public async Task RendersHorizontalRules()
+    {
+        const string md = """
+                          First paragraph.
+
+                          ---
+
+                          Second paragraph.
+
+                          ***
+
+                          Third paragraph.
+
+                          ___
+
+                          Fourth paragraph.
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
+
+    [Fact]
+    public async Task RendersTables()
+    {
+        const string md = """
+                          | Header 1 | Header 2 | Header 3 |
+                          |----------|:--------:|---------:|
+                          | Cell 1   | Cell 2   | Cell 3   |
+                          | Cell 4   | Cell 5   | Cell 6   |
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
+
+    [Fact]
+    public async Task RendersNestedElements()
+    {
+        const string md = """
+                          1. List item with paragraph
+
+                             This is a paragraph inside a list item.
+
+                             > Blockquote inside list
+                             >
+                             > - Nested list in blockquote
+                             > - Another item
+
+                          2. Another item
+
+                          - List with `inline code` and **bold text**
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
+
     [Fact]
     public async Task RendersTags()
     {
         const string md = """
                           This is page [**{currentPage}**](https://example.com) / *{totalPages}*.
                           """;
-        
+
         var document = GenerateDocument(item => item.Markdown(md,
             options =>
             {
