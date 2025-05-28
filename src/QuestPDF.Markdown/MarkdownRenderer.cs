@@ -5,8 +5,8 @@ using Markdig.Syntax.Inlines;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QuestPDF.Markdown.Extensions;
 using QuestPDF.Markdown.Compatibility;
+using QuestPDF.Markdown.Extensions;
 using QuestPDF.Markdown.Parsing;
 
 namespace QuestPDF.Markdown;
@@ -27,13 +27,13 @@ internal sealed class MarkdownRenderer : IComponent
     {
         _document = document;
         _options = new MarkdownRendererOptions();
-        
+
         configure?.Invoke(_options);
     }
-    
+
     internal static MarkdownRenderer Create(string markdownText) =>
         new(ParsedMarkdownDocument.FromText(markdownText));
-    
+
     internal static MarkdownRenderer Create(string markdownText, Action<MarkdownRendererOptions> configure) =>
         new(ParsedMarkdownDocument.FromText(markdownText), configure);
 
@@ -44,11 +44,11 @@ internal sealed class MarkdownRenderer : IComponent
         new(document, configure);
 
     public void Compose(IContainer pdf) => Render(_document.MarkdigDocument, pdf);
-    
+
     private void Render(Block block, IContainer pdf)
     {
-        if(_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, block is LeafBlock ? Colors.Red.Medium : Colors.Blue.Medium);
-        
+        if (_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, block is LeafBlock ? Colors.Red.Medium : Colors.Blue.Medium);
+
         _ = block switch
         {
             QuoteBlock quoteBlock => Render(quoteBlock, pdf),
@@ -98,7 +98,7 @@ internal sealed class MarkdownRenderer : IComponent
                     cd.RelativeColumn(col.Width > 0 ? col.Width : 1f);
                 }
             });
-            
+
             var rows = table.OfType<TableRow>().ToList();
             RenderTableRows(table, rows, td);
         });
@@ -113,7 +113,7 @@ internal sealed class MarkdownRenderer : IComponent
         {
             if (row.IsHeader) _textProperties.TextStyles.Push(t => t.Bold());
             var isLast = rowIdx + 1 == table.Count;
-        
+
             var cells = row.OfType<TableCell>().ToList();
             RenderTableCells(table, td, cells, rowIdx, row, isLast);
 
@@ -130,11 +130,11 @@ internal sealed class MarkdownRenderer : IComponent
         {
             var cd = table.ColumnDefinitions[(int)columnIdx];
             RenderTableCell(cell, rowIdx, columnIdx, row.IsHeader, isLast, td, cd);
-            
+
             columnIdx++;
         }
     }
-    
+
     private IContainer RenderTableCell(TableCell cell, uint rowIdx, uint columnIdx, bool isHeader, bool isLast, TableDescriptor table, TableColumnDefinition columnDefinition)
     {
         var container = table.Cell()
@@ -147,7 +147,7 @@ internal sealed class MarkdownRenderer : IComponent
                 ? _options.TableEvenRowBackgroundColor
                 : _options.TableOddRowBackgroundColor)
             .Padding(5);
-        
+
         switch (columnDefinition.Alignment)
         {
             case TableColumnAlign.Left:
@@ -160,7 +160,7 @@ internal sealed class MarkdownRenderer : IComponent
                 container = container.AlignRight();
                 break;
         }
-        
+
         return Render(cell, container);
     }
 
@@ -179,17 +179,17 @@ internal sealed class MarkdownRenderer : IComponent
                     Render(item, text);
                 }
             });
-            
+
         }
         else if (block.Lines.Count != 0)
         {
             pdf.Text(block.Lines.ToString())
                 .ApplyStyles(_textProperties.TextStyles.ToList());
         }
-        
+
         return pdf;
     }
-    
+
     private TextDescriptor Render(ContainerInline inline, TextDescriptor text)
     {
         foreach (var item in inline)
@@ -264,16 +264,16 @@ internal sealed class MarkdownRenderer : IComponent
     {
         // Push any styles that should be applied to the entire block on the stack
         _textProperties.TextStyles.Push(t => t.FontFamily(_options.CodeFont));
-        
+
         pdf = pdf.Background(_options.CodeBlockBackground).Padding(5);
         pdf = Render(block as LeafBlock, pdf);
-        
+
         // Pop any styles that were applied to the entire block off the stack
         _textProperties.TextStyles.Pop();
 
         return pdf;
     }
-    
+
     private TextDescriptor Render(Inline inline, TextDescriptor text) => inline switch
     {
         TemplateInline templateInline => Render(templateInline, text),
@@ -314,7 +314,7 @@ internal sealed class MarkdownRenderer : IComponent
             .DecorationColor(_options.LinkTextColor)
             .Underline()
         );
-        
+
         if (inline.IsImage) _textProperties.ImageUrl = inline.Url;
         if (!inline.IsImage) _textProperties.LinkUrl = inline.Url;
 
@@ -352,7 +352,7 @@ internal sealed class MarkdownRenderer : IComponent
         Render(inline as ContainerInline, text);
 
         _textProperties.TextStyles.Pop();
-        
+
         return text;
     }
 
@@ -360,7 +360,7 @@ internal sealed class MarkdownRenderer : IComponent
     {
         var linkSpan = text.Hyperlink(inline.Url, inline.Url);
         linkSpan.ApplyStyles(_textProperties.TextStyles.ToList());
-        
+
         return text;
     }
 
@@ -369,7 +369,7 @@ internal sealed class MarkdownRenderer : IComponent
         // Only add a line break within a paragraph if trailing spaces or a backslash are used.
         if (inline.IsBackslash || inline.IsHard) text.Span("\n");
         else text.Span(" ");
-        
+
         return text;
     }
 
@@ -401,8 +401,31 @@ internal sealed class MarkdownRenderer : IComponent
                 if (!_textProperties.LinkUrl.IsNullOrEmpty())
                     e = e.Hyperlink(_textProperties.LinkUrl);
 
-                e.Width(image.Width * _options.ImageScalingFactor)
-                    .Height(image.Height * _options.ImageScalingFactor)
+                double scaledWidth = image.Width * _options.ImageScalingFactor;
+                double scaledHeight = image.Height * _options.ImageScalingFactor;
+
+                // Get maximum allowed dimensions from options
+                double maxWidth = _options.MaxImageWidth;
+                double maxHeight = _options.MaxImageHeight;
+
+                // Adjust dimensions to fit within max constraints
+                if (maxWidth > 0 || maxHeight > 0)
+                {
+                    double widthRatio = maxWidth > 0 ? maxWidth / scaledWidth : double.MaxValue;
+                    double heightRatio = maxHeight > 0 ? maxHeight / scaledHeight : double.MaxValue;
+                    double minRatio = Math.Min(widthRatio, heightRatio);
+
+                    // Apply scaling only if necessary
+                    if (minRatio < 1)
+                    {
+                        scaledWidth *= minRatio;
+                        scaledHeight *= minRatio;
+                    }
+                }
+
+                // Set adjusted dimensions and render
+                e.Width((float)scaledWidth)
+                    .Height((float)scaledHeight)
                     .Image(image.Image)
                     .FitArea();
             });
@@ -438,7 +461,7 @@ internal sealed class MarkdownRenderer : IComponent
     private static TextDescriptor Render(HtmlEntityInline inline, TextDescriptor text)
     {
         text.Span(inline.Transcoded.ToString());
-        
+
         return text;
     }
 }
