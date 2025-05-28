@@ -15,6 +15,9 @@
 **/.idea/**/sqlDataSources.xml
 **/.idea/**/dynamic.xml
 
+# Android files
+**/.idea/**/AndroidProjectSystem.xml
+
 # Rider
 # Rider auto-generates .iml files, and contentModel.xml
 **/.idea/**/*.iml
