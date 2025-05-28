@@ -175,7 +175,7 @@ public sealed class RenderTests
                           ```
                           """;
 
-        var document = GenerateDocument(item => item.Markdown(md));
+        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = Fonts.Lato));
         
         await Verify(document);
     }
@@ -305,7 +305,7 @@ public sealed class RenderTests
                           - List with `inline code` and **bold text**
                           """;
 
-        var document = GenerateDocument(item => item.Markdown(md));
+        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = Fonts.Lato));
 
         await Verify(document);
     }
