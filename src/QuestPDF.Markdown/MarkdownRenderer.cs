@@ -229,8 +229,10 @@ internal sealed class MarkdownRenderer : IComponent
         pdf.Row(li =>
         {
             li.Spacing(5);
-            li.AutoItem().PaddingLeft(10)
-                .Text(list.IsOrdered ? $"{block.Order}{list.OrderedDelimiter}" : _options.UnorderedListGlyph);
+            var delimiter = li.AutoItem().PaddingLeft(10);
+            
+            if (list.IsOrdered) delimiter.Text($"{block.Order}{list.OrderedDelimiter}");
+            else delimiter.Text(_options.UnorderedListGlyph).FontFamily(_options.UnicodeGlyphFont);
 
             Render(block as ContainerBlock, li.RelativeItem());
         });
