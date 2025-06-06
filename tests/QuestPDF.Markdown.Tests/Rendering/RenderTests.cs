@@ -7,6 +7,9 @@ namespace QuestPDF.Markdown.Tests.Rendering;
 
 public sealed class RenderTests
 {
+    const string NotoSansMono = "Noto Sans Mono";
+    const string NotoSansSymbols2 = "Noto Sans Symbols 2";
+    
     [Fact]
     public async Task RendersHeadings()
     {
@@ -141,9 +144,19 @@ public sealed class RenderTests
                           3. Third
                              1. Subitem 3.1
                              2. Subitem 3.2
+                             
+                          - [ ] Task list item 1
+                          - [x] Task list item 2
+                          - [ ] Task list item 3
                           """;
 
-        var document = GenerateDocument(item => item.Markdown(md));
+        var document = GenerateDocument(item => item.Markdown(md, options =>
+        {
+            options.UnicodeGlyphFont = NotoSansSymbols2;
+            options.UnorderedListGlyph = "🞴";
+            options.TaskListCheckedGlyph = "🞚";
+            options.TaskListUncheckedGlyph = "◇";
+        }));
         await Verify(document);
     }
 
@@ -175,7 +188,7 @@ public sealed class RenderTests
                           ```
                           """;
 
-        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = Fonts.Lato));
+        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = NotoSansMono));
         
         await Verify(document);
     }
@@ -305,7 +318,7 @@ public sealed class RenderTests
                           - List with `inline code` and **bold text**
                           """;
 
-        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = Fonts.Lato));
+        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = NotoSansMono));
 
         await Verify(document);
     }

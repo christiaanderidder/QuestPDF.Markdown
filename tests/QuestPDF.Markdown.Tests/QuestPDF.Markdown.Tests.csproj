@@ -36,9 +36,7 @@
 
     <ItemGroup>
       <EmbeddedResource Include="test.md" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Verify\" />
+      <EmbeddedResource Include="Fonts/NotoSansMono-Regular.ttf" />
+      <EmbeddedResource Include="Fonts/NotoSansSymbols2-Regular.ttf" />
     </ItemGroup>
 </Project>
