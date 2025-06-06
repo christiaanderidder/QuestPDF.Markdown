@@ -23,14 +23,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Markdig" Version="0.41.1"/>
-        <PackageReference Include="QuestPDF" Version="2025.5.0" />
-        <PackageReference Include="SkiaSharp" Version="3.119.0" />
+        <PackageReference Include="Markdig" />
+        <PackageReference Include="QuestPDF" />
+        <PackageReference Include="SkiaSharp" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="../../LICENSE" Pack="true" PackagePath=""/>
-        <None Include="../../README.md" Pack="true" PackagePath=""/>
-        <None Include="../../img/logo.png" Pack="true" PackagePath=""/>
+        <None Include="../../LICENSE" Pack="true" PackagePath="" />
+        <None Include="../../README.md" Pack="true" PackagePath="" />
+        <None Include="../../img/logo.png" Pack="true" PackagePath="" />
     </ItemGroup>
+    
 </Project>
