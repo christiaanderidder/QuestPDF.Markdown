@@ -60,6 +60,8 @@ public class MarkdownRendererOptions
     public float ListItemSpacing { get; set; } = 5;
     public string UnorderedListGlyph { get; set; } = "•";
 
+    public Color HeadingTextColor { get; set; } = Colors.Black;
+    
     /// <summary>
     /// The formula used to calculate heading sizes based on their level.
     /// </summary>
