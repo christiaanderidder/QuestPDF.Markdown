@@ -31,7 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="../../src/QuestPDF.Markdown/QuestPDF.Markdown.csproj"/>
+        <ProjectReference Include="../../src/QuestPDF.Markdown/QuestPDF.Markdown.csproj" />
     </ItemGroup>
 
     <ItemGroup>
