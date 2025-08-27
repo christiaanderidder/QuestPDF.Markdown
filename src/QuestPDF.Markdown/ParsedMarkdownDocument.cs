@@ -1,6 +1,3 @@
-using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
-using System.Text.RegularExpressions;
 using Markdig;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -8,6 +5,9 @@ using QuestPDF.Infrastructure;
 using QuestPDF.Markdown.Compatibility;
 using QuestPDF.Markdown.Parsing;
 using SkiaSharp;
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
 
 namespace QuestPDF.Markdown;
 
@@ -18,12 +18,13 @@ namespace QuestPDF.Markdown;
 public class ParsedMarkdownDocument
 {
     private readonly MarkdownDocument _document;
+    private readonly string? _documentPath;
     private readonly ConcurrentDictionary<string, ImageWithDimensions> _imageCache = new();
     private static readonly Regex DataUri = new(@"data:image\/.+?;base64,(?<data>.+)", RegexOptions.Compiled, TimeSpan.FromMilliseconds(100));
 
     private static readonly HttpClient HttpClient = new();
 
-    private ParsedMarkdownDocument(string markdownText)
+    private ParsedMarkdownDocument(string markdownText, string? documentPath)
     {
         var pipeline = new MarkdownPipelineBuilder()
             .DisableHtml()
@@ -34,8 +35,10 @@ public class ParsedMarkdownDocument
             .UseAutoLinks()
             .Use<TemplateExtension>()
             .Build();
-        
+
         _document = Markdig.Markdown.Parse(markdownText, pipeline);
+        _documentPath = documentPath;
+
     }
 
     /// <summary>
@@ -47,7 +50,7 @@ public class ParsedMarkdownDocument
     {
         var parallelism = Math.Max(1, imageDownloaderMaxParallelism);
         var semaphore = new SemaphoreSlim(parallelism);
-        
+
         var urls = _document.Descendants<LinkInline>()
             .Where(l => l.IsImage && l.Url != null)
             .Select(l => l.Url)
@@ -57,9 +60,9 @@ public class ParsedMarkdownDocument
         var tasks = urls.Select([SuppressMessage("ReSharper", "AccessToDisposedClosure")] async (url) =>
         {
             if (url == null) return;
-            
+
             await semaphore.WaitAsync().ConfigureAwait(false);
-            
+
             try
             {
                 var (success, imageData) = await GetImageData(httpClient, url).ConfigureAwait(false);
@@ -85,15 +88,25 @@ public class ParsedMarkdownDocument
         semaphore.Dispose();
     }
 
-    private static async Task<(bool Success, byte[] ImageData)> GetImageData(HttpClient? httpClient, string url)
+    private async Task<(bool Success, byte[] ImageData)> GetImageData(HttpClient? httpClient, string url)
     {
         // Check for Base64 data URI first, as this might exceed Uri.
         var base64Match = DataUri.Match(url);
         if (base64Match.Success && base64Match.Groups["data"].Success)
             return (true, Convert.FromBase64String(base64Match.Groups["data"].Value));
-        
+
         if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
             return (true, await DownloadImage(httpClient, uri).ConfigureAwait(false));
+
+        if (_documentPath is not null && !Path.IsPathRooted(url))
+            url = Path.GetFullPath(url, Path.GetDirectoryName(_documentPath) ?? "");
+        if (File.Exists(url))
+        {
+            using var stream = File.OpenRead(url);
+            var result = new byte[stream.Length];
+            await stream.ReadAsync(result, 0, (int)stream.Length).ConfigureAwait(false);
+            return (true, result);
+        }
 
         return (false, []);
     }
@@ -109,7 +122,7 @@ public class ParsedMarkdownDocument
     }
 
     internal MarkdownDocument MarkdigDocument => _document;
-    
+
     internal bool TryGetImageFromCache(string url, [MaybeNullWhen(false)] out ImageWithDimensions image)
     {
         return _imageCache.TryGetValue(url, out image);
@@ -120,5 +133,7 @@ public class ParsedMarkdownDocument
     /// </summary>
     /// <param name="markdownText">The markdown text</param>
     /// <returns>An instance of ParsesMarkdownDocument</returns>
-    public static ParsedMarkdownDocument FromText(string markdownText) => new(markdownText);
+    public static ParsedMarkdownDocument FromText(string markdownText, string? documentPath) => new(markdownText, documentPath);
+
+    public static ParsedMarkdownDocument FromFile(string filePath) => new(File.ReadAllText(filePath), filePath);
 }
