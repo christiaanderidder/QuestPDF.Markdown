@@ -1,0 +1,13 @@
+﻿{
+  Pages: 1,
+  Metadata: {
+    CreationDate: DateTimeOffset_1,
+    ModifiedDate: DateTimeOffset_1
+  },
+  Settings: {
+    ContentDirection: LeftToRight,
+    PdfA: false,
+    ImageCompressionQuality: High,
+    ImageRasterDpi: 288
+  }
+}

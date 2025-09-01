@@ -290,9 +290,29 @@ public sealed class RenderTests
     {
         const string md = """
                           | Header 1 | Header 2 | Header 3 |
-                          |----------|:--------:|---------:|
+                          |:---------|:--------:|---------:|
                           | Cell 1   | Cell 2   | Cell 3   |
                           | Cell 4   | Cell 5   | Cell 6   |
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
+
+        await Verify(document);
+    }
+
+    [Fact]
+    public async Task RendersGridTables()
+    {
+        const string md = """
+                          +---+---+---+
+                          | AAA \ | B |
+                          + AAA \ +---+
+                          | AAA   | C |
+                          +===+===+===+
+                          | DDDDDDDDD |
+                          +---+---+---+
+                          | E | F | G |
+                          +---+---+---+
                           """;
 
         var document = GenerateDocument(item => item.Markdown(md));
@@ -336,6 +356,24 @@ public sealed class RenderTests
                 options.AddTemplateTag("currentPage", t => t.CurrentPageNumber());
                 options.AddTemplateTag("totalPages", t => t.TotalPages());
             }));
+
+        await Verify(document);
+    }
+
+    [Fact]
+    public async Task RendersHtmlEntities()
+    {
+        const string md = """
+                          Basic entities: &amp; &lt; &gt; &quot; &apos;
+                          
+                          Named entities: &copy; &reg; &trade; &mdash; &ndash; &hellip; &euro;
+                          
+                          Numeric entities: &#169; &#174; &#8482; &#8212; &#8211; &#8230; &#8364;
+                          
+                          Hex entities: &#x00A9; &#x00AE; &#x2122; &#x2014; &#x2013; &#x2026; &#x20AC;
+                          """;
+
+        var document = GenerateDocument(item => item.Markdown(md));
 
         await Verify(document);
     }
