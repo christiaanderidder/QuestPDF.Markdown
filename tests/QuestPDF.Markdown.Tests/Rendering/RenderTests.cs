@@ -212,6 +212,70 @@ public sealed class RenderTests
     }
     
     [Fact]
+    public async Task RendersImagesDownloadBase64()
+    {
+        const string md = """
+                          ![Alt text](data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAyAGQDASIAAhEBAxEB/8QAGgABAAMBAQEAAAAAAAAAAAAAAAIDBAUGB//EACcQAAEEAQMDBAMBAAAAAAAAAAABAgMEEQUSExQhUSIxQWEGMnGh/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/APvgAAAAAAAAAAAAAAAAAAAADla7qcunwKsFd0rkTcrlT0NTOO6+fos1C7LFJVr1WMfZsZ271Xa1ETKquCr8mV79MlrxQTSySomONmUTCovcqt8q2KGoxVp3NiRzJItuH4VMZRADtZlihnjmhZ10crYUY1fS5Xfqv89zTSu2OvdSvMibNx8rHRKu1yZwvv8AJypqVqw6xqLYHtk6iKaOF3ZytYmO/hVz/hvqJLc1nrXQSwQxw8bUlTa5yquV7eAOk+1CydYXyNbIjOTDu3p85JV5mWIWSxO3RvTLVxjKGDVtMdqUjGyyNZAxMt2plyv+8/H18m6skrazEn2LKiYXZ2Rf4By6F+5csrxrSSukjm7VcvJtRcZwQm1W2rbVitBE6nWerHbnKj3491T4KHwJZtVEqaZJTljmSSSVWI1EanumU/bJF0dqtUv6eypLI6d7+KRqeja7yvxgD0UMjZYmSMXLHtRyfxSZTTh6epDDnPGxrM+cJguAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/9k=)
+                          """;
+
+        var markdown = ParsedMarkdownDocument.FromText(md);
+        
+        await markdown.DownloadImages();
+        
+        var document = GenerateDocument(item => item.Markdown(markdown));
+
+        await Verify(document);
+    }
+    
+    [Fact]
+    public async Task RendersImagesDownloadLocal()
+    {
+        const string md = """
+                          ![Alt text](./local.jpg)
+                          """;
+
+        var markdown = ParsedMarkdownDocument.FromText(md);
+        
+        await markdown.DownloadImages(safeRootPath: Path.Combine(AppContext.BaseDirectory, "Images"));
+        
+        var document = GenerateDocument(item => item.Markdown(markdown));
+
+        await Verify(document);
+    }
+    
+    [Fact]
+    public async Task RendersImagesDownloadLocalNoRoot()
+    {
+        const string md = """
+                          ![Alt text](./local.jpg)
+                          """;
+
+        var markdown = ParsedMarkdownDocument.FromText(md);
+        
+        await markdown.DownloadImages();
+        
+        var document = GenerateDocument(item => item.Markdown(markdown));
+
+        await Verify(document);
+    }
+    
+    [Fact]
+    public async Task RendersImagesDownloadLocalPathTraversal()
+    {
+        const string md = """
+                          ![Alt text](../../local.jpg)
+                          """;
+
+        var markdown = ParsedMarkdownDocument.FromText(md);
+        
+        await markdown.DownloadImages(safeRootPath: Path.Combine(AppContext.BaseDirectory, "Images"));
+        
+        var document = GenerateDocument(item => item.Markdown(markdown));
+
+        await Verify(document);
+    }
+    
+    [Fact]
     public async Task RendersImagesDownloadMaxSizeInvalid()
     {
         const string md = """

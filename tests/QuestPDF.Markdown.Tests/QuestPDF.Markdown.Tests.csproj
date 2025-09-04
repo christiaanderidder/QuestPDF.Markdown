@@ -38,5 +38,6 @@
       <EmbeddedResource Include="test.md" />
       <EmbeddedResource Include="Fonts/NotoSansMono-Regular.ttf" />
       <EmbeddedResource Include="Fonts/NotoSansSymbols2-Regular.ttf" />
+      <None Update="Images/local.jpg" CopyToOutputDirectory="Always" />
     </ItemGroup>
 </Project>
