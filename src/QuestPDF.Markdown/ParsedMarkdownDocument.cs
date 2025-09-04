@@ -43,7 +43,8 @@ public class ParsedMarkdownDocument
     /// </summary>
     /// <param name="imageDownloaderMaxParallelism">Optionally provide the maximum number of request to execute in parallel</param>
     /// <param name="httpClient">Optionally provide your own HttpClient instance used to download images</param>
-    public async Task DownloadImages(int imageDownloaderMaxParallelism = 4, HttpClient? httpClient = null)
+    /// <param name="safeRootPath">Optionally provide a path from which local relative image paths are allowed to be loaded, leaving this empty disables local image loading</param>
+    public async Task DownloadImages(int imageDownloaderMaxParallelism = 4, HttpClient? httpClient = null, string safeRootPath = "")
     {
         var parallelism = Math.Max(1, imageDownloaderMaxParallelism);
         var semaphore = new SemaphoreSlim(parallelism);
@@ -62,7 +63,7 @@ public class ParsedMarkdownDocument
             
             try
             {
-                var (success, imageData) = await GetImageData(httpClient, url).ConfigureAwait(false);
+                var (success, imageData) = await GetImageData(httpClient, url, safeRootPath).ConfigureAwait(false);
                 if (!success) return;
 
                 // QuestPDF does not allow accessing image dimensions on loaded images
@@ -85,17 +86,43 @@ public class ParsedMarkdownDocument
         semaphore.Dispose();
     }
 
-    private static async Task<(bool Success, byte[] ImageData)> GetImageData(HttpClient? httpClient, string url)
+    private static async Task<(bool Success, byte[] ImageData)> GetImageData(HttpClient? httpClient, string url, string safeRootPath)
     {
-        // Check for Base64 data URI first, as this might exceed Uri.
+        // Check for Base64 data URI first, as this might exceed Uri size
         var base64Match = DataUri.Match(url);
         if (base64Match.Success && base64Match.Groups["data"].Success)
             return (true, Convert.FromBase64String(base64Match.Groups["data"].Value));
-        
+
+        // Check for valid external URI
         if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
             return (true, await DownloadImage(httpClient, uri).ConfigureAwait(false));
+        
+        // Check for valid local file path relative to safe root
+        if (!string.IsNullOrEmpty(safeRootPath) && TryGetLocalPath(url, safeRootPath, out var path))
+            return (true, await CompatibilityShims.ReadAllBytesAsync(path).ConfigureAwait(false));
 
         return (false, []);
+    }
+
+    private static bool TryGetLocalPath(string imagePath, string safeRootPath, out string safeImagePath)
+    {
+        safeImagePath = string.Empty;
+        
+        if (imagePath.IndexOfAny(Path.GetInvalidPathChars()) != -1)
+            return false;
+
+        // Combine and resolve absolute path
+        var combinedPath = Path.GetFullPath(Path.Combine(safeRootPath, imagePath));
+
+        // Ensure the combined path is within the safe root
+        if (!combinedPath.StartsWith(Path.GetFullPath(safeRootPath), StringComparison.OrdinalIgnoreCase))
+            return false;
+
+        if (!File.Exists(combinedPath))
+            return false;
+
+        safeImagePath = combinedPath;
+        return true;
     }
 
     private static async Task<byte[]> DownloadImage(HttpClient? httpClient, Uri uri)
