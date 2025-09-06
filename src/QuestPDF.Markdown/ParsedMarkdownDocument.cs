@@ -6,6 +6,7 @@ using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 using QuestPDF.Infrastructure;
 using QuestPDF.Markdown.Compatibility;
+using QuestPDF.Markdown.Helpers;
 using QuestPDF.Markdown.Parsing;
 using SkiaSharp;
 
@@ -98,31 +99,10 @@ public class ParsedMarkdownDocument
             return (true, await DownloadImage(httpClient, uri).ConfigureAwait(false));
         
         // Check for valid local file path relative to safe root
-        if (!string.IsNullOrEmpty(safeRootPath) && TryGetLocalPath(url, safeRootPath, out var path))
+        if (!string.IsNullOrEmpty(safeRootPath) && PathHelpers.TryResolveSafeLocalPath(url, safeRootPath, out var path) && File.Exists(path))
             return (true, await CompatibilityShims.ReadAllBytesAsync(path).ConfigureAwait(false));
 
         return (false, []);
-    }
-
-    private static bool TryGetLocalPath(string imagePath, string safeRootPath, out string safeImagePath)
-    {
-        safeImagePath = string.Empty;
-        
-        if (imagePath.IndexOfAny(Path.GetInvalidPathChars()) != -1)
-            return false;
-
-        // Combine and resolve absolute path
-        var combinedPath = Path.GetFullPath(Path.Combine(safeRootPath, imagePath));
-
-        // Ensure the combined path is within the safe root
-        if (!combinedPath.StartsWith(Path.GetFullPath(safeRootPath), StringComparison.OrdinalIgnoreCase))
-            return false;
-
-        if (!File.Exists(combinedPath))
-            return false;
-
-        safeImagePath = combinedPath;
-        return true;
     }
 
     private static async Task<byte[]> DownloadImage(HttpClient? httpClient, Uri uri)
