@@ -53,14 +53,19 @@ var document = Document.Create(container =>
 ```
 
 ### Rendering images
-By default, downloading and rendering external images is disabled.
-Images can be downloaded using the `ParsedMarkdownDocument.DownloadImages()` method.
+By default, downloading and rendering images is disabled.
+To opt-in to loading images use the `ParsedMarkdownDocument.DownloadImages()` method.
+This method will load any remote images, base64 images and local images (if a safe root path is provided).
+
 The parsed markdown document can then be passed to the `Markdown()` extension method.
 ```csharp
 var text = @"![title](https://placehold.co/100x50.jpg)";
 
 var markdown = ParsedMarkdownDocument.FromText(text);
-await markdown.DownloadImages(httpClient: myHttpClient /* Optionally provide your own HttpClient */);
+await markdown.DownloadImages(
+    httpClient: myHttpClient /* Optionally provide your own HttpClient */
+    safeRootPath: "/my/safe/path" /* Optionally provide a safe root path from which relative local images paths can be read */
+);
 
 var document = Document.Create(container =>
 {
@@ -109,7 +114,7 @@ Currently the following features are supported:
 - Task lists
 - Extra emphasis (subscript, superscript, strikethrough, marked, inserted)
 - Tables
-- Images
+- Images (remote, base64 encoded, local paths)
 - HTML encoded entities (e.g. `&amp;`, `&lt;`, `&gt;`)
 - Custom renderers for text content
 
