@@ -166,6 +166,9 @@ internal sealed class MarkdownRenderer : IComponent
 
     private IContainer Render(LeafBlock block, IContainer pdf)
     {
+        // Semantic tagging for accessibility
+        pdf = pdf.SemanticParagraph();
+        
         // Some blocks don't contain any further inline elements, render the text directly
         if (block.Inline != null && block.Inline.Any())
         {
@@ -208,6 +211,9 @@ internal sealed class MarkdownRenderer : IComponent
 
         // Push any styles that should be applied to the entire container on the stack
         _textProperties.TextStyles.Push(t => t.FontColor(_options.BlockQuoteTextColor));
+        
+        // Semantic tagging for accessibility
+        pdf = pdf.SemanticBlockQuotation();
 
         Render(block as ContainerBlock, pdf);
 
@@ -248,6 +254,18 @@ internal sealed class MarkdownRenderer : IComponent
             .FontSize(Math.Max(0, _options.CalculateHeadingSize(block.Level)))
             .Bold());
 
+        // Semantic tagging for accessibility
+        pdf = block.Level switch
+        {
+            1 => pdf.SemanticHeader1(),
+            2 => pdf.SemanticHeader2(),
+            3 => pdf.SemanticHeader3(),
+            4 => pdf.SemanticHeader4(),
+            5 => pdf.SemanticHeader5(),
+            6 => pdf.SemanticHeader6(),
+            _ => pdf.SemanticHeader()
+        };
+        
         Render(block as LeafBlock, pdf);
 
         // Pop any styles that were applied to the entire block off the stack
