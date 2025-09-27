@@ -3,4 +3,5 @@ apt-get -y update &&
 apt-get install rename &&
 dotnet test ;
 cd tests/QuestPDF.Markdown.Tests/Verify &&
-rename 's/\.received\./.verified./' *.*
+echo $PWD &&
+rename -v -f 's/\.received\./.verified./' *.*
