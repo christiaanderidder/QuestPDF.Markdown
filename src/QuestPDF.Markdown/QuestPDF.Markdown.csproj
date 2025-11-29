@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;net10.0</TargetFrameworks>
         <PackageId>QuestPDF.Markdown</PackageId>
         <Authors>Christiaan de Ridder</Authors>
         <PackageDescription>QuestPDF.Markdown is an open-source helper library that allows rendering markdown into a QuestPDF document</PackageDescription>
