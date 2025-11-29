@@ -63,8 +63,6 @@ jobs:
         --report-github
         --report-github-summary-include-passed=true
         --report-github-summary-include-skipped=true
-        --
-        RunConfiguration.CollectSourceInformation=true
         
     - name: Upload Test Results
       if: failure()
