@@ -6,16 +6,16 @@
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="2.4.1" />
-    <PackageVersion Include="Markdig" Version="0.42.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageVersion Include="QuestPDF" Version="2025.7.2" />
+    <PackageVersion Include="Markdig" Version="0.43.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageVersion Include="QuestPDF" Version="2025.7.4" />
     <PackageVersion Include="SkiaSharp" Version="3.119.1" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.1" />
-    <PackageVersion Include="Verify.ImageMagick" Version="3.7.5" />
+    <PackageVersion Include="Verify.ImageMagick" Version="3.8.0" />
     <PackageVersion Include="Verify.QuestPDF" Version="2.3.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="30.19.0" />
-    <PackageVersion Include="xunit.analyzers" Version="1.24.0" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
-    <PackageVersion Include="xunit.v3" Version="3.0.1" />
+    <PackageVersion Include="Verify.XunitV3" Version="31.7.2" />
+    <PackageVersion Include="xunit.analyzers" Version="1.25.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="xunit.v3" Version="3.2.0" />
   </ItemGroup>
 </Project>
