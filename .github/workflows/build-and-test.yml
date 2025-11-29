@@ -60,7 +60,9 @@ jobs:
       run: >
         dotnet test
         --no-build
-        --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+        --report-github
+        --report-github-summary-include-passed=true
+        --report-github-summary-include-skipped=true
         --
         RunConfiguration.CollectSourceInformation=true
         
