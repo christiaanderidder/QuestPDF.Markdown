@@ -8,13 +8,6 @@
         <AnalysisLevel>latest</AnalysisLevel>
         <AnalysisMode>All</AnalysisMode>
     </PropertyGroup>
-    <ItemGroup>
-      <!--
-      Suppress false positive vulnerability warning for Magick.NET
-      See: https://github.com/dlemstra/Magick.NET/issues/1937
-      -->
-      <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-q3hc-j9x5-mp9m" />
-    </ItemGroup>
     <!--
         Perform a deep clean using `dotnet clean -p:deep=true` to remove obj and bin folders
         After a deep clean make sure to restore NuGet packages
