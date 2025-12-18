@@ -69,6 +69,10 @@ public class MarkdownRendererOptions
     /// Level is non zero-indexed and starts at 1 for the largest heading
     /// </remarks>
     public Func<int, int> CalculateHeadingSize { get; set; } = level => 28 - 2 * (level - 1);
+    public float HeadingSizeLevel1 { get; set; }
+    public float HeadingSizeLevel2 { get; set; }
+    public float HeadingSizeLevel3 { get; set; }
+    public float HeadingSizeLevel4 { get; set; }
 
     public Dictionary<string, Func<TextDescriptor, TextSpanDescriptor>> RenderTemplates { get; } = [];
 

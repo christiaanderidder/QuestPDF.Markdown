@@ -242,10 +242,35 @@ internal sealed class MarkdownRenderer : IComponent
 
     private IContainer Render(HeadingBlock block, IContainer pdf)
     {
+        float fontSize = Math.Max(0, _options.CalculateHeadingSize(block.Level));
+
+        switch (block.Level)
+        {
+            case 1:
+                if (_options.HeadingSizeLevel1 != 0)
+                    fontSize = _options.HeadingSizeLevel1;
+                break;
+
+            case 2:
+                if (_options.HeadingSizeLevel2 != 0)
+                    fontSize = _options.HeadingSizeLevel2;
+                break;
+
+            case 3:
+                if (_options.HeadingSizeLevel3 != 0)
+                    fontSize = _options.HeadingSizeLevel3;
+                break;
+
+            case 4:
+                if (_options.HeadingSizeLevel4 != 0)
+                    fontSize = _options.HeadingSizeLevel4;
+                break;
+        }
+
         // Push any styles that should be applied to the entire block on the stack
         _textProperties.TextStyles.Push(t => t
             .FontColor(_options.HeadingTextColor)
-            .FontSize(Math.Max(0, _options.CalculateHeadingSize(block.Level)))
+            .FontSize(fontSize)
             .Bold());
 
         Render(block as LeafBlock, pdf);
