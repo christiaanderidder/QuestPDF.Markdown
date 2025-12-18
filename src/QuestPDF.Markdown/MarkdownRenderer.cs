@@ -207,7 +207,7 @@ internal sealed class MarkdownRenderer : IComponent
             .PaddingLeft(10);
 
         // Push any styles that should be applied to the entire container on the stack
-        _textProperties.TextStyles.Push(t => t.FontColor(_options.BlockQuoteTextColor));
+        _textProperties.TextStyles.Push(t => t.FontColor(_options.BlockQuoteTextColor).Italic());
 
         Render(block as ContainerBlock, pdf);
 
