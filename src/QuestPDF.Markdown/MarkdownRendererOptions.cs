@@ -58,7 +58,19 @@ public class MarkdownRendererOptions
 
     public float ParagraphSpacing { get; set; } = 10;
     public float ListItemSpacing { get; set; } = 5;
-    public string UnorderedListGlyph { get; set; } = "•";
+
+    public float ListItemOrderedDelimiterPaddingLeft { get; set; } = 10;
+    public float ListItemOrderedDelimiterWidth { get; set; } = 10;
+    public float ListItemOrderedDelimiterTranslateY { get; set; }
+    public Color ListItemOrderedDelimiterColor { get; set; } = Colors.White;
+    public float ListItemOrderedDelimiterSize { get; set; }
+
+    public float ListItemUnorderedDelimiterPaddingLeft { get; set; } = 10;
+    public float ListItemUnorderedDelimiterWidth { get; set; } = 10;
+    public float ListItemUnorderedDelimiterTranslateY { get; set; }
+    public string ListItemUnorderedDelimiterGlyph { get; set; } = "•";
+    public Color ListItemUnorderedDelimiterColor { get; set; } = Colors.White;
+    public float ListItemUnorderedDelimiterSize { get; set; }
 
     public Color HeadingTextColor { get; set; } = Colors.Black;
     

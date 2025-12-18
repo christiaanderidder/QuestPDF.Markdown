@@ -1,4 +1,4 @@
-using Markdig.Extensions.Tables;
+﻿using Markdig.Extensions.Tables;
 using Markdig.Extensions.TaskLists;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -228,11 +228,37 @@ internal sealed class MarkdownRenderer : IComponent
 
         pdf.Row(li =>
         {
-            li.Spacing(5);
-            var delimiter = li.AutoItem().PaddingLeft(10);
-            
-            if (list.IsOrdered) delimiter.Text($"{block.Order}{list.OrderedDelimiter}");
-            else delimiter.Text(_options.UnorderedListGlyph).FontFamily(_options.UnicodeGlyphFont);
+            li.Spacing(_options.ListItemSpacing);
+
+            #region delimiter
+            if (list.IsOrdered)
+            {
+                var delimiterText = li
+                    .AutoItem()
+                    .PaddingLeft(_options.ListItemOrderedDelimiterPaddingLeft)
+                    .Width(_options.ListItemOrderedDelimiterWidth)
+                    .TranslateY(_options.ListItemOrderedDelimiterTranslateY)
+                    .Text($"{block.Order}{list.OrderedDelimiter}")
+                    .FontColor(_options.ListItemOrderedDelimiterColor);
+
+                if (_options.ListItemOrderedDelimiterSize != 0)
+                    delimiterText.FontSize(_options.ListItemOrderedDelimiterSize);
+            }
+            else
+            {
+                var delimiterText = li
+                    .AutoItem()
+                    .PaddingLeft(_options.ListItemUnorderedDelimiterPaddingLeft)
+                    .Width(_options.ListItemUnorderedDelimiterWidth)
+                    .TranslateY(_options.ListItemUnorderedDelimiterTranslateY)
+                    .Text(_options.ListItemUnorderedDelimiterGlyph)
+                    .FontColor(_options.ListItemUnorderedDelimiterColor)
+                    .FontFamily(_options.UnicodeGlyphFont);
+
+                if (_options.ListItemUnorderedDelimiterSize != 0)
+                    delimiterText.FontSize(_options.ListItemUnorderedDelimiterSize);
+            }
+            #endregion
 
             Render(block as ContainerBlock, li.RelativeItem());
         });
