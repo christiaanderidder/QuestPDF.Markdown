@@ -6,7 +6,8 @@
   },
   Settings: {
     ContentDirection: LeftToRight,
-    PdfA: false,
+    PDFA_Conformance: None,
+    PDFUA_Conformance: None,
     ImageCompressionQuality: High,
     ImageRasterDpi: 288
   }
