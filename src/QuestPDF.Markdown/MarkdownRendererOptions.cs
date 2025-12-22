@@ -59,18 +59,51 @@ public class MarkdownRendererOptions
     public float ParagraphSpacing { get; set; } = 10;
     public float ListItemSpacing { get; set; } = 5;
 
-    public float ListItemOrderedDelimiterPaddingLeft { get; set; } = 10;
-    public float ListItemOrderedDelimiterWidth { get; set; } = 10;
-    public float ListItemOrderedDelimiterTranslateY { get; set; }
-    public Color ListItemOrderedDelimiterColor { get; set; } = Colors.White;
-    public float ListItemOrderedDelimiterSize { get; set; }
+    public float ListItemOrderedDelimiterPaddingLeftLevel1 { get; set; } = 10;
+    public float ListItemOrderedDelimiterPaddingLeftLevel2 { get; set; } = 10;
+    public float ListItemOrderedDelimiterPaddingLeftLevel3 { get; set; } = 10;
+    public float ListItemOrderedDelimiterPaddingLeftLevel4 { get; set; } = 10;
+    public float ListItemOrderedDelimiterWidthLevel1 { get; set; } = 10;
+    public float ListItemOrderedDelimiterWidthLevel2 { get; set; } = 10;
+    public float ListItemOrderedDelimiterWidthLevel3 { get; set; } = 10;
+    public float ListItemOrderedDelimiterWidthLevel4 { get; set; } = 10;
+    public float ListItemOrderedDelimiterTranslateYLevel1 { get; set; }
+    public float ListItemOrderedDelimiterTranslateYLevel2 { get; set; }
+    public float ListItemOrderedDelimiterTranslateYLevel3 { get; set; }
+    public float ListItemOrderedDelimiterTranslateYLevel4 { get; set; }
+    public Color ListItemOrderedDelimiterColorLevel1 { get; set; } = Colors.White;
+    public Color ListItemOrderedDelimiterColorLevel2 { get; set; } = Colors.White;
+    public Color ListItemOrderedDelimiterColorLevel3 { get; set; } = Colors.White;
+    public Color ListItemOrderedDelimiterColorLevel4 { get; set; } = Colors.White;
+    public float ListItemOrderedDelimiterSizeLevel1 { get; set; }
+    public float ListItemOrderedDelimiterSizeLevel2 { get; set; }
+    public float ListItemOrderedDelimiterSizeLevel3 { get; set; }
+    public float ListItemOrderedDelimiterSizeLevel4 { get; set; }
 
-    public float ListItemUnorderedDelimiterPaddingLeft { get; set; } = 10;
-    public float ListItemUnorderedDelimiterWidth { get; set; } = 10;
-    public float ListItemUnorderedDelimiterTranslateY { get; set; }
-    public string ListItemUnorderedDelimiterGlyph { get; set; } = "•";
-    public Color ListItemUnorderedDelimiterColor { get; set; } = Colors.White;
-    public float ListItemUnorderedDelimiterSize { get; set; }
+    public float ListItemUnorderedDelimiterPaddingLeftLevel1 { get; set; } = 10;
+    public float ListItemUnorderedDelimiterPaddingLeftLevel2 { get; set; } = 10;
+    public float ListItemUnorderedDelimiterPaddingLeftLevel3 { get; set; } = 10;
+    public float ListItemUnorderedDelimiterPaddingLeftLevel4 { get; set; } = 10;
+    public float ListItemUnorderedDelimiterWidthLevel1 { get; set; } = 10;
+    public float ListItemUnorderedDelimiterWidthLevel2 { get; set; } = 10;
+    public float ListItemUnorderedDelimiterWidthLevel3 { get; set; } = 10;
+    public float ListItemUnorderedDelimiterWidthLevel4 { get; set; } = 10;
+    public float ListItemUnorderedDelimiterTranslateYLevel1 { get; set; }
+    public float ListItemUnorderedDelimiterTranslateYLevel2 { get; set; }
+    public float ListItemUnorderedDelimiterTranslateYLevel3 { get; set; }
+    public float ListItemUnorderedDelimiterTranslateYLevel4 { get; set; }
+    public string ListItemUnorderedDelimiterGlyphLevel1 { get; set; } = "•";
+    public string ListItemUnorderedDelimiterGlyphLevel2 { get; set; } = "•";
+    public string ListItemUnorderedDelimiterGlyphLevel3 { get; set; } = "•";
+    public string ListItemUnorderedDelimiterGlyphLevel4 { get; set; } = "•";
+    public Color ListItemUnorderedDelimiterColorLevel1 { get; set; } = Colors.White;
+    public Color ListItemUnorderedDelimiterColorLevel2 { get; set; } = Colors.White;
+    public Color ListItemUnorderedDelimiterColorLevel3 { get; set; } = Colors.White;
+    public Color ListItemUnorderedDelimiterColorLevel4 { get; set; } = Colors.White;
+    public float ListItemUnorderedDelimiterSizeLevel1 { get; set; }
+    public float ListItemUnorderedDelimiterSizeLevel2 { get; set; }
+    public float ListItemUnorderedDelimiterSizeLevel3 { get; set; }
+    public float ListItemUnorderedDelimiterSizeLevel4 { get; set; }
 
     public Color HeadingTextColor { get; set; } = Colors.Black;
     

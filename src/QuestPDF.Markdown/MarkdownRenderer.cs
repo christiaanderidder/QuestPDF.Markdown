@@ -224,6 +224,17 @@ internal sealed class MarkdownRenderer : IComponent
 
     private IContainer Render(ListItemBlock block, IContainer pdf)
     {
+        int GetDepth(ListItemBlock item)
+        {
+            int depth = 0;
+
+            for (Block? cur = item.Parent; cur != null; cur = cur.Parent)
+                if (cur is ListBlock)
+                    depth++;
+
+            return depth;
+        }
+
         if (block.Parent is not ListBlock list) return pdf;
 
         pdf.Row(li =>
@@ -233,30 +244,121 @@ internal sealed class MarkdownRenderer : IComponent
             #region delimiter
             if (list.IsOrdered)
             {
-                var delimiterText = li
-                    .AutoItem()
-                    .PaddingLeft(_options.ListItemOrderedDelimiterPaddingLeft)
-                    .Width(_options.ListItemOrderedDelimiterWidth)
-                    .TranslateY(_options.ListItemOrderedDelimiterTranslateY)
-                    .Text($"{block.Order}{list.OrderedDelimiter}")
-                    .FontColor(_options.ListItemOrderedDelimiterColor);
+                switch (GetDepth(block))
+                {
+                    case 1:
+                        var delimiterTextLevel1 = li
+                            .AutoItem()
+                            .PaddingLeft(_options.ListItemOrderedDelimiterPaddingLeftLevel1)
+                            .Width(_options.ListItemOrderedDelimiterWidthLevel1)
+                            .TranslateY(_options.ListItemOrderedDelimiterTranslateYLevel1)
+                            .Text($"{block.Order}{list.OrderedDelimiter}")
+                            .FontColor(_options.ListItemOrderedDelimiterColorLevel1);
 
-                if (_options.ListItemOrderedDelimiterSize != 0)
-                    delimiterText.FontSize(_options.ListItemOrderedDelimiterSize);
+                        if (_options.ListItemOrderedDelimiterSizeLevel1 != 0)
+                            delimiterTextLevel1.FontSize(_options.ListItemOrderedDelimiterSizeLevel1);
+                        break;
+
+                    case 2:
+                        var delimiterTextLevel2 = li
+                            .AutoItem()
+                            .PaddingLeft(_options.ListItemOrderedDelimiterPaddingLeftLevel2)
+                            .Width(_options.ListItemOrderedDelimiterWidthLevel2)
+                            .TranslateY(_options.ListItemOrderedDelimiterTranslateYLevel2)
+                            .Text($"{block.Order}{list.OrderedDelimiter}")
+                            .FontColor(_options.ListItemOrderedDelimiterColorLevel2);
+
+                        if (_options.ListItemOrderedDelimiterSizeLevel2 != 0)
+                            delimiterTextLevel2.FontSize(_options.ListItemOrderedDelimiterSizeLevel2);
+                        break;
+
+                    case 3:
+                        var delimiterTextLevel3 = li
+                            .AutoItem()
+                            .PaddingLeft(_options.ListItemOrderedDelimiterPaddingLeftLevel3)
+                            .Width(_options.ListItemOrderedDelimiterWidthLevel3)
+                            .TranslateY(_options.ListItemOrderedDelimiterTranslateYLevel3)
+                            .Text($"{block.Order}{list.OrderedDelimiter}")
+                            .FontColor(_options.ListItemOrderedDelimiterColorLevel3);
+
+                        if (_options.ListItemOrderedDelimiterSizeLevel3 != 0)
+                            delimiterTextLevel3.FontSize(_options.ListItemOrderedDelimiterSizeLevel3);
+                        break;
+
+                    default:
+                        var delimiterTextLevel4 = li
+                            .AutoItem()
+                            .PaddingLeft(_options.ListItemOrderedDelimiterPaddingLeftLevel4)
+                            .Width(_options.ListItemOrderedDelimiterWidthLevel4)
+                            .TranslateY(_options.ListItemOrderedDelimiterTranslateYLevel4)
+                            .Text($"{block.Order}{list.OrderedDelimiter}")
+                            .FontColor(_options.ListItemOrderedDelimiterColorLevel4);
+
+                        if (_options.ListItemOrderedDelimiterSizeLevel4 != 0)
+                            delimiterTextLevel4.FontSize(_options.ListItemOrderedDelimiterSizeLevel4);
+                        break;
+                }                
             }
             else
             {
-                var delimiterText = li
-                    .AutoItem()
-                    .PaddingLeft(_options.ListItemUnorderedDelimiterPaddingLeft)
-                    .Width(_options.ListItemUnorderedDelimiterWidth)
-                    .TranslateY(_options.ListItemUnorderedDelimiterTranslateY)
-                    .Text(_options.ListItemUnorderedDelimiterGlyph)
-                    .FontColor(_options.ListItemUnorderedDelimiterColor)
-                    .FontFamily(_options.UnicodeGlyphFont);
+                switch (GetDepth(block))
+                {
+                    case 1:
+                        var delimiterTextLevel1 = li
+                            .AutoItem()
+                            .PaddingLeft(_options.ListItemUnorderedDelimiterPaddingLeftLevel1)
+                            .Width(_options.ListItemUnorderedDelimiterWidthLevel1)
+                            .TranslateY(_options.ListItemUnorderedDelimiterTranslateYLevel1)
+                            .Text(_options.ListItemUnorderedDelimiterGlyphLevel1)
+                            .FontColor(_options.ListItemUnorderedDelimiterColorLevel1)
+                            .FontFamily(_options.UnicodeGlyphFont);
 
-                if (_options.ListItemUnorderedDelimiterSize != 0)
-                    delimiterText.FontSize(_options.ListItemUnorderedDelimiterSize);
+                        if (_options.ListItemUnorderedDelimiterSizeLevel1 != 0)
+                            delimiterTextLevel1.FontSize(_options.ListItemUnorderedDelimiterSizeLevel1);
+                        break;
+
+                    case 2:
+                        var delimiterTextLevel2 = li
+                            .AutoItem()
+                            .PaddingLeft(_options.ListItemUnorderedDelimiterPaddingLeftLevel2)
+                            .Width(_options.ListItemUnorderedDelimiterWidthLevel2)
+                            .TranslateY(_options.ListItemUnorderedDelimiterTranslateYLevel2)
+                            .Text(_options.ListItemUnorderedDelimiterGlyphLevel2)
+                            .FontColor(_options.ListItemUnorderedDelimiterColorLevel2)
+                            .FontFamily(_options.UnicodeGlyphFont);
+
+                        if (_options.ListItemUnorderedDelimiterSizeLevel2 != 0)
+                            delimiterTextLevel2.FontSize(_options.ListItemUnorderedDelimiterSizeLevel2);
+                        break;
+
+                    case 3:
+                        var delimiterTextLevel3 = li
+                            .AutoItem()
+                            .PaddingLeft(_options.ListItemUnorderedDelimiterPaddingLeftLevel3)
+                            .Width(_options.ListItemUnorderedDelimiterWidthLevel3)
+                            .TranslateY(_options.ListItemUnorderedDelimiterTranslateYLevel3)
+                            .Text(_options.ListItemUnorderedDelimiterGlyphLevel3)
+                            .FontColor(_options.ListItemUnorderedDelimiterColorLevel3)
+                            .FontFamily(_options.UnicodeGlyphFont);
+
+                        if (_options.ListItemUnorderedDelimiterSizeLevel3 != 0)
+                            delimiterTextLevel3.FontSize(_options.ListItemUnorderedDelimiterSizeLevel3);
+                        break;
+
+                    default:
+                        var delimiterTextLevel4 = li
+                            .AutoItem()
+                            .PaddingLeft(_options.ListItemUnorderedDelimiterPaddingLeftLevel4)
+                            .Width(_options.ListItemUnorderedDelimiterWidthLevel4)
+                            .TranslateY(_options.ListItemUnorderedDelimiterTranslateYLevel4)
+                            .Text(_options.ListItemUnorderedDelimiterGlyphLevel4)
+                            .FontColor(_options.ListItemUnorderedDelimiterColorLevel4)
+                            .FontFamily(_options.UnicodeGlyphFont);
+
+                        if (_options.ListItemUnorderedDelimiterSizeLevel4 != 0)
+                            delimiterTextLevel4.FontSize(_options.ListItemUnorderedDelimiterSizeLevel4);
+                        break;
+                }                
             }
             #endregion
 
