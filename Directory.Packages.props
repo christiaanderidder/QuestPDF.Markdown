@@ -8,14 +8,14 @@
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.1" />
     <PackageVersion Include="Markdig" Version="0.44.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageVersion Include="QuestPDF" Version="2025.12.1" />
+    <PackageVersion Include="QuestPDF" Version="2025.12.3" />
     <PackageVersion Include="SkiaSharp" Version="3.119.1" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.1" />
     <PackageVersion Include="Verify.ImageMagick" Version="3.8.2" />
     <PackageVersion Include="Verify.QuestPDF" Version="2.4.0" />
-    <PackageVersion Include="Verify.XunitV3" Version="31.9.3" />
-    <PackageVersion Include="xunit.analyzers" Version="1.26.0" />
+    <PackageVersion Include="Verify.XunitV3" Version="31.9.4" />
+    <PackageVersion Include="xunit.analyzers" Version="1.27.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
-    <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.1" />
+    <PackageVersion Include="xunit.v3.mtp-v2" Version="3.2.2" />
   </ItemGroup>
 </Project>
