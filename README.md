@@ -1,6 +1,4 @@
-<img src="/img/logo.png?raw=true" width="128" align="right">
-
-# QuestPDF.Markdown
+# QuestPDF.Markdown <img src="/img/logo.png?raw=true" width="128" align="right">
 QuestPDF.Markdown allows rendering markdown into a [QuestPDF](https://www.questpdf.com/) document using the [markdig](https://github.com/xoofx/markdig) parser.
 
 [![Nuget](https://img.shields.io/nuget/v/QuestPDF.Markdown)](https://www.nuget.org/packages/QuestPDF.Markdown)
