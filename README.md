@@ -1,4 +1,4 @@
-<img src="/img/logo.svg?raw=true" width="128" align="right">
+<img src="/img/logo.png?raw=true" width="128" align="right">
 
 # QuestPDF.Markdown
 QuestPDF.Markdown allows rendering markdown into a [QuestPDF](https://www.questpdf.com/) document using the [markdig](https://github.com/xoofx/markdig) parser.
