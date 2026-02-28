@@ -7,11 +7,11 @@
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.1" />
     <PackageVersion Include="Markdig" Version="0.45.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageVersion Include="QuestPDF" Version="2025.12.4" />
     <PackageVersion Include="SkiaSharp" Version="3.119.2" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
-    <PackageVersion Include="Verify.ImageMagick" Version="3.8.3" />
+    <PackageVersion Include="Verify.ImageMagick" Version="3.8.4" />
     <PackageVersion Include="Verify.QuestPDF" Version="2.4.0" />
     <PackageVersion Include="Verify.XunitV3" Version="31.13.2" />
     <PackageVersion Include="xunit.analyzers" Version="1.27.0" />
