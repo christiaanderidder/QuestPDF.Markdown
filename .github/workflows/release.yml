@@ -21,7 +21,7 @@ jobs:
     - name: Archive package
       uses: actions/upload-artifact@v7
       with:
-        name: QuestPDF.Markdown
+        archive: false
         path: ./package/QuestPDF.Markdown.${{ github.event.release.tag_name }}.nupkg
 
     - name: Publish package (GitHub)
