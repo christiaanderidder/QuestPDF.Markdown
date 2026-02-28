@@ -12,11 +12,15 @@ internal static class GlobalInitializer
         Settings.License = LicenseType.Community;
         Settings.EnableDebugging = true;
 
-        FontManager.RegisterFontFromEmbeddedResource("QuestPDF.Markdown.Tests.Fonts.NotoSansMono-Regular.ttf");
-        FontManager.RegisterFontFromEmbeddedResource("QuestPDF.Markdown.Tests.Fonts.NotoSansSymbols2-Regular.ttf");
-        
+        FontManager.RegisterFontFromEmbeddedResource(
+            "QuestPDF.Markdown.Tests.Fonts.NotoSansMono-Regular.ttf"
+        );
+        FontManager.RegisterFontFromEmbeddedResource(
+            "QuestPDF.Markdown.Tests.Fonts.NotoSansSymbols2-Regular.ttf"
+        );
+
         UseProjectRelativeDirectory("Verify");
-        
+
         VerifyImageMagick.RegisterComparers();
         VerifyQuestPdf.Initialize();
     }

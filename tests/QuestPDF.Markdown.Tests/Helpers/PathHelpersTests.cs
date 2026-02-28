@@ -12,10 +12,19 @@ public class PathHelpersTests
     [InlineData("../image.png", "/safe/root", "", false)]
     [InlineData("/absolute/path/image.png", "/safe/root", "", false)]
     [InlineData("invaid\0.png", "/safe/root", "", false)]
-    public void ResolvesSafeLocalPath(string imagePath, string safeRootPath, string expectedSafeImagePath, bool expectedResult)
+    public void ResolvesSafeLocalPath(
+        string imagePath,
+        string safeRootPath,
+        string expectedSafeImagePath,
+        bool expectedResult
+    )
     {
-        var result = PathHelpers.TryResolveSafeLocalPath(imagePath, safeRootPath, out var safeImagePath);
-        
+        var result = PathHelpers.TryResolveSafeLocalPath(
+            imagePath,
+            safeRootPath,
+            out var safeImagePath
+        );
+
         Assert.Equal(expectedSafeImagePath, safeImagePath);
         Assert.Equal(expectedResult, result);
     }

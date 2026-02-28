@@ -1,20 +1,22 @@
 <Project>
-    <PropertyGroup>
-        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <LangVersion>latest</LangVersion>
-        <EnableNETAnalyzers>true</EnableNETAnalyzers>
-        <AnalysisLevel>latest</AnalysisLevel>
-        <AnalysisMode>All</AnalysisMode>
-        <UseArtifactsOutput>true</UseArtifactsOutput>
-    </PropertyGroup>
-    <!--
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>All</AnalysisMode>
+    <UseArtifactsOutput>true</UseArtifactsOutput>
+  </PropertyGroup>
+  <!--
         Perform a deep clean using `dotnet clean -p:deep=true` to remove obj and bin folders
         After a deep clean make sure to restore NuGet packages
     -->
-    <Target Name="PostClean" AfterTargets="Clean" Condition="$(Deep)==True">
-        <RemoveDir Directories="$(BaseIntermediateOutputPath)" /><!-- obj -->
-        <RemoveDir Directories="$(BaseOutputPath)" /><!-- bin -->
-    </Target>
+  <Target Name="PostClean" AfterTargets="Clean" Condition="$(Deep)==True">
+    <!-- obj -->
+    <RemoveDir Directories="$(BaseIntermediateOutputPath)" />
+    <!-- bin -->
+    <RemoveDir Directories="$(BaseOutputPath)" />
+  </Target>
 </Project>

@@ -5,7 +5,11 @@ namespace QuestPDF.Markdown.Helpers;
 
 internal static class PathHelpers
 {
-    public static bool TryResolveSafeLocalPath(string imagePath, string safeRootPath, out string safeImagePath)
+    public static bool TryResolveSafeLocalPath(
+        string imagePath,
+        string safeRootPath,
+        out string safeImagePath
+    )
     {
         safeImagePath = string.Empty;
 
@@ -36,6 +40,6 @@ internal static class PathHelpers
         return true;
     }
 
-    private static string NormalizePath(string path) => Path.GetFullPath(path)
-        .Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+    private static string NormalizePath(string path) =>
+        Path.GetFullPath(path).Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 }

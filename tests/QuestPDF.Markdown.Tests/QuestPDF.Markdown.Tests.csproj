@@ -1,40 +1,40 @@
 <Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="GitHubActionsTestLogger" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="coverlet.collector">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
-        <PackageReference Include="Verify.ImageMagick" />
-        <PackageReference Include="Verify.QuestPDF" />
-        <PackageReference Include="Verify.XunitV3" />
-        <PackageReference Include="xunit.analyzers">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="xunit.runner.visualstudio">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="xunit.v3.mtp-v2" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="GitHubActionsTestLogger" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="coverlet.collector">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
+    <PackageReference Include="Verify.ImageMagick" />
+    <PackageReference Include="Verify.QuestPDF" />
+    <PackageReference Include="Verify.XunitV3" />
+    <PackageReference Include="xunit.analyzers">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.v3.mtp-v2" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="../../src/QuestPDF.Markdown/QuestPDF.Markdown.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/QuestPDF.Markdown/QuestPDF.Markdown.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <EmbeddedResource Include="test.md" />
-      <EmbeddedResource Include="Fonts/NotoSansMono-Regular.ttf" />
-      <EmbeddedResource Include="Fonts/NotoSansSymbols2-Regular.ttf" />
-      <None Update="Images/local.jpg" CopyToOutputDirectory="Always" />
-    </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="test.md" />
+    <EmbeddedResource Include="Fonts/NotoSansMono-Regular.ttf" />
+    <EmbeddedResource Include="Fonts/NotoSansSymbols2-Regular.ttf" />
+    <None Update="Images/local.jpg" CopyToOutputDirectory="Always" />
+  </ItemGroup>
 </Project>

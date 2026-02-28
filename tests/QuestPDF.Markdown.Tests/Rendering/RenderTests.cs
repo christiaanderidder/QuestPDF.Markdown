@@ -9,33 +9,33 @@ public sealed class RenderTests
 {
     const string NotoSansMono = "Noto Sans Mono";
     const string NotoSansSymbols2 = "Noto Sans Symbols 2";
-    
+
     [Fact]
     public async Task RendersHeadings()
     {
         const string md = """
-                          # h1 Heading
-                          ## h2 Heading
-                          ### h3 Heading
-                          #### h4 Heading
-                          ##### h5 Heading
-                          ###### h6 Heading
-                          """;
+            # h1 Heading
+            ## h2 Heading
+            ### h3 Heading
+            #### h4 Heading
+            ##### h5 Heading
+            ###### h6 Heading
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
         await Verify(document);
     }
-    
+
     [Fact]
     public async Task RendersAlternativeHeadings()
     {
         const string md = """
-                          h1 heading
-                          ======
-                          h2 heading
-                          ------
-                          """;
+            h1 heading
+            ======
+            h2 heading
+            ------
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
@@ -46,39 +46,39 @@ public sealed class RenderTests
     public async Task RendersParagraphs()
     {
         const string md = """
-                          A paragraph is followed by a blank line.
-                          
-                          Newlines within paragraphs
-                           are ignored.
-                          
-                          Text should be followed by two trailing spaces   
-                          or a backlash \
-                          to force a newline.
-                          
-                          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                          """;
-        
+            A paragraph is followed by a blank line.
+
+            Newlines within paragraphs
+             are ignored.
+
+            Text should be followed by two trailing spaces   
+            or a backlash \
+            to force a newline.
+
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            """;
+
         var document = GenerateDocument(item => item.Markdown(md));
 
         await Verify(document);
     }
-    
+
     [Fact]
     public async Task RedersEmphasis()
     {
         const string md = """
-                          **This is bold text**
-                          
-                          __This is bold text__
-                          
-                          *This is italic text*
-                          
-                          _This is italic text_
-                          
-                          **This is bold and _italic_ text**
-                          
-                          ~~This is strikethrough text~~
-                          """;
+            **This is bold text**
+
+            __This is bold text__
+
+            *This is italic text*
+
+            _This is italic text_
+
+            **This is bold and _italic_ text**
+
+            ~~This is strikethrough text~~
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
@@ -89,40 +89,40 @@ public sealed class RenderTests
     public async Task RendersExtendedEmphasis()
     {
         const string md = """
-                          19^th^
+            19^th^
 
-                          H~2~O
+            H~2~O
 
-                          ++Inserted text++
+            ++Inserted text++
 
-                          ==Marked text==
-                          """;
+            ==Marked text==
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
         await Verify(document);
     }
-    
+
     [Fact]
     public async Task RendersLinks()
     {
         const string md = """
-                          Inline style link: [link](https://example.com)
-                          
-                          Inline-style link with title: [link](https://example.com "example title")
-                          
-                          Reference-style link with text: [link][ref]
+            Inline style link: [link](https://example.com)
 
-                          Reference-style link with number: [link][1]
-                          
-                          Reference-style link with link text: [link]
-                          
-                          Plaintext URL: https://example.com
-                          
-                          [ref]: https://example.com
-                          [1]: https://example.com
-                          [link]: https://example.com
-                          """;
+            Inline-style link with title: [link](https://example.com "example title")
+
+            Reference-style link with text: [link][ref]
+
+            Reference-style link with number: [link][1]
+
+            Reference-style link with link text: [link]
+
+            Plaintext URL: https://example.com
+
+            [ref]: https://example.com
+            [1]: https://example.com
+            [link]: https://example.com
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
@@ -133,30 +133,35 @@ public sealed class RenderTests
     public async Task RendersLists()
     {
         const string md = """
-                          - Item 1
-                          - Item 2
-                            - Nested Item 2.1
-                            - Nested Item 2.2
-                          - Item 3
+            - Item 1
+            - Item 2
+              - Nested Item 2.1
+              - Nested Item 2.2
+            - Item 3
 
-                          1. First
-                          2. Second
-                          3. Third
-                             1. Subitem 3.1
-                             2. Subitem 3.2
-                             
-                          - [ ] Task list item 1
-                          - [x] Task list item 2
-                          - [ ] Task list item 3
-                          """;
+            1. First
+            2. Second
+            3. Third
+               1. Subitem 3.1
+               2. Subitem 3.2
+               
+            - [ ] Task list item 1
+            - [x] Task list item 2
+            - [ ] Task list item 3
+            """;
 
-        var document = GenerateDocument(item => item.Markdown(md, options =>
-        {
-            options.UnicodeGlyphFont = NotoSansSymbols2;
-            options.UnorderedListGlyph = "🞴";
-            options.TaskListCheckedGlyph = "🞚";
-            options.TaskListUncheckedGlyph = "◇";
-        }));
+        var document = GenerateDocument(item =>
+            item.Markdown(
+                md,
+                options =>
+                {
+                    options.UnicodeGlyphFont = NotoSansSymbols2;
+                    options.UnorderedListGlyph = "🞴";
+                    options.TaskListCheckedGlyph = "🞚";
+                    options.TaskListUncheckedGlyph = "◇";
+                }
+            )
+        );
         await Verify(document);
     }
 
@@ -164,15 +169,15 @@ public sealed class RenderTests
     public async Task RendersBlockquotes()
     {
         const string md = """
-                          > Blockquote level 1
-                          >
-                          > > Blockquote level 2
-                          >
-                          > Back to level 1
-                          """;
+            > Blockquote level 1
+            >
+            > > Blockquote level 2
+            >
+            > Back to level 1
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
-        
+
         await Verify(document);
     }
 
@@ -180,16 +185,18 @@ public sealed class RenderTests
     public async Task RendersCodeBlocksAndInlineCode()
     {
         const string md = """
-                          Inline code: `var x = 1;`
+            Inline code: `var x = 1;`
 
-                          ```
-                          // Fenced code block
-                          Console.WriteLine("Hello, world!");
-                          ```
-                          """;
+            ```
+            // Fenced code block
+            Console.WriteLine("Hello, world!");
+            ```
+            """;
 
-        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = NotoSansMono));
-        
+        var document = GenerateDocument(item =>
+            item.Markdown(md, options => options.CodeFont = NotoSansMono)
+        );
+
         await Verify(document);
     }
 
@@ -197,128 +204,137 @@ public sealed class RenderTests
     public async Task RendersImagesDownload()
     {
         const string md = """
-                          ![Alt text](https://placehold.co/100x50.jpg "Optional title")
+            ![Alt text](https://placehold.co/100x50.jpg "Optional title")
 
-                          Inline image: ![Logo](https://placehold.co/100x50.jpg)
-                          """;
+            Inline image: ![Logo](https://placehold.co/100x50.jpg)
+            """;
 
         var markdown = ParsedMarkdownDocument.FromText(md);
-        
+
         await markdown.DownloadImages();
-        
+
         var document = GenerateDocument(item => item.Markdown(markdown));
 
         await Verify(document);
     }
-    
+
     [Fact]
     public async Task RendersImagesDownloadBase64()
     {
         const string md = """
-                          ![Alt text](data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAyAGQDASIAAhEBAxEB/8QAGgABAAMBAQEAAAAAAAAAAAAAAAIDBAUGB//EACcQAAEEAQMDBAMBAAAAAAAAAAABAgMEEQUSExQhUSIxQWEGMnGh/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/APvgAAAAAAAAAAAAAAAAAAAADla7qcunwKsFd0rkTcrlT0NTOO6+fos1C7LFJVr1WMfZsZ271Xa1ETKquCr8mV79MlrxQTSySomONmUTCovcqt8q2KGoxVp3NiRzJItuH4VMZRADtZlihnjmhZ10crYUY1fS5Xfqv89zTSu2OvdSvMibNx8rHRKu1yZwvv8AJypqVqw6xqLYHtk6iKaOF3ZytYmO/hVz/hvqJLc1nrXQSwQxw8bUlTa5yquV7eAOk+1CydYXyNbIjOTDu3p85JV5mWIWSxO3RvTLVxjKGDVtMdqUjGyyNZAxMt2plyv+8/H18m6skrazEn2LKiYXZ2Rf4By6F+5csrxrSSukjm7VcvJtRcZwQm1W2rbVitBE6nWerHbnKj3491T4KHwJZtVEqaZJTljmSSSVWI1EanumU/bJF0dqtUv6eypLI6d7+KRqeja7yvxgD0UMjZYmSMXLHtRyfxSZTTh6epDDnPGxrM+cJguAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/9k=)
-                          """;
+            ![Alt text](data:image/jpeg;base64,/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAyAGQDASIAAhEBAxEB/8QAGgABAAMBAQEAAAAAAAAAAAAAAAIDBAUGB//EACcQAAEEAQMDBAMBAAAAAAAAAAABAgMEEQUSExQhUSIxQWEGMnGh/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/APvgAAAAAAAAAAAAAAAAAAAADla7qcunwKsFd0rkTcrlT0NTOO6+fos1C7LFJVr1WMfZsZ271Xa1ETKquCr8mV79MlrxQTSySomONmUTCovcqt8q2KGoxVp3NiRzJItuH4VMZRADtZlihnjmhZ10crYUY1fS5Xfqv89zTSu2OvdSvMibNx8rHRKu1yZwvv8AJypqVqw6xqLYHtk6iKaOF3ZytYmO/hVz/hvqJLc1nrXQSwQxw8bUlTa5yquV7eAOk+1CydYXyNbIjOTDu3p85JV5mWIWSxO3RvTLVxjKGDVtMdqUjGyyNZAxMt2plyv+8/H18m6skrazEn2LKiYXZ2Rf4By6F+5csrxrSSukjm7VcvJtRcZwQm1W2rbVitBE6nWerHbnKj3491T4KHwJZtVEqaZJTljmSSSVWI1EanumU/bJF0dqtUv6eypLI6d7+KRqeja7yvxgD0UMjZYmSMXLHtRyfxSZTTh6epDDnPGxrM+cJguAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/9k=)
+            """;
 
         var markdown = ParsedMarkdownDocument.FromText(md);
-        
+
         await markdown.DownloadImages();
-        
+
         var document = GenerateDocument(item => item.Markdown(markdown));
 
         await Verify(document);
     }
-    
+
     [Fact]
     public async Task RendersImagesDownloadLocal()
     {
         const string md = """
-                          ![Alt text](./local.jpg)
-                          """;
+            ![Alt text](./local.jpg)
+            """;
 
         var markdown = ParsedMarkdownDocument.FromText(md);
-        
-        await markdown.DownloadImages(safeRootPath: Path.Combine(AppContext.BaseDirectory, "Images"));
-        
+
+        await markdown.DownloadImages(
+            safeRootPath: Path.Combine(AppContext.BaseDirectory, "Images")
+        );
+
         var document = GenerateDocument(item => item.Markdown(markdown));
 
         await Verify(document);
     }
-    
+
     [Fact]
     public async Task RendersImagesDownloadLocalNoRoot()
     {
         const string md = """
-                          ![Alt text](./local.jpg)
-                          """;
+            ![Alt text](./local.jpg)
+            """;
 
         var markdown = ParsedMarkdownDocument.FromText(md);
-        
+
         await markdown.DownloadImages();
-        
+
         var document = GenerateDocument(item => item.Markdown(markdown));
 
         await Verify(document);
     }
-    
+
     [Fact]
     public async Task RendersImagesDownloadLocalPathTraversal()
     {
         const string md = """
-                          ![Alt text](../../local.jpg)
-                          """;
+            ![Alt text](../../local.jpg)
+            """;
 
         var markdown = ParsedMarkdownDocument.FromText(md);
-        
-        await markdown.DownloadImages(safeRootPath: Path.Combine(AppContext.BaseDirectory, "Images"));
-        
+
+        await markdown.DownloadImages(
+            safeRootPath: Path.Combine(AppContext.BaseDirectory, "Images")
+        );
+
         var document = GenerateDocument(item => item.Markdown(markdown));
 
         await Verify(document);
     }
-    
+
     [Fact]
     public async Task RendersImagesDownloadMaxSizeInvalid()
     {
         const string md = """
-                          ![Alt text](https://placehold.co/500x200.jpg)
-                          """;
+            ![Alt text](https://placehold.co/500x200.jpg)
+            """;
 
         var markdown = ParsedMarkdownDocument.FromText(md);
-        
+
         await markdown.DownloadImages();
-        
+
         var document = GenerateDocument(item => item.Markdown(markdown));
 
         Assert.Throws<DocumentLayoutException>(() => document.GeneratePdf());
     }
-    
+
     [Fact]
     public async Task RendersImagesDownloadMaxSizeValid()
     {
         const string md = """
-                          ![Alt text](https://placehold.co/500x200.jpg)
-                          """;
+            ![Alt text](https://placehold.co/500x200.jpg)
+            """;
 
         var markdown = ParsedMarkdownDocument.FromText(md);
-        
+
         await markdown.DownloadImages();
-        
-        var document = GenerateDocument(item => item.Markdown(markdown, options =>
-        {
-            options.MaxImageWidth = 200;
-            options.MaxImageHeight = 50;
-        }));
+
+        var document = GenerateDocument(item =>
+            item.Markdown(
+                markdown,
+                options =>
+                {
+                    options.MaxImageWidth = 200;
+                    options.MaxImageHeight = 50;
+                }
+            )
+        );
 
         await Verify(document);
     }
-    
+
     [Fact]
     public async Task RendersImagesNoDownload()
     {
         const string md = """
-                          ![Alt text](https://placehold.co/100x50.jpg "Optional title")
+            ![Alt text](https://placehold.co/100x50.jpg "Optional title")
 
-                          Inline image: ![Logo](https://placehold.co/100x50.jpg)
-                          """;
+            Inline image: ![Logo](https://placehold.co/100x50.jpg)
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
@@ -329,20 +345,20 @@ public sealed class RenderTests
     public async Task RendersHorizontalRules()
     {
         const string md = """
-                          First paragraph.
+            First paragraph.
 
-                          ---
+            ---
 
-                          Second paragraph.
+            Second paragraph.
 
-                          ***
+            ***
 
-                          Third paragraph.
+            Third paragraph.
 
-                          ___
+            ___
 
-                          Fourth paragraph.
-                          """;
+            Fourth paragraph.
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
@@ -353,11 +369,11 @@ public sealed class RenderTests
     public async Task RendersTables()
     {
         const string md = """
-                          | Header 1 | Header 2 | Header 3 |
-                          |:---------|:--------:|---------:|
-                          | Cell 1   | Cell 2   | Cell 3   |
-                          | Cell 4   | Cell 5   | Cell 6   |
-                          """;
+            | Header 1 | Header 2 | Header 3 |
+            |:---------|:--------:|---------:|
+            | Cell 1   | Cell 2   | Cell 3   |
+            | Cell 4   | Cell 5   | Cell 6   |
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
@@ -368,16 +384,16 @@ public sealed class RenderTests
     public async Task RendersGridTables()
     {
         const string md = """
-                          +---+---+---+
-                          | AAA \ | B |
-                          + AAA \ +---+
-                          | AAA   | C |
-                          +===+===+===+
-                          | DDDDDDDDD |
-                          +---+---+---+
-                          | E | F | G |
-                          +---+---+---+
-                          """;
+            +---+---+---+
+            | AAA \ | B |
+            + AAA \ +---+
+            | AAA   | C |
+            +===+===+===+
+            | DDDDDDDDD |
+            +---+---+---+
+            | E | F | G |
+            +---+---+---+
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
@@ -388,21 +404,23 @@ public sealed class RenderTests
     public async Task RendersNestedElements()
     {
         const string md = """
-                          1. List item with paragraph
+            1. List item with paragraph
 
-                             This is a paragraph inside a list item.
+               This is a paragraph inside a list item.
 
-                             > Blockquote inside list
-                             >
-                             > - Nested list in blockquote
-                             > - Another item
+               > Blockquote inside list
+               >
+               > - Nested list in blockquote
+               > - Another item
 
-                          2. Another item
+            2. Another item
 
-                          - List with `inline code` and **bold text**
-                          """;
+            - List with `inline code` and **bold text**
+            """;
 
-        var document = GenerateDocument(item => item.Markdown(md, options => options.CodeFont = NotoSansMono));
+        var document = GenerateDocument(item =>
+            item.Markdown(md, options => options.CodeFont = NotoSansMono)
+        );
 
         await Verify(document);
     }
@@ -411,15 +429,19 @@ public sealed class RenderTests
     public async Task RendersTags()
     {
         const string md = """
-                          This is page [**{currentPage}**](https://example.com) / *{totalPages}*.
-                          """;
+            This is page [**{currentPage}**](https://example.com) / *{totalPages}*.
+            """;
 
-        var document = GenerateDocument(item => item.Markdown(md,
-            options =>
-            {
-                options.AddTemplateTag("currentPage", t => t.CurrentPageNumber());
-                options.AddTemplateTag("totalPages", t => t.TotalPages());
-            }));
+        var document = GenerateDocument(item =>
+            item.Markdown(
+                md,
+                options =>
+                {
+                    options.AddTemplateTag("currentPage", t => t.CurrentPageNumber());
+                    options.AddTemplateTag("totalPages", t => t.TotalPages());
+                }
+            )
+        );
 
         await Verify(document);
     }
@@ -428,14 +450,14 @@ public sealed class RenderTests
     public async Task RendersHtmlEntities()
     {
         const string md = """
-                          Basic entities: &amp; &lt; &gt; &quot; &apos;
-                          
-                          Named entities: &copy; &reg; &trade; &mdash; &ndash; &hellip; &euro;
-                          
-                          Numeric entities: &#169; &#174; &#8482; &#8212; &#8211; &#8230; &#8364;
-                          
-                          Hex entities: &#x00A9; &#x00AE; &#x2122; &#x2014; &#x2013; &#x2026; &#x20AC;
-                          """;
+            Basic entities: &amp; &lt; &gt; &quot; &apos;
+
+            Named entities: &copy; &reg; &trade; &mdash; &ndash; &hellip; &euro;
+
+            Numeric entities: &#169; &#174; &#8482; &#8212; &#8211; &#8230; &#8364;
+
+            Hex entities: &#x00A9; &#x00AE; &#x2122; &#x2014; &#x2013; &#x2026; &#x20AC;
+            """;
 
         var document = GenerateDocument(item => item.Markdown(md));
 
@@ -444,32 +466,36 @@ public sealed class RenderTests
 
     private static Document GenerateDocument(Action<IContainer> body)
     {
-        return Document.Create(container =>
-        {
-            container.Page(page =>
+        return Document
+            .Create(container =>
             {
-                page.PageColor(Colors.White);
-                page.Size(PageSizes.A6);
-                page.Margin(1, Unit.Centimetre);
-                page.DefaultTextStyle(text =>
+                container.Page(page =>
                 {
-                    text.FontFamily(Fonts.Lato);
-                    text.LineHeight(1.5f);
-                    return text;
-                });
-
-                page.Content()
-                    .PaddingVertical(20)
-                    .Column(main =>
+                    page.PageColor(Colors.White);
+                    page.Size(PageSizes.A6);
+                    page.Margin(1, Unit.Centimetre);
+                    page.DefaultTextStyle(text =>
                     {
-                        main.Spacing(20);
-                        body(main.Item());
+                        text.FontFamily(Fonts.Lato);
+                        text.LineHeight(1.5f);
+                        return text;
                     });
-            });
-        }).WithMetadata(new DocumentMetadata
-        {
-            CreationDate = new DateTime(2023, 11, 15, 12, 00, 00),
-            ModifiedDate = new DateTime(2023, 11, 15, 12, 00, 00),
-        });
+
+                    page.Content()
+                        .PaddingVertical(20)
+                        .Column(main =>
+                        {
+                            main.Spacing(20);
+                            body(main.Item());
+                        });
+                });
+            })
+            .WithMetadata(
+                new DocumentMetadata
+                {
+                    CreationDate = new DateTime(2023, 11, 15, 12, 00, 00),
+                    ModifiedDate = new DateTime(2023, 11, 15, 12, 00, 00),
+                }
+            );
     }
 }

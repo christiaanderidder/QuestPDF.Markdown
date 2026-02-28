@@ -11,13 +11,12 @@ public sealed class TemplateTests
         const string markdown = "This is a {template} test";
         var document = ParsedMarkdownDocument.FromText(markdown);
 
-        var block = document.MarkdigDocument
-            .OfType<ParagraphBlock>()
+        var block = document
+            .MarkdigDocument.OfType<ParagraphBlock>()
             .Single()
-            .Inline!
-            .OfType<TemplateInline>()
+            .Inline!.OfType<TemplateInline>()
             .Single();
-        
+
         Assert.Equal("template", block.Tag);
         Assert.Equal(11, block.Span.Start);
         Assert.Equal(19, block.Span.End);
