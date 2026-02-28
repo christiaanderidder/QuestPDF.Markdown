@@ -7,6 +7,7 @@
         <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <AnalysisLevel>latest</AnalysisLevel>
         <AnalysisMode>All</AnalysisMode>
+        <UseArtifactsOutput>true</UseArtifactsOutput>
     </PropertyGroup>
     <!--
         Perform a deep clean using `dotnet clean -p:deep=true` to remove obj and bin folders
