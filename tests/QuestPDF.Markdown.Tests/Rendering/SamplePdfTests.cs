@@ -28,7 +28,7 @@ public class SamplePdfTests
         var document = GenerateDocument(item => item.Markdown(markdown));
         document.GeneratePdf(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "test.pdf"));
     }
-   
+
     [Fact(Skip = "This test is not run in CI")]
     public async Task ShowInCompanion()
     {
@@ -39,46 +39,52 @@ public class SamplePdfTests
 
         try
         {
-            await document.ShowInCompanionAsync(cancellationToken: TestContext.Current.CancellationToken);
+            await document.ShowInCompanionAsync(
+                cancellationToken: TestContext.Current.CancellationToken
+            );
         }
         catch (OperationCanceledException)
         {
             // Ignore
         }
     }
-    
+
     private static Document GenerateDocument(Action<IContainer> body)
     {
-        return Document.Create(container =>
-        {
-            container.Page(page =>
+        return Document
+            .Create(container =>
             {
-                page.PageColor(Colors.White);
-                page.Size(PageSizes.A4);
-                page.Margin(1, Unit.Centimetre);
-                page.DefaultTextStyle(text =>
+                container.Page(page =>
                 {
-                    text.FontFamily(Fonts.Arial);
-                    text.LineHeight(1.5f);
-                    return text;
-                });
-
-                page.Content()
-                    .PaddingVertical(20)
-                    .Column(main =>
+                    page.PageColor(Colors.White);
+                    page.Size(PageSizes.A4);
+                    page.Margin(1, Unit.Centimetre);
+                    page.DefaultTextStyle(text =>
                     {
-                        main.Spacing(20);
-                        body(main.Item());
+                        text.FontFamily(Fonts.Arial);
+                        text.LineHeight(1.5f);
+                        return text;
                     });
-            });
-        }).WithMetadata(new DocumentMetadata
-        {
-            Author = "QuestPDF.Markdown",
-            Title = "QuestPDF.Markdown",
-            Subject = "QuestPDF.Markdown",
-            Keywords = "questpdf, markdown, pdf",
-            CreationDate = new DateTime(2023, 11, 15, 12, 00, 00),
-            ModifiedDate = new DateTime(2023, 11, 15, 12, 00, 00),
-        });
+
+                    page.Content()
+                        .PaddingVertical(20)
+                        .Column(main =>
+                        {
+                            main.Spacing(20);
+                            body(main.Item());
+                        });
+                });
+            })
+            .WithMetadata(
+                new DocumentMetadata
+                {
+                    Author = "QuestPDF.Markdown",
+                    Title = "QuestPDF.Markdown",
+                    Subject = "QuestPDF.Markdown",
+                    Keywords = "questpdf, markdown, pdf",
+                    CreationDate = new DateTime(2023, 11, 15, 12, 00, 00),
+                    ModifiedDate = new DateTime(2023, 11, 15, 12, 00, 00),
+                }
+            );
     }
 }

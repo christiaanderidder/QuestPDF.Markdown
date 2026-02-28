@@ -13,9 +13,12 @@ public static class CompatibilityShims
         return source.EndsWith(value);
 #endif
     }
-    
-    public static HashSet<T> ToHashSetShim<T>(this IEnumerable<T> source) => [..source];
-    public static bool IsNullOrEmpty([NotNullWhen(false)] this string? data) => string.IsNullOrEmpty(data);
+
+    public static HashSet<T> ToHashSetShim<T>(this IEnumerable<T> source) => [.. source];
+
+    public static bool IsNullOrEmpty([NotNullWhen(false)] this string? data) =>
+        string.IsNullOrEmpty(data);
+
     public static Task<byte[]> ReadAllBytesAsync(string path)
     {
 #if NETSTANDARD2_0

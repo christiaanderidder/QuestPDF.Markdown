@@ -17,6 +17,6 @@ internal static class TextExtensions
             TextHorizontalAlignment.Justify => text.Justify,
             TextHorizontalAlignment.Start => text.AlignStart,
             TextHorizontalAlignment.End => text.AlignEnd,
-            _ => throw new ArgumentOutOfRangeException(nameof(alignment), alignment, null)
+            _ => throw new ArgumentOutOfRangeException(nameof(alignment), alignment, null),
         };
 }

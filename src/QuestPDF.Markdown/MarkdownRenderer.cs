@@ -23,7 +23,10 @@ internal sealed class MarkdownRenderer : IComponent
     private readonly ParsedMarkdownDocument _document;
     private readonly TextProperties _textProperties = new();
 
-    private MarkdownRenderer(ParsedMarkdownDocument document, Action<MarkdownRendererOptions>? configure = null)
+    private MarkdownRenderer(
+        ParsedMarkdownDocument document,
+        Action<MarkdownRendererOptions>? configure = null
+    )
     {
         _document = document;
         _options = new MarkdownRendererOptions();
@@ -34,20 +37,27 @@ internal sealed class MarkdownRenderer : IComponent
     internal static MarkdownRenderer Create(string markdownText) =>
         new(ParsedMarkdownDocument.FromText(markdownText));
 
-    internal static MarkdownRenderer Create(string markdownText, Action<MarkdownRendererOptions> configure) =>
-        new(ParsedMarkdownDocument.FromText(markdownText), configure);
+    internal static MarkdownRenderer Create(
+        string markdownText,
+        Action<MarkdownRendererOptions> configure
+    ) => new(ParsedMarkdownDocument.FromText(markdownText), configure);
 
-    internal static MarkdownRenderer Create(ParsedMarkdownDocument document) =>
-        new(document);
+    internal static MarkdownRenderer Create(ParsedMarkdownDocument document) => new(document);
 
-    internal static MarkdownRenderer Create(ParsedMarkdownDocument document, Action<MarkdownRendererOptions> configure) =>
-        new(document, configure);
+    internal static MarkdownRenderer Create(
+        ParsedMarkdownDocument document,
+        Action<MarkdownRendererOptions> configure
+    ) => new(document, configure);
 
     public void Compose(IContainer pdf) => Render(_document.MarkdigDocument, pdf);
 
     private void Render(Block block, IContainer pdf)
     {
-        if (_options.Debug) pdf = pdf.PaddedDebugArea(block.GetType().Name, block is LeafBlock ? Colors.Red.Medium : Colors.Blue.Medium);
+        if (_options.Debug)
+            pdf = pdf.PaddedDebugArea(
+                block.GetType().Name,
+                block is LeafBlock ? Colors.Red.Medium : Colors.Blue.Medium
+            );
 
         _ = block switch
         {
@@ -62,22 +72,27 @@ internal sealed class MarkdownRenderer : IComponent
             TableCell tableCell => Render(tableCell, pdf),
             ContainerBlock containerBlock => Render(containerBlock, pdf),
             LeafBlock leafBlock => Render(leafBlock, pdf),
-            _ => throw new InvalidOperationException($"Unsupported block type {block.GetType().Name}")
+            _ => throw new InvalidOperationException(
+                $"Unsupported block type {block.GetType().Name}"
+            ),
         };
     }
 
     private IContainer Render(ContainerBlock block, IContainer pdf)
     {
-        if (block.Count == 0) return pdf;
+        if (block.Count == 0)
+            return pdf;
 
         pdf.Column(col =>
         {
             foreach (var item in block)
             {
                 // Blocks inside a list get the same spacing as the list items themselves
-                col.Spacing(item.Parent is ListBlock or ListItemBlock
-                    ? _options.ListItemSpacing
-                    : _options.ParagraphSpacing);
+                col.Spacing(
+                    item.Parent is ListBlock or ListItemBlock
+                        ? _options.ListItemSpacing
+                        : _options.ParagraphSpacing
+                );
 
                 Render(item, col.Item());
             }
@@ -111,19 +126,28 @@ internal sealed class MarkdownRenderer : IComponent
         uint rowIdx = 0;
         foreach (var row in rows)
         {
-            if (row.IsHeader) _textProperties.TextStyles.Push(t => t.Bold());
+            if (row.IsHeader)
+                _textProperties.TextStyles.Push(t => t.Bold());
             var isLast = rowIdx + 1 == table.Count;
 
             var cells = row.OfType<TableCell>().ToList();
             RenderTableCells(table, td, cells, rowIdx, row, isLast);
 
-            if (row.IsHeader) _textProperties.TextStyles.Pop();
+            if (row.IsHeader)
+                _textProperties.TextStyles.Pop();
 
             rowIdx++;
         }
     }
 
-    private void RenderTableCells(Table table, TableDescriptor td, List<TableCell> cells, uint rowIdx, TableRow row, bool isLast)
+    private void RenderTableCells(
+        Table table,
+        TableDescriptor td,
+        List<TableCell> cells,
+        uint rowIdx,
+        TableRow row,
+        bool isLast
+    )
     {
         uint columnIdx = 0;
         foreach (var cell in cells)
@@ -135,17 +159,28 @@ internal sealed class MarkdownRenderer : IComponent
         }
     }
 
-    private IContainer RenderTableCell(TableCell cell, uint rowIdx, uint columnIdx, bool isHeader, bool isLast, TableDescriptor table, TableColumnDefinition columnDefinition)
+    private IContainer RenderTableCell(
+        TableCell cell,
+        uint rowIdx,
+        uint columnIdx,
+        bool isHeader,
+        bool isLast,
+        TableDescriptor table,
+        TableColumnDefinition columnDefinition
+    )
     {
-        var container = table.Cell()
+        var container = table
+            .Cell()
             .RowSpan((uint)cell.RowSpan)
             .Row(rowIdx + 1)
             .Column((cell.ColumnIndex >= 0 ? (uint)cell.ColumnIndex : columnIdx) + 1)
             .ColumnSpan((uint)cell.ColumnSpan)
             .Border(_options, isHeader, isLast)
-            .Background(rowIdx % 2 == 1
-                ? _options.TableEvenRowBackgroundColor
-                : _options.TableOddRowBackgroundColor)
+            .Background(
+                rowIdx % 2 == 1
+                    ? _options.TableEvenRowBackgroundColor
+                    : _options.TableOddRowBackgroundColor
+            )
             .Padding(5);
 
         switch (columnDefinition.Alignment)
@@ -179,12 +214,10 @@ internal sealed class MarkdownRenderer : IComponent
                     Render(item, text);
                 }
             });
-
         }
         else if (block.Lines.Count != 0)
         {
-            pdf.Text(block.Lines.ToString())
-                .ApplyStyles(_textProperties.TextStyles.ToList());
+            pdf.Text(block.Lines.ToString()).ApplyStyles(_textProperties.TextStyles.ToList());
         }
 
         return pdf;
@@ -224,15 +257,18 @@ internal sealed class MarkdownRenderer : IComponent
 
     private IContainer Render(ListItemBlock block, IContainer pdf)
     {
-        if (block.Parent is not ListBlock list) return pdf;
+        if (block.Parent is not ListBlock list)
+            return pdf;
 
         pdf.Row(li =>
         {
             li.Spacing(5);
             var delimiter = li.AutoItem().PaddingLeft(10);
-            
-            if (list.IsOrdered) delimiter.Text($"{block.Order}{list.OrderedDelimiter}");
-            else delimiter.Text(_options.UnorderedListGlyph).FontFamily(_options.UnicodeGlyphFont);
+
+            if (list.IsOrdered)
+                delimiter.Text($"{block.Order}{list.OrderedDelimiter}");
+            else
+                delimiter.Text(_options.UnorderedListGlyph).FontFamily(_options.UnicodeGlyphFont);
 
             Render(block as ContainerBlock, li.RelativeItem());
         });
@@ -243,10 +279,11 @@ internal sealed class MarkdownRenderer : IComponent
     private IContainer Render(HeadingBlock block, IContainer pdf)
     {
         // Push any styles that should be applied to the entire block on the stack
-        _textProperties.TextStyles.Push(t => t
-            .FontColor(_options.HeadingTextColor)
-            .FontSize(Math.Max(0, _options.CalculateHeadingSize(block.Level)))
-            .Bold());
+        _textProperties.TextStyles.Push(t =>
+            t.FontColor(_options.HeadingTextColor)
+                .FontSize(Math.Max(0, _options.CalculateHeadingSize(block.Level)))
+                .Bold()
+        );
 
         Render(block as LeafBlock, pdf);
 
@@ -278,21 +315,24 @@ internal sealed class MarkdownRenderer : IComponent
         return pdf;
     }
 
-    private TextDescriptor Render(Inline inline, TextDescriptor text) => inline switch
-    {
-        TemplateInline templateInline => Render(templateInline, text),
-        LinkInline linkInline => Render(linkInline, text),
-        EmphasisInline emphasisInline => Render(emphasisInline, text),
-        AutolinkInline autolinkInline => Render(autolinkInline, text),
-        LineBreakInline lineBreakInline => Render(lineBreakInline, text),
-        TaskList taskList => Render(taskList, text),
-        LiteralInline literalInline => Render(literalInline, text),
-        CodeInline codeInline => Render(codeInline, text),
-        HtmlEntityInline htmlEntityInline => Render(htmlEntityInline, text),
-        ContainerInline containerInline => Render(containerInline, text),
-        LeafInline leafInline => Render(leafInline, text),
-        _ => throw new InvalidOperationException($"Unsupported inline type {inline.GetType().Name}")
-    };
+    private TextDescriptor Render(Inline inline, TextDescriptor text) =>
+        inline switch
+        {
+            TemplateInline templateInline => Render(templateInline, text),
+            LinkInline linkInline => Render(linkInline, text),
+            EmphasisInline emphasisInline => Render(emphasisInline, text),
+            AutolinkInline autolinkInline => Render(autolinkInline, text),
+            LineBreakInline lineBreakInline => Render(lineBreakInline, text),
+            TaskList taskList => Render(taskList, text),
+            LiteralInline literalInline => Render(literalInline, text),
+            CodeInline codeInline => Render(codeInline, text),
+            HtmlEntityInline htmlEntityInline => Render(htmlEntityInline, text),
+            ContainerInline containerInline => Render(containerInline, text),
+            LeafInline leafInline => Render(leafInline, text),
+            _ => throw new InvalidOperationException(
+                $"Unsupported inline type {inline.GetType().Name}"
+            ),
+        };
 
     private static TextDescriptor Render(LeafInline inline, TextDescriptor text)
     {
@@ -303,7 +343,8 @@ internal sealed class MarkdownRenderer : IComponent
 
     private TextDescriptor Render(TemplateInline inline, TextDescriptor text)
     {
-        if (!_options.RenderTemplates.TryGetValue(inline.Tag, out var render) || render == null) return text;
+        if (!_options.RenderTemplates.TryGetValue(inline.Tag, out var render) || render == null)
+            return text;
 
         render(text).ApplyStyles(_textProperties.TextStyles.ToList());
 
@@ -313,21 +354,23 @@ internal sealed class MarkdownRenderer : IComponent
     private TextDescriptor Render(LinkInline inline, TextDescriptor text)
     {
         // Push any styles that should be applied to the entire span on the stack
-        _textProperties.TextStyles.Push(t => t
-            .FontColor(_options.LinkTextColor)
-            .DecorationColor(_options.LinkTextColor)
-            .Underline()
+        _textProperties.TextStyles.Push(t =>
+            t.FontColor(_options.LinkTextColor).DecorationColor(_options.LinkTextColor).Underline()
         );
 
-        if (inline.IsImage) _textProperties.ImageUrl = inline.Url;
-        if (!inline.IsImage) _textProperties.LinkUrl = inline.Url;
+        if (inline.IsImage)
+            _textProperties.ImageUrl = inline.Url;
+        if (!inline.IsImage)
+            _textProperties.LinkUrl = inline.Url;
 
         Render(inline as ContainerInline, text);
 
         // Pop any styles that were applied to the entire span off the stack
         _textProperties.TextStyles.Pop();
-        if (inline.IsImage) _textProperties.ImageUrl = null;
-        if (!inline.IsImage) _textProperties.LinkUrl = null;
+        if (inline.IsImage)
+            _textProperties.ImageUrl = null;
+        if (!inline.IsImage)
+            _textProperties.LinkUrl = null;
 
         return text;
     }
@@ -371,8 +414,10 @@ internal sealed class MarkdownRenderer : IComponent
     private static TextDescriptor Render(LineBreakInline inline, TextDescriptor text)
     {
         // Only add a line break within a paragraph if trailing spaces or a backslash are used.
-        if (inline.IsBackslash || inline.IsHard) text.Span("\n");
-        else text.Span(" ");
+        if (inline.IsBackslash || inline.IsHard)
+            text.Span("\n");
+        else
+            text.Span(" ");
 
         return text;
     }
@@ -416,17 +461,17 @@ internal sealed class MarkdownRenderer : IComponent
                 if (maxWidth > 0 || maxHeight > 0)
                 {
                     const double epsilon = 1e-6;
-                    
+
                     var widthNonZero = Math.Abs(scaledWidth) > epsilon;
                     var heightNonZero = Math.Abs(scaledHeight) > epsilon;
 
-                    var widthRatio = (maxWidth > 0 && widthNonZero)
-                        ? maxWidth / scaledWidth
-                        : double.MaxValue;
+                    var widthRatio =
+                        (maxWidth > 0 && widthNonZero) ? maxWidth / scaledWidth : double.MaxValue;
 
-                    var heightRatio = (maxHeight > 0 && heightNonZero)
-                        ? maxHeight / scaledHeight
-                        : double.MaxValue;
+                    var heightRatio =
+                        (maxHeight > 0 && heightNonZero)
+                            ? maxHeight / scaledHeight
+                            : double.MaxValue;
 
                     var minRatio = Math.Min(widthRatio, heightRatio);
 
@@ -458,8 +503,7 @@ internal sealed class MarkdownRenderer : IComponent
         }
 
         // Fallback to plain text
-        text.Span(inline.ToString())
-            .ApplyStyles(_textProperties.TextStyles.ToList());
+        text.Span(inline.ToString()).ApplyStyles(_textProperties.TextStyles.ToList());
 
         return text;
     }

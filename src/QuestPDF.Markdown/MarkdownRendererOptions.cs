@@ -27,7 +27,8 @@ public class MarkdownRendererOptions
 
     public string TaskListCheckedGlyph { get; set; } = "☑";
     public string TaskListUncheckedGlyph { get; set; } = "☐";
-    public string UnicodeGlyphFont { get; set; } = RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Arial Unicode MS" : Fonts.Arial;
+    public string UnicodeGlyphFont { get; set; } =
+        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Arial Unicode MS" : Fonts.Arial;
 
     public Color TableBorderColor { get; set; } = Colors.Grey.Lighten2;
     public Color TableEvenRowBackgroundColor { get; set; } = Colors.Grey.Lighten4;
@@ -61,7 +62,7 @@ public class MarkdownRendererOptions
     public string UnorderedListGlyph { get; set; } = "•";
 
     public Color HeadingTextColor { get; set; } = Colors.Black;
-    
+
     /// <summary>
     /// The formula used to calculate heading sizes based on their level.
     /// </summary>
@@ -70,7 +71,8 @@ public class MarkdownRendererOptions
     /// </remarks>
     public Func<int, int> CalculateHeadingSize { get; set; } = level => 28 - 2 * (level - 1);
 
-    public Dictionary<string, Func<TextDescriptor, TextSpanDescriptor>> RenderTemplates { get; } = [];
+    public Dictionary<string, Func<TextDescriptor, TextSpanDescriptor>> RenderTemplates { get; } =
+    [];
 
     /// <summary>
     /// Register a render function to replace a template tag in the markdown text with custom content
@@ -79,7 +81,10 @@ public class MarkdownRendererOptions
     /// <remarks>The rendered content must fit within a single line. Larger block elements are currently not supported</remarks>
     /// <param name="tag">The tag to replace.</param>
     /// <param name="render">The render function to render custom text in place of the template tag</param>
-    public MarkdownRendererOptions AddTemplateTag(string tag, Func<TextDescriptor, TextSpanDescriptor> render)
+    public MarkdownRendererOptions AddTemplateTag(
+        string tag,
+        Func<TextDescriptor, TextSpanDescriptor> render
+    )
     {
         RenderTemplates[tag] = render;
         return this;
@@ -90,5 +95,5 @@ public enum TableBorderStyle
 {
     None,
     Horizontal,
-    Full
+    Full,
 }
