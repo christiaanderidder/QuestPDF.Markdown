@@ -24,6 +24,7 @@
 **/.idea/**/contentModel.xml
 **/.idea/**/modules.xml
 
+artifacts/
 *.suo
 *.user
 .vs/
