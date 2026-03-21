@@ -26,7 +26,18 @@ public class SamplePdfTests
         await markdown.DownloadImages();
 
         var document = GenerateDocument(item => item.Markdown(markdown));
-        document.GeneratePdf(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "tests", "QuestPDF.Markdown.Tests", "test.pdf"));
+        document.GeneratePdf(
+            Path.Combine(
+                AppContext.BaseDirectory,
+                "..",
+                "..",
+                "..",
+                "..",
+                "tests",
+                "QuestPDF.Markdown.Tests",
+                "test.pdf"
+            )
+        );
     }
 
     [Fact(Skip = "This test is not run in CI")]
