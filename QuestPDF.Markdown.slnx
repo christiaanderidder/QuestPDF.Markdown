@@ -1,10 +1,10 @@
 <Solution>
-    <Folder Name="/Solution Items/">
-        <File Path=".gitignore" />
-        <File Path="Directory.Build.props" />
-        <File Path="Directory.Packages.props" />
-        <File Path="global.json" />
-    </Folder>
-    <Project Path="src/QuestPDF.Markdown/QuestPDF.Markdown.csproj" />
-    <Project Path="tests/QuestPDF.Markdown.Tests/QuestPDF.Markdown.Tests.csproj" />
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+  </Folder>
+  <Project Path="src/QuestPDF.Markdown/QuestPDF.Markdown.csproj" />
+  <Project Path="tests/QuestPDF.Markdown.Tests/QuestPDF.Markdown.Tests.csproj" />
 </Solution>
