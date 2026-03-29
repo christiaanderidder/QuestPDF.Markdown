@@ -5,14 +5,15 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="8.0.1" />
-    <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.1" />
-    <PackageVersion Include="Markdig" Version="1.1.1" />
+    <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.2" />
+    <PackageVersion Include="Markdig" Version="1.1.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageVersion Include="Microsoft.Testing.Platform" Version="2.1.0" />
     <PackageVersion Include="PolySharp" Version="1.15.0" />
     <PackageVersion Include="QuestPDF" Version="2026.2.4" />
     <PackageVersion Include="SkiaSharp" Version="3.119.2" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.2" />
-    <PackageVersion Include="Verify.ImageMagick" Version="3.8.6" />
+    <PackageVersion Include="Verify.ImageMagick" Version="3.8.7" />
     <PackageVersion Include="Verify.QuestPDF" Version="2.4.0" />
     <PackageVersion Include="Verify.XunitV3" Version="31.13.5" />
     <PackageVersion Include="xunit.analyzers" Version="1.27.0" />
