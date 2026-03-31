@@ -1,7 +1,7 @@
 namespace QuestPDF.Markdown.Tests;
 
-public sealed class VerifyChecksTests
+internal sealed class VerifyChecksTests
 {
-    [Fact]
+    [Test]
     public Task Run() => VerifyChecks.Run();
 }

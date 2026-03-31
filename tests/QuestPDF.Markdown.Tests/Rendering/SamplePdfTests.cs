@@ -1,4 +1,3 @@
-using System.Reflection;
 using QuestPDF.Companion;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -6,20 +5,20 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Markdown.Tests.Rendering;
 
-public class SamplePdfTests
+internal sealed class SamplePdfTests
 {
     private readonly string _markdown;
 
     public SamplePdfTests()
     {
-        var assembly = Assembly.GetExecutingAssembly();
+        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
         const string resourceName = "QuestPDF.Markdown.Tests.test.md";
         using var stream = assembly.GetManifestResourceStream(resourceName);
         using var reader = new StreamReader(stream!);
         _markdown = reader.ReadToEnd();
     }
 
-    [Fact(Skip = "This test is not run in CI")]
+    [Test, Skip("This test is not run in CI")]
     public async Task SaveToFile()
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
@@ -40,7 +39,7 @@ public class SamplePdfTests
         );
     }
 
-    [Fact(Skip = "This test is not run in CI")]
+    [Test, Skip("This test is not run in CI")]
     public async Task ShowInCompanion()
     {
         var markdown = ParsedMarkdownDocument.FromText(_markdown);
@@ -51,7 +50,7 @@ public class SamplePdfTests
         try
         {
             await document.ShowInCompanionAsync(
-                cancellationToken: TestContext.Current.CancellationToken
+                cancellationToken: TestContext.Current!.Execution.CancellationToken
             );
         }
         catch (OperationCanceledException)

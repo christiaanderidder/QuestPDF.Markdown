@@ -2,17 +2,17 @@ using QuestPDF.Markdown.Helpers;
 
 namespace QuestPDF.Markdown.Tests.Helpers;
 
-public class PathHelpersTests
+internal sealed class PathHelpersTests
 {
-    [Theory]
-    [InlineData("./image.png", "/safe/root", "/safe/root/image.png", true)]
-    [InlineData("image.png", "/safe/root", "/safe/root/image.png", true)]
-    [InlineData("subdir/../image.png", "/safe/root", "/safe/root/image.png", true)]
-    [InlineData("subdir/image.png", "/safe/root", "/safe/root/subdir/image.png", true)]
-    [InlineData("../image.png", "/safe/root", "", false)]
-    [InlineData("/absolute/path/image.png", "/safe/root", "", false)]
-    [InlineData("invaid\0.png", "/safe/root", "", false)]
-    public void ResolvesSafeLocalPath(
+    [Test]
+    [Arguments("./image.png", "/safe/root", "/safe/root/image.png", true)]
+    [Arguments("image.png", "/safe/root", "/safe/root/image.png", true)]
+    [Arguments("subdir/../image.png", "/safe/root", "/safe/root/image.png", true)]
+    [Arguments("subdir/image.png", "/safe/root", "/safe/root/subdir/image.png", true)]
+    [Arguments("../image.png", "/safe/root", "", false)]
+    [Arguments("/absolute/path/image.png", "/safe/root", "", false)]
+    [Arguments("invaid\0.png", "/safe/root", "", false)]
+    public async Task ResolvesSafeLocalPath(
         string imagePath,
         string safeRootPath,
         string expectedSafeImagePath,
@@ -25,7 +25,7 @@ public class PathHelpersTests
             out var safeImagePath
         );
 
-        Assert.Equal(expectedSafeImagePath, safeImagePath);
-        Assert.Equal(expectedResult, result);
+        await Assert.That(safeImagePath).IsEqualTo(expectedSafeImagePath);
+        await Assert.That(result).IsEqualTo(expectedResult);
     }
 }

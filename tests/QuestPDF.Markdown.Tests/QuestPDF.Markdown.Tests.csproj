@@ -14,18 +14,10 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Testing.Platform" />
     <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
+    <PackageReference Include="TUnit" />
     <PackageReference Include="Verify.ImageMagick" />
     <PackageReference Include="Verify.QuestPDF" />
-    <PackageReference Include="Verify.XunitV3" />
-    <PackageReference Include="xunit.analyzers">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="xunit.runner.visualstudio">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="xunit.v3.mtp-v2" />
+    <PackageReference Include="Verify.TUnit" />
   </ItemGroup>
 
   <ItemGroup>
