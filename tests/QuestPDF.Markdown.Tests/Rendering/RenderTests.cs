@@ -5,12 +5,12 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Markdown.Tests.Rendering;
 
-public sealed class RenderTests
+internal sealed class RenderTests
 {
     const string NotoSansMono = "Noto Sans Mono";
     const string NotoSansSymbols2 = "Noto Sans Symbols 2";
 
-    [Fact]
+    [Test]
     public async Task RendersHeadings()
     {
         const string md = """
@@ -27,7 +27,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersAlternativeHeadings()
     {
         const string md = """
@@ -42,7 +42,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersParagraphs()
     {
         const string md = """
@@ -63,7 +63,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RedersEmphasis()
     {
         const string md = """
@@ -85,7 +85,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersExtendedEmphasis()
     {
         const string md = """
@@ -103,7 +103,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersLinks()
     {
         const string md = """
@@ -129,7 +129,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersLists()
     {
         const string md = """
@@ -165,7 +165,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersBlockquotes()
     {
         const string md = """
@@ -181,7 +181,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersCodeBlocksAndInlineCode()
     {
         const string md = """
@@ -200,7 +200,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersImagesDownload()
     {
         const string md = """
@@ -218,7 +218,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersImagesDownloadBase64()
     {
         const string md = """
@@ -234,7 +234,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersImagesDownloadLocal()
     {
         const string md = """
@@ -252,7 +252,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersImagesDownloadLocalNoRoot()
     {
         const string md = """
@@ -268,7 +268,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersImagesDownloadLocalPathTraversal()
     {
         const string md = """
@@ -286,7 +286,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersImagesDownloadMaxSizeInvalid()
     {
         const string md = """
@@ -299,10 +299,10 @@ public sealed class RenderTests
 
         var document = GenerateDocument(item => item.Markdown(markdown));
 
-        Assert.Throws<DocumentLayoutException>(() => document.GeneratePdf());
+        await Assert.That(() => document.GeneratePdf()).Throws<DocumentLayoutException>();
     }
 
-    [Fact]
+    [Test]
     public async Task RendersImagesDownloadMaxSizeValid()
     {
         const string md = """
@@ -327,7 +327,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersImagesNoDownload()
     {
         const string md = """
@@ -341,7 +341,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersHorizontalRules()
     {
         const string md = """
@@ -365,7 +365,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersTables()
     {
         const string md = """
@@ -380,7 +380,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersGridTables()
     {
         const string md = """
@@ -400,7 +400,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersNestedElements()
     {
         const string md = """
@@ -425,7 +425,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersTags()
     {
         const string md = """
@@ -446,7 +446,7 @@ public sealed class RenderTests
         await Verify(document);
     }
 
-    [Fact]
+    [Test]
     public async Task RendersHtmlEntities()
     {
         const string md = """

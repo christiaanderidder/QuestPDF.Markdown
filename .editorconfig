@@ -7,3 +7,7 @@ indent_style = unset
 insert_final_newline = false
 tab_width = unset
 trim_trailing_whitespace = false
+
+# Consider calling ConfigureAwait on the awaited task
+[tests/**/*.cs]
+dotnet_diagnostic.CA2007.severity = none
