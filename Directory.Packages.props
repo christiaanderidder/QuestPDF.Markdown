@@ -4,11 +4,8 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="coverlet.collector" Version="8.0.1" />
     <PackageVersion Include="GitHubActionsTestLogger" Version="3.0.3" />
     <PackageVersion Include="Markdig" Version="1.1.2" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
-    <PackageVersion Include="Microsoft.Testing.Platform" Version="2.2.1" />
     <PackageVersion Include="PolySharp" Version="1.15.0" />
     <PackageVersion Include="QuestPDF" Version="2026.2.4" />
     <PackageVersion Include="SkiaSharp" Version="3.119.2" />
