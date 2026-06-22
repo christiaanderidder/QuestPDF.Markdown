@@ -8,7 +8,6 @@ using QuestPDF.Infrastructure;
 using QuestPDF.Markdown.Compatibility;
 using QuestPDF.Markdown.Helpers;
 using QuestPDF.Markdown.Parsing;
-using SkiaSharp;
 
 namespace QuestPDF.Markdown;
 
@@ -19,7 +18,7 @@ namespace QuestPDF.Markdown;
 public class ParsedMarkdownDocument
 {
     private readonly MarkdownDocument _document;
-    private readonly ConcurrentDictionary<string, ImageWithDimensions> _imageCache = new();
+    private readonly ConcurrentDictionary<string, Image> _imageCache = new();
     private static readonly Regex DataUri = new(
         @"data:image\/.+?;base64,(?<data>.+)",
         RegexOptions.Compiled,
@@ -81,13 +80,8 @@ public class ParsedMarkdownDocument
                     if (!success)
                         return;
 
-                    // QuestPDF does not allow accessing image dimensions on loaded images
-                    // To work around this we will parse the image ourselves first and keep track of the dimensions
-                    using var skImage = SKImage.FromEncodedData(imageData);
-                    var pdfImage = Image.FromBinaryData(skImage.EncodedData.ToArray());
-
-                    var image = new ImageWithDimensions(skImage.Width, skImage.Height, pdfImage);
-                    _imageCache.TryAdd(url, image);
+                    var pdfImage = Image.FromBinaryData(imageData);
+                    _imageCache.TryAdd(url, pdfImage);
                 }
                 finally
                 {
@@ -140,10 +134,7 @@ public class ParsedMarkdownDocument
 
     internal MarkdownDocument MarkdigDocument => _document;
 
-    internal bool TryGetImageFromCache(
-        string url,
-        [MaybeNullWhen(false)] out ImageWithDimensions image
-    )
+    internal bool TryGetImageFromCache(string url, [MaybeNullWhen(false)] out Image image)
     {
         return _imageCache.TryGetValue(url, out image);
     }

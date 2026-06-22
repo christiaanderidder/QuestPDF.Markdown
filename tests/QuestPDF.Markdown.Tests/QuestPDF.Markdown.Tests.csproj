@@ -8,7 +8,6 @@
   <ItemGroup>
     <PackageReference Include="GitHubActionsTestLogger" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" />
-    <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" />
     <PackageReference Include="TUnit" />
     <PackageReference Include="Verify.QuestPDF" />
     <PackageReference Include="Verify.TUnit" />
