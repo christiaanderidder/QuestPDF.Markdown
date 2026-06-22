@@ -11,9 +11,8 @@
     <PackageVersion Include="QuestPDF" Version="2026.6.0" />
     <PackageVersion Include="SkiaSharp" Version="3.119.4" />
     <PackageVersion Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
-    <PackageVersion Include="Verify.ImageMagick" Version="3.8.8" />
     <PackageVersion Include="Verify.QuestPDF" Version="2.5.0" />
-    <PackageVersion Include="TUnit" Version="1.56.18" />
+    <PackageVersion Include="TUnit" Version="1.56.25" />
     <PackageVersion Include="Verify.TUnit" Version="31.20.0" />
   </ItemGroup>
 </Project>
