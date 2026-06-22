@@ -1,9 +1,5 @@
 ﻿{
   Pages: 1,
-  Metadata: {
-    CreationDate: DateTimeOffset_1,
-    ModifiedDate: DateTimeOffset_1
-  },
   Settings: {
     ContentDirection: LeftToRight,
     PDFA_Conformance: None,
