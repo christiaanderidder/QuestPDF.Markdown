@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg-gradient" x1="25%" y1="25%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4fc3f7" />
+      <stop offset="100%" stop-color="#246ee0" />
+    </linearGradient>
+  </defs>
+  <path id="bg" fill="url(#bg-gradient)" d="
+    m 64 0
+    a 160 160 0 0 1 160 160
+    v 32
+    h -64
+    a 64 64 0 0 1 64 64
+    h -160
+    a 64 64 0 0 1 -64 -64
+    v -128
+    h 64
+    v -64
+    Z" />
+  <path id="paper" fill="#fff" style="filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));" d="
+    m 64 64
+    h 48
+    l 48 48
+    v 80
+    h -96
+    v -128
+    z" />
+  <path id="paper-ear" fill="#89dafe" d="
+    m 112 64
+    l 48 48
+    h -48
+    v -48
+    z
+    " />
+  <rect id="md-bg" fill="#999" x="80" y="128" width="64" height="36" rx="4" ry="4" />
+  <g transform="translate(86 134) scale(0.34)">
+    <path id="md-logo" fill="#fff" d="
+      m 0 68
+      v -68
+      h 20
+      l 20 25
+      l 20 -25
+      h 20
+      v 68
+      h -20
+      v -39
+      l -20 25
+      l -20 -25
+      v 39
+      h -20
+      z
+
+      m 125 0
+      l -30 -33
+      h 20
+      v -35
+      h 20
+      v 35
+      h 20
+      z
+    " />
+  </g>
+</svg>
