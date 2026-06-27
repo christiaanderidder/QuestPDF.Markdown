@@ -450,9 +450,8 @@ internal sealed class MarkdownRenderer : IComponent
                 if (!_textProperties.LinkUrl.IsNullOrEmpty())
                     e = e.Hyperlink(_textProperties.LinkUrl);
 
-                var imageSize = image.GetSize();
-                double scaledWidth = imageSize.Width * _options.ImageScalingFactor;
-                double scaledHeight = imageSize.Height * _options.ImageScalingFactor;
+                double scaledWidth = image.Size.Width * _options.ImageScalingFactor;
+                double scaledHeight = image.Size.Height * _options.ImageScalingFactor;
 
                 // Get maximum allowed dimensions from options
                 double maxWidth = _options.MaxImageWidth;
