@@ -10,7 +10,7 @@
     <PackageVersion Include="PolySharp" Version="1.16.0" />
     <PackageVersion Include="QuestPDF" Version="2026.6.1" />
     <PackageVersion Include="Verify.QuestPDF" Version="2.5.0" />
-    <PackageVersion Include="TUnit" Version="1.56.35" />
+    <PackageVersion Include="TUnit" Version="1.58.0" />
     <PackageVersion Include="Verify.TUnit" Version="31.20.0" />
   </ItemGroup>
 </Project>
