@@ -22,5 +22,6 @@ internal static class GlobalInitializer
         UseProjectRelativeDirectory("Verify");
 
         VerifyQuestPdf.Initialize();
+        VerifierSettings.ExcludeTargets("pdf");
     }
 }
