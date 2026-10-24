@@ -476,7 +476,7 @@ internal sealed class RenderTests
                     page.Margin(1, Unit.Centimetre);
                     page.DefaultTextStyle(text =>
                     {
-                        text.FontFamily(Fonts.Lato);
+                        text.FontFamily("Lato");
                         text.LineHeight(1.5f);
                         return text;
                     });

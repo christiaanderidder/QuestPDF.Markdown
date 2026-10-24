@@ -10,7 +10,7 @@ internal static class GlobalInitializer
     public static void Init()
     {
         Settings.License = LicenseType.Community;
-        Settings.EnableDebugging = true;
+        Settings.EnableDetailedLayoutErrors = true;
 
         FontManager.RegisterFontFromEmbeddedResource(
             "QuestPDF.Markdown.Tests.Fonts.NotoSansMono-Regular.ttf"
