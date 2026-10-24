@@ -21,14 +21,14 @@ public class MarkdownRendererOptions
     public Color BlockQuoteTextColor { get; set; } = Colors.Grey.Darken1;
     public int BlockQuoteBorderThickness { get; set; } = 2;
 
-    public string CodeFont { get; set; } = Fonts.CourierNew;
+    public string CodeFont { get; set; } = "Courier New";
     public Color CodeBlockBackground { get; set; } = Colors.Grey.Lighten4;
     public Color CodeInlineBackground { get; set; } = Colors.Grey.Lighten3;
 
     public string TaskListCheckedGlyph { get; set; } = "☑";
     public string TaskListUncheckedGlyph { get; set; } = "☐";
     public string UnicodeGlyphFont { get; set; } =
-        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Arial Unicode MS" : Fonts.Arial;
+        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Arial Unicode MS" : "Arial";
 
     public Color TableBorderColor { get; set; } = Colors.Grey.Lighten2;
     public Color TableEvenRowBackgroundColor { get; set; } = Colors.Grey.Lighten4;

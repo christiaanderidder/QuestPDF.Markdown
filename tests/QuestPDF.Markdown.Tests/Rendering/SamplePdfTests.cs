@@ -71,7 +71,7 @@ internal sealed class SamplePdfTests
                     page.Margin(1, Unit.Centimetre);
                     page.DefaultTextStyle(text =>
                     {
-                        text.FontFamily(Fonts.Arial);
+                        text.FontFamily("Arial");
                         text.LineHeight(1.5f);
                         return text;
                     });
