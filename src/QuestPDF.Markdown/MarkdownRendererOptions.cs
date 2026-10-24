@@ -28,7 +28,9 @@ public class MarkdownRendererOptions
     public string TaskListCheckedGlyph { get; set; } = "☑";
     public string TaskListUncheckedGlyph { get; set; } = "☐";
     public string UnicodeGlyphFont { get; set; } =
-        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Arial Unicode MS" : RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Lato" : "Arial";
+        RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ? "Arial Unicode MS"
+        : RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? "Lato"
+        : "Arial";
 
     public Color TableBorderColor { get; set; } = Colors.Grey.Lighten2;
     public Color TableEvenRowBackgroundColor { get; set; } = Colors.Grey.Lighten4;
