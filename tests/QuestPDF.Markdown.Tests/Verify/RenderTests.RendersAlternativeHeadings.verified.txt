@@ -1,10 +1,12 @@
 ﻿{
-  Pages: 1,
-  Settings: {
-    ContentDirection: LeftToRight,
-    PDFA_Conformance: None,
-    PDFUA_Conformance: None,
-    ImageCompressionQuality: High,
-    ImageRasterDpi: 288
-  }
+  Document: {
+    Settings: {
+      ContentDirection: LeftToRight,
+      PDFA_Conformance: None,
+      PDFUA_Conformance: None,
+      ImageCompressionQuality: High,
+      ImageRasterDpi: 288
+    }
+  },
+  PageCount: 1
 }
